@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">100.3 WXYZ</string>
+    <string name="app_name">Veda Radio</string>
+
+
+    <string name="veda_radio_stream_link">https://stream.vedaradio.fm/high?1649590462300</string>
 </resources>
