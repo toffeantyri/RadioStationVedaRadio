@@ -32,8 +32,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Loading..."
-                android:textSize="10sp"
-                android:textColor="@color/purple_700"
+                android:textSize="8sp"
+                android:textColor="@color/green_700"
                 android:textStyle="bold" />
 
 

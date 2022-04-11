@@ -6,9 +6,9 @@
 <color name="info_text">#ffffff</color>
 
 
-    <color name="purple_200">#BC96FF</color>
-    <color name="purple_500">#965AFF</color>
-    <color name="purple_700">#6D1AFF</color>
+    <color name="green_200">#5F8B52</color>
+    <color name="green_500">#36852F</color>
+    <color name="green_700">#097A17</color>
 
     <color name="teal_700">#00E2FF</color>
     <color name="teal_200">#91F3FF</color>
