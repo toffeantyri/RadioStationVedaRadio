@@ -5,4 +5,7 @@
 
     <string name="veda_radio_stream_link">https://stream.vedaradio.fm/high?1649590462300</string>
     <string name="veda_radio_stream_link_alt_low">https://listen.vedaradio.fm:8000/verylow</string>
+
+
+    <string name="error_loading">Переподключение…</string>
 </resources>
