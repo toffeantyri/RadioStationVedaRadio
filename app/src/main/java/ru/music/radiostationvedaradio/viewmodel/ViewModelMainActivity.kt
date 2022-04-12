@@ -6,16 +6,20 @@ import androidx.lifecycle.ViewModel
 
 class ViewModelMainActivity : ViewModel() {
 
-    val progressBarVisibility: MutableLiveData<Int> by lazy {
-        MutableLiveData<Int>()
-    }
-
-    val preparedStatement: MutableLiveData<Int> by lazy {
-        MutableLiveData<Int>()
-    }
-
-    val stateIsPlaing: MutableLiveData<Boolean> by lazy {
+    val preparedStateComplete: MutableLiveData<Boolean> by lazy {
         MutableLiveData<Boolean>()
+    }
+
+    init {
+        preparedStateComplete.value = false
+    }
+
+    val stateIsPlaying: MutableLiveData<Boolean> by lazy {
+        MutableLiveData<Boolean>()
+    }
+
+    init {
+        stateIsPlaying.value = false
     }
 
 
