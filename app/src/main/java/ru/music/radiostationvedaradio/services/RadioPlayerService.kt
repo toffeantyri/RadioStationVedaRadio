@@ -220,13 +220,12 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         return null
     }
 
-    @SuppressLint("DefaultLocale")
     private fun handleIncomingAction(playbackAction: Intent) {
         if (playbackAction.action == null) return
         val actionString: String = playbackAction.action!!
-        if (actionString.toUpperCase() == (ACTION_PLAY.toUpperCase())) {
+        if (actionString == ACTION_PLAY) {
             transportControls?.play()
-        } else if (actionString.toUpperCase() == (ACTION_PAUSE.toUpperCase())) {
+        } else if (actionString == ACTION_PAUSE) {
             transportControls?.pause()
         }
     }
@@ -393,7 +392,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
             }
             buildNotification(Playbackstatus.PLAYING)
         }
-        if (intent != null) handleIncomingAction(intent)
+//        if (intent != null)
+            handleIncomingAction(intent!!)
 
         return super.onStartCommand(intent, flags, startId)
     }
