@@ -29,7 +29,7 @@ import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 const val ACTION_PLAY = "ru.music.vedaradio.ACTION_PLAY"
 const val ACTION_PAUSE = "ru.music.vedaradio.ACTION_PAUSE"
 
-const val CHANNEL_ID = "777"
+const val CHANNEL_ID = "ru.music.vedaradio.ID"
 
 const val NOTIFICATION_ID = 101
 
@@ -148,14 +148,18 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
             .addAction(notificationAction, "Pause", playbackAction(1))
             .addAction(notificationAction, "Play", playbackAction(0))
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+            .setOngoing(true)
+
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val name = "Channel 1"
         val descriptionText = "Description 1"
-        val importance = NotificationManager.IMPORTANCE_LOW
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
         val channel = NotificationChannel(CHANNEL_ID, name, importance ).apply{
             description = descriptionText
+            lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
+
         }
         notificationManager.createNotificationChannel(channel)
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())

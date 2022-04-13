@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setUpActionBar()
+
         url = getString(R.string.veda_radio_stream_link)
         Log.d("MyLog", "mediaservice: " + mediaService.toString() + "serverBound: $serviceBound")
         playAudio(url)
@@ -95,9 +96,6 @@ class MainActivity : AppCompatActivity() {
                 serviceBound && mediaService!!.isPlaying() -> mediaService?.pauseMedia()
             }
         }
-//        else if(item.itemId == R.id.action_stop_reset){
-//            mediaService?.reloadMedia()
-//        }
         return super.onOptionsItemSelected(item)
     }
 
