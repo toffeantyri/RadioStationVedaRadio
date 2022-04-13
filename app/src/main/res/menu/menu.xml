@@ -6,15 +6,6 @@
 
 
     <item
-        android:id="@+id/action_progressbar"
-        android:menuCategory="container"
-        app:showAsAction="ifRoom"
-        android:visible="true"
-        android:actionLayout="@layout/action_progressbar"
-        tools:ignore="MenuTitle" />
-
-
-    <item
         android:id="@+id/action_play"
         android:icon="@drawable/ic_baseline_play_circle_filled_24"
         android:orderInCategory="1"

@@ -12,11 +12,14 @@ import android.util.Log
 import android.view.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.createBitmap
+import kotlinx.android.synthetic.main.action_progressbar.*
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.music.radiostationvedaradio.BroadcastReceiverForPlayerSevice
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.services.RadioPlayerService
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
+import java.util.zip.Inflater
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     var mediaService: RadioPlayerService? = null
     val dataModel: ViewModelMainActivity by viewModels()
     lateinit var url: String
+    lateinit var btnPlay : MenuItem
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -38,7 +42,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -46,13 +49,15 @@ class MainActivity : AppCompatActivity() {
 
         url = getString(R.string.veda_radio_stream_link)
         Log.d("MyLog", "mediaservice: " + mediaService.toString() + "serverBound: $serviceBound")
+
+
+
+
+    }
+
+    override fun onStart() {
+        super.onStart()
         playAudio(url)
-
-        dataModel.preparedStateComplete.observe(this){
-            container_progressbar.visibility = if(it) View.GONE else View.VISIBLE
-        }
-
-
     }
 
     override fun onResume() {
@@ -80,11 +85,19 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
-        val btnPlay = menu?.getItem(0)
-        val btnReload = menu?.getItem(1)
-        dataModel.stateIsPlaying.observe(this){
-            if(it)btnPlay?.setIcon(R.drawable.ic_baseline_pause_circle_filled_24)
-            if(!it)btnPlay?.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
+        btnPlay = menu?.getItem(0)!!
+        dataModel.stateIsPlaying.observe(this) {
+            if (it) btnPlay?.setIcon(R.drawable.ic_baseline_pause_circle_filled_24)
+            if (!it) btnPlay?.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
+        }
+        dataModel.preparedStateComplete.observe(this){
+            if (it) {
+                btnPlay.collapseActionView()
+                btnPlay.actionView = null
+            } else {
+                btnPlay.setActionView(R.layout.action_progressbar)
+                btnPlay.expandActionView()
+            }
         }
         return super.onCreateOptionsMenu(menu)
     }
@@ -96,6 +109,7 @@ class MainActivity : AppCompatActivity() {
                 serviceBound && mediaService!!.isPlaying() -> mediaService?.pauseMedia()
             }
         }
+
         return super.onOptionsItemSelected(item)
     }
 
