@@ -36,19 +36,15 @@ const val NOTIFICATION_ID = 101
 class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener,
     MediaPlayer.OnErrorListener, MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnInfoListener,
     MediaPlayer.OnBufferingUpdateListener, AudioManager.OnAudioFocusChangeListener {
+
     val iBinder: IBinder = LocalBinder()
 
     var urlString: String? = null
+
     private var resumePosition: Int = 0
     private var mediaPlayer: MediaPlayer? = null
     private var audioManager: AudioManager? = null
     lateinit var dataModelInner: ViewModelMainActivity
-    private val broadcastReceiver = object : BroadcastReceiverForPlayerSevice() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            pauseMedia()
-            buildNotification(Playbackstatus.PAUSED)
-        }
-    }
     private var onIncomingCall = false
     private var phoneStateListener: PhoneStateListener? = null
     private var telephonyManager: TelephonyManager? = null
@@ -56,40 +52,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
     private var mediaSessionManager: MediaSessionManager? = null
     private var mediaSession: MediaSession? = null
     private var transportControls: MediaController.TransportControls? = null
-
-
-    private fun callStateListener() {
-        telephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-        phoneStateListener = object : PhoneStateListener() {
-            override fun onCallStateChanged(state: Int, phoneNumber: String?) {
-                when (state) {
-                    TelephonyManager.CALL_STATE_OFFHOOK -> {
-                    }
-                    TelephonyManager.CALL_STATE_RINGING -> {
-                        if (mediaPlayer != null) {
-                            pauseMedia()
-                            onIncomingCall = true
-                        }
-                    }
-                    TelephonyManager.CALL_STATE_IDLE -> {
-                        if (mediaPlayer != null) {
-                            if (onIncomingCall) {
-                                onIncomingCall = false
-                                //resumeMedia()
-                                playMedia()
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE)
-    }
-
-    fun registerBroadcatListener() {
-        val intentFilter: IntentFilter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
-        registerReceiver(broadcastReceiver, intentFilter)
-    }
 
     fun initMediaPlayer() {
         mediaPlayer = MediaPlayer()
@@ -183,8 +145,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
             .setContentText("N:Artist")
             .setContentTitle("N:Album")
             .setContentInfo("N:Title")
-            .addAction(notificationAction, "Pause", playPause_action)
-            .addAction(notificationAction, "Play", playPause_action)
+            .addAction(notificationAction, "Pause", playbackAction(1))
+            .addAction(notificationAction, "Play", playbackAction(0))
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -230,59 +192,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         }
     }
 
-    fun playMedia() {
-        if (mediaPlayer == null) return
-        if (!mediaPlayer!!.isPlaying) {
-            mediaPlayer!!.start()
-            dataModelInner.stateIsPlaying.value = mediaPlayer!!.isPlaying
-        }
-    }
-
-    fun stopMedia() {
-        if (mediaPlayer == null) return
-        if (mediaPlayer!!.isPlaying) {
-            mediaPlayer!!.stop()
-            dataModelInner.stateIsPlaying.value = mediaPlayer!!.isPlaying
-        }
-    }
-
-    fun pauseMedia() {
-        if (mediaPlayer == null) return
-        if (mediaPlayer!!.isPlaying) {
-            mediaPlayer!!.pause()
-            resumePosition = mediaPlayer!!.currentPosition
-            dataModelInner.stateIsPlaying.value = mediaPlayer!!.isPlaying
-        }
-    }
-
-    fun resumeMedia() {
-        if (mediaPlayer == null) return
-        if (!mediaPlayer!!.isPlaying) {
-            mediaPlayer!!.seekTo(resumePosition)
-            mediaPlayer!!.start()
-            dataModelInner.stateIsPlaying.value = mediaPlayer!!.isPlaying
-        }
-    }
-
-    fun reloadMedia() {
-        dataModelInner.preparedStateComplete.value = false
-        if (mediaPlayer == null) return
-        if (mediaPlayer!!.isPlaying) {
-            mediaPlayer!!.stop()
-            dataModelInner.stateIsPlaying.value = isPlaying()
-            mediaPlayer!!.release()
-        }
-        initMediaPlayer()
-    }
-
-    fun isPlaying(): Boolean {
-        return when {
-            mediaPlayer == null -> false
-            !mediaPlayer!!.isPlaying -> false
-            mediaPlayer!!.isPlaying -> true
-            else -> false
-        }
-    }
 
     override fun onBind(intent: Intent): IBinder {
         return iBinder
@@ -398,11 +307,110 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         return super.onStartCommand(intent, flags, startId)
     }
 
+//----------------------------MediaPlayerControl-------------------------------------------
+
+    fun playMedia() {
+        if (mediaPlayer == null) return
+        if (!mediaPlayer!!.isPlaying) {
+            mediaPlayer!!.start()
+            dataModelInner.stateIsPlaying.value = mediaPlayer!!.isPlaying
+        }
+    }
+
+    fun stopMedia() {
+        if (mediaPlayer == null) return
+        if (mediaPlayer!!.isPlaying) {
+            mediaPlayer!!.stop()
+            dataModelInner.stateIsPlaying.value = mediaPlayer!!.isPlaying
+        }
+    }
+
+    fun pauseMedia() {
+        if (mediaPlayer == null) return
+        if (mediaPlayer!!.isPlaying) {
+            mediaPlayer!!.pause()
+            resumePosition = mediaPlayer!!.currentPosition
+            dataModelInner.stateIsPlaying.value = mediaPlayer!!.isPlaying
+        }
+    }
+
+    fun resumeMedia() {
+        if (mediaPlayer == null) return
+        if (!mediaPlayer!!.isPlaying) {
+            mediaPlayer!!.seekTo(resumePosition)
+            mediaPlayer!!.start()
+            dataModelInner.stateIsPlaying.value = mediaPlayer!!.isPlaying
+        }
+    }
+
+    fun reloadMedia() {
+        dataModelInner.preparedStateComplete.value = false
+        if (mediaPlayer == null) return
+        if (mediaPlayer!!.isPlaying) {
+            mediaPlayer!!.stop()
+            dataModelInner.stateIsPlaying.value = isPlaying()
+            mediaPlayer!!.release()
+        }
+        initMediaPlayer()
+    }
+
+    fun isPlaying(): Boolean {
+        return when {
+            mediaPlayer == null -> false
+            !mediaPlayer!!.isPlaying -> false
+            mediaPlayer!!.isPlaying -> true
+            else -> false
+        }
+    }
+//------------------------------------------------------------------------
+
+
+
+
+
+    private val broadcastReceiver = object : BroadcastReceiverForPlayerSevice() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            pauseMedia()
+            buildNotification(Playbackstatus.PAUSED)
+        }
+    }
+
+    private fun callStateListener() {
+        telephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        phoneStateListener = object : PhoneStateListener() {
+            override fun onCallStateChanged(state: Int, phoneNumber: String?) {
+                when (state) {
+                    TelephonyManager.CALL_STATE_OFFHOOK -> {
+                    }
+                    TelephonyManager.CALL_STATE_RINGING -> {
+                        if (mediaPlayer != null) {
+                            pauseMedia()
+                            onIncomingCall = true
+                        }
+                    }
+                    TelephonyManager.CALL_STATE_IDLE -> {
+                        if (mediaPlayer != null) {
+                            if (onIncomingCall) {
+                                onIncomingCall = false
+                                playMedia()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE)
+    }
+
+    fun registerBroadcatListener() {
+        val intentFilter: IntentFilter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
+        registerReceiver(broadcastReceiver, intentFilter)
+    }
+
     override fun onCreate() {
         super.onCreate()
         callStateListener()
         registerBroadcatListener()
-
     }
 
     override fun onDestroy() {
