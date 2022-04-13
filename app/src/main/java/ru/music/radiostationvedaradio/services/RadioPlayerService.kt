@@ -191,9 +191,11 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         if (playbackAction.action == null) return
         val actionString: String = playbackAction.action!!
         if (actionString == ACTION_PLAY) {
-            transportControls?.play()
+            //transportControls?.play()
+            playMedia()
         } else if (actionString == ACTION_PAUSE) {
-            transportControls?.pause()
+            //transportControls?.pause()
+            pauseMedia()
         }
     }
 
@@ -318,6 +320,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         if (!mediaPlayer!!.isPlaying) {
             mediaPlayer!!.start()
             dataModelInner.stateIsPlaying.value = mediaPlayer!!.isPlaying
+            transportControls?.play()
         }
     }
 
@@ -335,6 +338,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
             mediaPlayer!!.pause()
             resumePosition = mediaPlayer!!.currentPosition
             dataModelInner.stateIsPlaying.value = mediaPlayer!!.isPlaying
+            transportControls?.pause()
         }
     }
 
