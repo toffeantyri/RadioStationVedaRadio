@@ -398,13 +398,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         return super.onStartCommand(intent, flags, startId)
     }
 
-    inner class LocalBinder : Binder() {
-        fun getService(dataModel: ViewModelMainActivity): RadioPlayerService {
-            dataModelInner = dataModel
-            return this@RadioPlayerService
-        }
-    }
-
     override fun onCreate() {
         super.onCreate()
         callStateListener()
@@ -423,9 +416,14 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         if (phoneStateListener != null) {
             telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE)
         }
-        // todo removeNotification()
+        removeNotification()
         unregisterReceiver(broadcastReceiver)
     }
 
-
+    inner class LocalBinder : Binder() {
+        fun getService(dataModel: ViewModelMainActivity): RadioPlayerService {
+            dataModelInner = dataModel
+            return this@RadioPlayerService
+        }
+    }
 }
