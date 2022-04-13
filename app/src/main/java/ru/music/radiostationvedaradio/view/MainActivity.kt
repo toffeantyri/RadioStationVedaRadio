@@ -12,14 +12,9 @@ import android.util.Log
 import android.view.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.graphics.createBitmap
-import kotlinx.android.synthetic.main.action_progressbar.*
-import kotlinx.android.synthetic.main.activity_main.*
-import ru.music.radiostationvedaradio.BroadcastReceiverForPlayerSevice
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.services.RadioPlayerService
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
-import java.util.zip.Inflater
 
 class MainActivity : AppCompatActivity() {
 

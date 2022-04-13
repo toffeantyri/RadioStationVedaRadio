@@ -24,7 +24,7 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <receiver
-            android:name=".BroadcastReceiverForPlayerSevice"
+            android:name=".services.BroadcastReceiverForPlayerSevice"
             android:enabled="true"
             android:exported="false" />
 

@@ -20,8 +20,6 @@ import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import ru.music.radiostationvedaradio.BroadcastReceiverForPlayerSevice
-import ru.music.radiostationvedaradio.Playbackstatus
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
@@ -36,7 +34,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
     MediaPlayer.OnErrorListener, MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnInfoListener,
     MediaPlayer.OnBufferingUpdateListener, AudioManager.OnAudioFocusChangeListener {
 
-    val iBinder: IBinder = LocalBinder()
+    private val iBinder: IBinder = LocalBinder()
 
     var urlString: String? = null
 
@@ -52,7 +50,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
     private var mediaSession: MediaSession? = null
     private var transportControls: MediaController.TransportControls? = null
 
-    fun initMediaPlayer() {
+    private fun initMediaPlayer() {
         mediaPlayer = MediaPlayer()
         mediaPlayer?.apply {
             setOnCompletionListener(this@RadioPlayerService)
@@ -191,10 +189,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         if (playbackAction.action == null) return
         val actionString: String = playbackAction.action!!
         if (actionString == ACTION_PLAY) {
-            //transportControls?.play()
             playMedia()
         } else if (actionString == ACTION_PAUSE) {
-            //transportControls?.pause()
             pauseMedia()
         }
     }

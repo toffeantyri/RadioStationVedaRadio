@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio
+package ru.music.radiostationvedaradio.services
 
 enum class Playbackstatus {
     PLAYING,
