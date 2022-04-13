@@ -1,6 +1,5 @@
 package ru.music.radiostationvedaradio.services
 
-import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
@@ -123,19 +122,23 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
     private fun buildNotification(playbackstatus: Playbackstatus) {
         var notificationAction = android.R.drawable.ic_media_pause
         var playPause_action: PendingIntent? = null
+        var titleButton : String = ""
 
         if (playbackstatus == Playbackstatus.PLAYING) {
-            notificationAction = android.R.drawable.ic_media_play
-            playPause_action = playbackAction(1)
-        } else if (playbackstatus == Playbackstatus.PAUSED) {
             notificationAction = android.R.drawable.ic_media_pause
+            playPause_action = playbackAction(1)
+            titleButton = "Play"
+        } else if (playbackstatus == Playbackstatus.PAUSED) {
+            notificationAction = android.R.drawable.ic_media_play
             playPause_action = playbackAction(0)
+            titleButton = "Pause"
         }
 
         val largeIconDrawble = R.drawable.totemanimal_ivon
         val largeIcon: Bitmap = BitmapFactory.decodeResource(resources, largeIconDrawble)
 
         val notificationBuilder: NotificationCompat.Builder = NotificationCompat.Builder(this, CHANNEL_ID)
+
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setShowWhen(false)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -145,9 +148,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
             .setContentText("N:Artist")
             .setContentTitle("N:Album")
             .setContentInfo("N:Title")
-            .addAction(notificationAction, "Pause", playbackAction(1))
-            .addAction(notificationAction, "Play", playbackAction(0))
-            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+            .addAction(notificationAction, titleButton, playPause_action)
+            .setStyle(androidx.media.app.NotificationCompat.MediaStyle())
             .setOngoing(true)
 
 
@@ -159,7 +161,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         val channel = NotificationChannel(CHANNEL_ID, name, importance ).apply{
             description = descriptionText
             lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
-
         }
         notificationManager.createNotificationChannel(channel)
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
@@ -303,10 +304,9 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
                 e.printStackTrace()
                 stopSelf()
             }
-            buildNotification(Playbackstatus.PLAYING)
+            buildNotification(Playbackstatus.PAUSED)
         }
-//        if (intent != null)
-            handleIncomingAction(intent!!)
+        if (intent != null) handleIncomingAction(intent)
 
         return super.onStartCommand(intent, flags, startId)
     }
@@ -406,7 +406,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE)
     }
 
-    fun registerBroadcatListener() {
+    private fun registerBroadcastListener() {
         val intentFilter: IntentFilter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
         registerReceiver(broadcastReceiver, intentFilter)
     }
@@ -414,7 +414,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
     override fun onCreate() {
         super.onCreate()
         callStateListener()
-        registerBroadcatListener()
+        registerBroadcastListener()
     }
 
     override fun onDestroy() {
