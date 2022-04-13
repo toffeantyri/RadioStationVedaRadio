@@ -94,9 +94,10 @@ class MainActivity : AppCompatActivity() {
                 serviceBound && !mediaService!!.isPlaying() -> mediaService?.playMedia()
                 serviceBound && mediaService!!.isPlaying() -> mediaService?.pauseMedia()
             }
-        } else if(item.itemId == R.id.action_stop_reset){
-            mediaService?.reloadMedia()
         }
+//        else if(item.itemId == R.id.action_stop_reset){
+//            mediaService?.reloadMedia()
+//        }
         return super.onOptionsItemSelected(item)
     }
 

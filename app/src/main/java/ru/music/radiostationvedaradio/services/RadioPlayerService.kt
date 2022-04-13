@@ -21,19 +21,15 @@ import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.core.graphics.drawable.toBitmap
 import ru.music.radiostationvedaradio.BroadcastReceiverForPlayerSevice
 import ru.music.radiostationvedaradio.Playbackstatus
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
-const val ACTION_PLAY = "com.valdioveliu.valdio.audioplayer.ACTION_PLAY"
-const val ACTION_PAUSE = "com.valdioveliu.valdio.audioplayer.ACTION_PAUSE"
-const val ACTION_PREVIOUS = "com.valdioveliu.valdio.audioplayer.ACTION_PREVIOUS"
-const val ACTION_NEXT = "com.valdioveliu.valdio.audioplayer.ACTION_NEXT"
-const val ACTION_STOP = "com.valdioveliu.valdio.audioplayer.ACTION_STOP"
+const val ACTION_PLAY = "ru.music.vedaradio.ACTION_PLAY"
+const val ACTION_PAUSE = "ru.music.vedaradio.ACTION_PAUSE"
 
-const val CHANNEL_ID = "666"
+const val CHANNEL_ID = "777"
 
 const val NOTIFICATION_ID = 101
 
@@ -122,10 +118,11 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         mediaSession?.isActive = true
         mediaSession?.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS)
         updateMetaData()
+
         mediaSession?.setCallback(object : MediaSession.Callback() {
             override fun onPlay() {
                 super.onPlay()
-                resumeMedia()
+                playMedia()
                 buildNotification(Playbackstatus.PLAYING)
             }
 
@@ -177,41 +174,29 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         val largeIcon: Bitmap = BitmapFactory.decodeResource(resources, largeIconDrawble)
 
         val notificationBuilder: NotificationCompat.Builder = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setShowWhen(false)
-            .setStyle(NotificationCompat.BigTextStyle()
-                .bigText("My Notifity")
-            )
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setColor(resources.getColor(R.color.green_200))
             .setLargeIcon(largeIcon)
-            .setSmallIcon(android.R.drawable.stat_sys_headset)
+            .setSmallIcon(notificationAction)
             .setContentText("N:Artist")
             .setContentTitle("N:Album")
             .setContentInfo("N:Title")
-            .addAction(notificationAction, "pause", playPause_action)
+            .addAction(notificationAction, "Pause", playPause_action)
+            .addAction(notificationAction, "Play", playPause_action)
+            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val name = "Channel 1"
         val descriptionText = "Description 1"
-        val importance = NotificationManager.IMPORTANCE_DEFAULT
-        val channel = NotificationChannel(CHANNEL_ID, name, importance ).apply {
+        val importance = NotificationManager.IMPORTANCE_LOW
+        val channel = NotificationChannel(CHANNEL_ID, name, importance ).apply{
             description = descriptionText
         }
         notificationManager.createNotificationChannel(channel)
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
-    }
-
-    private fun createNotificationChannel(){
-        val name = "Channel 1"
-        val descriptionText = "Description 1"
-        val CHANNEL_ID = "666"
-        val importance = NotificationManager.IMPORTANCE_DEFAULT
-        val channel = NotificationChannel(CHANNEL_ID, name, importance ).apply {
-            description = descriptionText
-        }
-        val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.createNotificationChannel(channel)
     }
 
     private fun removeNotification() {
@@ -224,20 +209,20 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         val playbackAction = Intent(this, RadioPlayerService::class.java)
         when (actionNumber) {
             0 -> {
-                playbackAction.setAction(ACTION_PLAY)
+                playbackAction.action = ACTION_PLAY
                 return PendingIntent.getService(this, actionNumber, playbackAction, 0)
             }
             1 -> {
-                playbackAction.setAction(ACTION_PAUSE)
+                playbackAction.action = ACTION_PAUSE
                 return PendingIntent.getService(this, actionNumber, playbackAction, 0)
             }
         }
         return null
     }
 
+    @SuppressLint("DefaultLocale")
     private fun handleIncomingAction(playbackAction: Intent) {
-        if (playbackAction?.action == null) return
-
+        if (playbackAction.action == null) return
         val actionString: String = playbackAction.action!!
         if (actionString.toUpperCase() == (ACTION_PLAY.toUpperCase())) {
             transportControls?.play()
