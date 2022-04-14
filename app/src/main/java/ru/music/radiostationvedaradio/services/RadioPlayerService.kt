@@ -40,7 +40,8 @@ const val NOTIFICATION_ID = 101
 // -1 - неинициализирован, 0 - инициализируется, 1 - инициализирован
 var STATE_INIT_MEDIAPLAYER = InitStatusMediaPlayer.IDLE
 
-class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener,
+class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
+    MediaPlayer.OnPreparedListener,
     MediaPlayer.OnErrorListener, MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnInfoListener,
     MediaPlayer.OnBufferingUpdateListener, AudioManager.OnAudioFocusChangeListener {
 
@@ -61,6 +62,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
     private var transportControls: MediaControllerCompat.TransportControls? = null
 
     private fun initMediaPlayer() {
+        if (STATE_INIT_MEDIAPLAYER == InitStatusMediaPlayer.INITIALISATION) return
         mediaPlayer = MediaPlayer()
         mediaPlayer?.apply {
             setOnCompletionListener(this@RadioPlayerService)
@@ -78,7 +80,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         }
         STATE_INIT_MEDIAPLAYER = InitStatusMediaPlayer.INITIALISATION
         mediaPlayer?.prepareAsync()
-        Log.d("MyLog", "initMEdiaPlayer")
+        Log.d("MyLog", "initMediaPlayer")
     }
 
     private fun initMediaSession() {
@@ -107,7 +109,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
                 super.onStop()
                 removeNotification()
                 stopSelf()
-                buildNotification(Playbackstatus.STOPPED)
             }
 
             override fun onSeekTo(pos: Long) {
@@ -135,44 +136,50 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         var notificationAction = android.R.drawable.ic_media_pause
         var playPause_action: PendingIntent? = null
         var titleButton: String = ""
+        var notRemoveOnSwipe = true
 
         if (playbackstatus == Playbackstatus.PLAYING) {
             notificationAction = android.R.drawable.ic_media_pause
             playPause_action = playbackAction(1)
             titleButton = "Play"
+            notRemoveOnSwipe = true
         } else if (playbackstatus == Playbackstatus.PAUSED) {
             notificationAction = android.R.drawable.ic_media_play
             playPause_action = playbackAction(0)
             titleButton = "Pause"
+            notRemoveOnSwipe = false
+
         }
 
         val cancelDrawable = android.R.drawable.ic_menu_close_clear_cancel
         val largeIconDrawble = R.drawable.totemanimal_ivon
         val largeIcon: Bitmap = BitmapFactory.decodeResource(resources, largeIconDrawble)
 
-        val notificationBuilder: NotificationCompat.Builder = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setDefaults(0)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setShowWhen(false)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setLargeIcon(largeIcon)
-            .setSmallIcon(notificationAction)
-            .setContentText("N:Artist")
-            .setContentTitle("N:Album")
-            .setContentInfo("N:Title")
-            .addAction(notificationAction, titleButton, playPause_action)
-            .addAction(cancelDrawable, "Cancel", playbackAction(-1))
-            .setStyle(
-                androidx.media.app.NotificationCompat.MediaStyle()
-                    .setMediaSession(mediaSession?.sessionToken)
-                    .setShowActionsInCompactView(0, 1)
-            )
-            .setOngoing(true)
-            .setColor(Color.GREEN)
-            .setColorized(true)
+        val notificationBuilder: NotificationCompat.Builder =
+            NotificationCompat.Builder(this, CHANNEL_ID)
+                .setDefaults(0)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setShowWhen(false)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setLargeIcon(largeIcon)
+                .setSmallIcon(notificationAction)
+                .setContentText("N:Artist")
+                .setContentTitle("N:Album")
+                .setContentInfo("N:Title")
+                .addAction(notificationAction, titleButton, playPause_action)
+                .addAction(cancelDrawable, "Cancel", playbackAction(10))
+                .setStyle(
+                    androidx.media.app.NotificationCompat.MediaStyle()
+                        .setMediaSession(mediaSession?.sessionToken)
+                        .setShowActionsInCompactView(0, 1)
+                )
+                .setOngoing(notRemoveOnSwipe)
+                .setColor(Color.GREEN)
+                .setColorized(true)
 
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val name = "Channel 1"
         val descriptionText = "Description 1"
@@ -188,7 +195,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
     private fun playbackAction(actionNumber: Int): PendingIntent? {
         val playbackAction = Intent(this, RadioPlayerService::class.java)
         when (actionNumber) {
-            -1 -> {
+            10 -> {
                 playbackAction.action = ACTION_CANCEL
                 return PendingIntent.getService(this, actionNumber, playbackAction, 0)
             }
@@ -206,13 +213,16 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
 
     private fun handleIncomingAction(playbackAction: Intent) {
         if (playbackAction.action == null) return
-        val actionString: String = playbackAction.action!!
-        if (actionString == ACTION_PLAY) {
-            playMedia()
-        } else if (actionString == ACTION_PAUSE) {
-            pauseMedia()
-        } else if (actionString == ACTION_CANCEL) {
-            removeNotifityMedia()
+        when (playbackAction.action!!) {
+            ACTION_PLAY -> {
+                playMedia()
+            }
+            ACTION_PAUSE -> {
+                pauseMedia()
+            }
+            ACTION_CANCEL -> {
+                removeNotifityMedia()
+            }
         }
     }
 
@@ -228,16 +238,16 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
 
     override fun onCompletion(mp: MediaPlayer?) {
         stopMedia()
-        stopSelf()
         dataModelInner.preparedStateComplete.value = false
-        Log.d("MyLog", "onComplition: ${dataModelInner.preparedStateComplete.value}")
+        stopSelf()
+        Log.d("MyLog", "onComplition prep: ${dataModelInner.preparedStateComplete.value}")
     }
 
     override fun onPrepared(mp: MediaPlayer?) {
         if (mediaPlayer == null) return
         if (mediaPlayer != null) {
             dataModelInner.preparedStateComplete.value = true
-            Log.d("MyLog", "onPrepader: ${dataModelInner.preparedStateComplete.value}")
+            Log.d("MyLog", "onPrepader prep: ${dataModelInner.preparedStateComplete.value}")
         }
         STATE_INIT_MEDIAPLAYER = InitStatusMediaPlayer.INIT_COMPLETE
         playMedia()
@@ -283,24 +293,25 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
                 }
             }
             AudioManager.AUDIOFOCUS_LOSS -> {
-                if (mediaPlayer!!.isPlaying) {
+                if (mediaPlayer?.isPlaying == true) {
                     mediaPlayer?.let {
-                        stopMedia()
-
+                        pauseMedia()
                     }
-                    mediaPlayer?.release()
+                    mediaPlayer?.let { stopMedia() }
+                    //mediaPlayer?.release()
+                    mediaPlayer?.reset()
                     STATE_INIT_MEDIAPLAYER = InitStatusMediaPlayer.IDLE
                     mediaPlayer = null
                 }
             }
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
-                if (mediaPlayer!!.isPlaying) {
+                if (mediaPlayer?.isPlaying == true) {
                     pauseMedia()
                 }
             }
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
-                if (mediaPlayer!!.isPlaying) {
-                    mediaPlayer!!.setVolume(0.1f, 0.1f)
+                if (mediaPlayer?.isPlaying == true) {
+                    mediaPlayer?.setVolume(0.1f, 0.1f)
                 }
             }
         }
@@ -308,7 +319,11 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
 
     private fun requestAudioFocus(): Boolean {
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager?
-        val result = audioManager?.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
+        val result = audioManager?.requestAudioFocus(
+            this,
+            AudioManager.STREAM_MUSIC,
+            AudioManager.AUDIOFOCUS_GAIN
+        )
         if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             return true
         }
@@ -332,7 +347,9 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         if (mediaSessionManager == null) {
             try {
                 initMediaSession()
+                Log.d("MyLog", "onStartCommand InitStatusPlayer : $STATE_INIT_MEDIAPLAYER")
                 if (STATE_INIT_MEDIAPLAYER == InitStatusMediaPlayer.IDLE) {
+                    mediaPlayer = null
                     initMediaPlayer()
                 }
             } catch (e: RemoteException) {
@@ -360,10 +377,11 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
     fun stopMedia() {
         if (mediaPlayer == null) return
         mediaPlayer?.stop()
+        //mediaPlayer?.reset()
         STATE_INIT_MEDIAPLAYER = InitStatusMediaPlayer.IDLE
         dataModelInner.stateIsPlaying.value = mediaPlayer!!.isPlaying
         dataModelInner.preparedStateComplete.value = false
-        Log.d("MyLog", "stopMedia: ${dataModelInner.preparedStateComplete.value}")
+        Log.d("MyLog", "stopMedia prep: ${dataModelInner.preparedStateComplete.value}")
     }
 
     fun pauseMedia() {
@@ -393,7 +411,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
     fun isPlaying(): Boolean {
         return when {
             mediaPlayer == null -> false
-            !mediaPlayer!!.isPlaying -> false
+            !mediaPlayer?.isPlaying!! -> false
             mediaPlayer!!.isPlaying -> true
             else -> false
         }
@@ -412,9 +430,13 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
 
     private val broadcastReceiverNewAudio = object : BroadcastReceiverForPlayerSevice() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d("MyLog", "onReceive 2 broadcastReseiver")
+            Log.d("MyLog", "onReceive broadcastReceiver NewAudio")
             if (STATE_INIT_MEDIAPLAYER == InitStatusMediaPlayer.INITIALISATION) return
-
+            try {
+                urlString = intent!!.getStringExtra("url")
+            } catch (e: NullPointerException) {
+                stopSelf()
+            }
             stopMedia()
             mediaPlayer?.reset()
             initMediaPlayer()
@@ -469,21 +491,21 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
     }
 
     override fun onDestroy() {
-        super.onDestroy()
+        removeNotification()
         if (mediaPlayer != null) {
             stopMedia()
             mediaPlayer!!.release()
         }
         STATE_INIT_MEDIAPLAYER = InitStatusMediaPlayer.IDLE
         dataModelInner.preparedStateComplete.value = false
-        Log.d("MyLog", "onDestroy: ${dataModelInner.preparedStateComplete.value}")
+        Log.d("MyLog", "onDestroy prep: ${dataModelInner.preparedStateComplete.value}")
         removeAudioFocus()
         if (phoneStateListener != null) {
             telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE)
         }
-        removeNotification()
         unregisterReceiver(broadcastReceiver)
         unregisterReceiver(broadcastReceiverNewAudio)
+        super.onDestroy()
     }
 
     inner class LocalBinder : Binder() {

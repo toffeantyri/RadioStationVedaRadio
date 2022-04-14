@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
 
         override fun onServiceDisconnected(name: ComponentName?) {
             dataModel.stateServiceBound.value = false
+            Log.d("MyLog", "onServiceDisconnected")
         }
     }
 
@@ -131,6 +132,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             Log.d("MyLog", "service is already bound")
             val broadcastIntent : Intent = Intent(Broadcast_NEW_AUDIO)
+            broadcastIntent.putExtra("url", urlStream)
             sendBroadcast(broadcastIntent)
         }
     }
