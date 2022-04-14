@@ -107,6 +107,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
             override fun onStop() {
                 super.onStop()
+                Log.d("MyLog", "onStop callback")
                 removeNotification()
                 stopSelf()
             }
@@ -222,6 +223,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
             }
             ACTION_CANCEL -> {
                 removeNotifityMedia()
+                stopMedia()
             }
         }
     }
@@ -381,6 +383,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         STATE_INIT_MEDIAPLAYER = InitStatusMediaPlayer.IDLE
         dataModelInner.stateIsPlaying.value = mediaPlayer!!.isPlaying
         dataModelInner.preparedStateComplete.value = false
+        transportControls?.stop()
         Log.d("MyLog", "stopMedia prep: ${dataModelInner.preparedStateComplete.value}")
     }
 
