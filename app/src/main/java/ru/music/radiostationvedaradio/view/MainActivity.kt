@@ -1,9 +1,6 @@
 package ru.music.radiostationvedaradio.view
 
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.media.AudioManager
 import android.os.Bundle
 import android.os.IBinder
@@ -15,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.services.RadioPlayerService
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
+
+const val Broadcast_NEW_AUDIO = "ru.music.vedaradio.NEW_AUDIO"
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,12 +28,10 @@ class MainActivity : AppCompatActivity() {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as RadioPlayerService.LocalBinder
             mediaService = binder.getService(dataModel)
-            //serviceBound = true
             dataModel.stateServiceBound.value = true
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
-            //serviceBound = false
             dataModel.stateServiceBound.value = false
         }
     }
@@ -51,7 +48,7 @@ class MainActivity : AppCompatActivity() {
             Log.d("MyLog", "serviceBount = $serviceBound")
         }
 
-
+        playAudio(url)
     }
 
     override fun onPause() {
@@ -61,19 +58,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        playAudio(url)
+
         volumeControlStream = AudioManager.STREAM_MUSIC
         Log.d("MyLog", "MainActivity onResume")
-    }
-
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        outState.putBoolean("ServiceState", serviceBound)
-        super.onSaveInstanceState(outState, outPersistentState)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        serviceBound = savedInstanceState.getBoolean("ServiceState")
     }
 
     override fun onDestroy() {
@@ -106,10 +93,20 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_play && mediaService != null) {
-            when {
-                serviceBound && !mediaService!!.isPlaying() -> mediaService?.playMedia()
-                serviceBound && mediaService!!.isPlaying() -> mediaService?.pauseMedia()
+            Log.d("MyLog", "action_play click. isPlaying: ${mediaService!!.isPlaying()}")
+            if (dataModel.preparedStateComplete.value!!) {
+                when {
+                    serviceBound && !mediaService!!.isPlaying() -> mediaService?.playMedia()
+                    serviceBound && mediaService!!.isPlaying() -> mediaService?.pauseMedia()
+                }
             }
+
+            else if (!dataModel.preparedStateComplete.value!!) {
+                when {
+                    serviceBound  -> playAudio(url)
+                }
+            }
+
         }
 
         return super.onOptionsItemSelected(item)
@@ -125,14 +122,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun playAudio(urlStream: String) {
         if (!serviceBound) {
-            Log.d("MyLog, ","StartService")
+            Log.d("MyLog", "StartService")
             val playerIntent = Intent(this, RadioPlayerService::class.java)
             playerIntent.putExtra("url", urlStream)
             startService(playerIntent)
             bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE)
         } else {
             Log.d("MyLog", "service is already bound")
-            //todo send media with broadcastReceiver
+            val broadcastIntent : Intent = Intent(Broadcast_NEW_AUDIO)
+            sendBroadcast(broadcastIntent)
         }
     }
 
