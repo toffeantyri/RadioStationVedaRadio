@@ -22,17 +22,20 @@ class MainActivity : AppCompatActivity() {
     var mediaService: RadioPlayerService? = null
     val dataModel: ViewModelMainActivity by viewModels()
     lateinit var url: String
-    lateinit var btnPlay : MenuItem
+    lateinit var btnPlay: MenuItem
+    lateinit var btnNone: MenuItem
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as RadioPlayerService.LocalBinder
             mediaService = binder.getService(dataModel)
-            serviceBound = true
+            //serviceBound = true
+            dataModel.stateServiceBound.value = true
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
-            serviceBound = false
+            //serviceBound = false
+            dataModel.stateServiceBound.value = false
         }
     }
 
@@ -41,23 +44,26 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setUpActionBar()
-
         url = getString(R.string.veda_radio_stream_link)
-        Log.d("MyLog", "mediaservice: " + mediaService.toString() + "serverBound: $serviceBound")
 
+        dataModel.stateServiceBound.observe(this) {
+            serviceBound = it
+            Log.d("MyLog", "serviceBount = $serviceBound")
+        }
 
-
-
+        playAudio(url)
     }
 
-    override fun onStart() {
-        super.onStart()
-        playAudio(url)
+    override fun onPause() {
+        super.onPause()
+        Log.d("MyLog", "Mainactivity onPause")
     }
 
     override fun onResume() {
         super.onResume()
+
         volumeControlStream = AudioManager.STREAM_MUSIC
+        Log.d("MyLog", "MainActivity onResume")
     }
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
@@ -80,18 +86,19 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
-        btnPlay = menu?.getItem(0)!!
+        btnPlay = menu?.getItem(1)!!
+        btnNone = menu.getItem(0)!!
         dataModel.stateIsPlaying.observe(this) {
-            if (it) btnPlay?.setIcon(R.drawable.ic_baseline_pause_circle_filled_24)
-            if (!it) btnPlay?.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
+            if (it) btnPlay.setIcon(R.drawable.ic_baseline_pause_circle_filled_24)
+            if (!it) btnPlay.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
         }
-        dataModel.preparedStateComplete.observe(this){
+        dataModel.preparedStateComplete.observe(this) {
             if (it) {
-                btnPlay.collapseActionView()
-                btnPlay.actionView = null
+                btnNone.collapseActionView()
+                btnNone.actionView = null
             } else {
-                btnPlay.setActionView(R.layout.action_progressbar)
-                btnPlay.expandActionView()
+                btnNone.setActionView(R.layout.action_progressbar)
+                btnNone.expandActionView()
             }
         }
         return super.onCreateOptionsMenu(menu)
@@ -118,6 +125,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun playAudio(urlStream: String) {
         if (!serviceBound) {
+            Log.d("MyLog, ","StartService")
             val playerIntent = Intent(this, RadioPlayerService::class.java)
             playerIntent.putExtra("url", urlStream)
             startService(playerIntent)

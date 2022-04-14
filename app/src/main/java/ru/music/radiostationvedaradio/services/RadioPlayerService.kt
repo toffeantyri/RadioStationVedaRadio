@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.MediaMetadata
@@ -16,6 +17,9 @@ import android.media.session.MediaSessionManager
 import android.os.Binder
 import android.os.IBinder
 import android.os.RemoteException
+import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.session.MediaControllerCompat
+import android.support.v4.media.session.MediaSessionCompat
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -25,6 +29,7 @@ import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 const val ACTION_PLAY = "ru.music.vedaradio.ACTION_PLAY"
 const val ACTION_PAUSE = "ru.music.vedaradio.ACTION_PAUSE"
+const val ACTION_CANCEL = "ru.music.vedaradio.ACTION_CANCEL"
 
 const val CHANNEL_ID = "ru.music.vedaradio.ID"
 
@@ -47,8 +52,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
     private var telephonyManager: TelephonyManager? = null
 
     private var mediaSessionManager: MediaSessionManager? = null
-    private var mediaSession: MediaSession? = null
-    private var transportControls: MediaController.TransportControls? = null
+    private var mediaSession: MediaSessionCompat? = null
+    private var transportControls: MediaControllerCompat.TransportControls? = null
 
     private fun initMediaPlayer() {
         mediaPlayer = MediaPlayer()
@@ -72,13 +77,13 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
     private fun initMediaSession() {
         if (mediaSessionManager != null) return
         mediaSessionManager = getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
-        mediaSession = MediaSession(applicationContext, "Audio Player")
+        mediaSession = MediaSessionCompat(applicationContext, "Audio Player")
         transportControls = mediaSession?.controller?.transportControls
         mediaSession?.isActive = true
-        mediaSession?.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS)
+        mediaSession?.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS)
         updateMetaData()
 
-        mediaSession?.setCallback(object : MediaSession.Callback() {
+        mediaSession?.setCallback(object : MediaSessionCompat.Callback() {
             override fun onPlay() {
                 super.onPlay()
                 playMedia()
@@ -95,6 +100,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
                 super.onStop()
                 removeNotification()
                 stopSelf()
+                buildNotification(Playbackstatus.STOPPED)
             }
 
             override fun onSeekTo(pos: Long) {
@@ -107,11 +113,11 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         val bitmap = BitmapFactory.decodeResource(resources, R.drawable.ic_baseline_radio_24)
         //todo bitmap
         mediaSession?.setMetadata(
-            MediaMetadata.Builder()
-                .putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, bitmap)
-                .putString(MediaMetadata.METADATA_KEY_ARTIST, "Artist")
-                .putString(MediaMetadata.METADATA_KEY_ALBUM, "ALBUM")
-                .putString(MediaMetadata.METADATA_KEY_TITLE, "Title").build()
+            MediaMetadataCompat.Builder()
+                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "Artist")
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, "ALBUM")
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "Title").build()
 
 
         )
@@ -120,7 +126,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
     private fun buildNotification(playbackstatus: Playbackstatus) {
         var notificationAction = android.R.drawable.ic_media_pause
         var playPause_action: PendingIntent? = null
-        var titleButton : String = ""
+        var titleButton: String = ""
 
         if (playbackstatus == Playbackstatus.PLAYING) {
             notificationAction = android.R.drawable.ic_media_pause
@@ -132,6 +138,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
             titleButton = "Pause"
         }
 
+        val cancelDrawable = android.R.drawable.ic_menu_close_clear_cancel
         val largeIconDrawble = R.drawable.totemanimal_ivon
         val largeIcon: Bitmap = BitmapFactory.decodeResource(resources, largeIconDrawble)
 
@@ -140,15 +147,21 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setShowWhen(false)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setColor(resources.getColor(R.color.green_200))
             .setLargeIcon(largeIcon)
             .setSmallIcon(notificationAction)
             .setContentText("N:Artist")
             .setContentTitle("N:Album")
             .setContentInfo("N:Title")
             .addAction(notificationAction, titleButton, playPause_action)
-            .setStyle(androidx.media.app.NotificationCompat.MediaStyle())
+            .addAction(cancelDrawable, "Cancel", playbackAction(-1))
+            .setStyle(
+                androidx.media.app.NotificationCompat.MediaStyle()
+                    .setMediaSession(mediaSession?.sessionToken)
+                    .setShowActionsInCompactView(0,1)
+            )
             .setOngoing(true)
+            .setColor(Color.GREEN)
+            .setColorized(true)
 
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -156,7 +169,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         val name = "Channel 1"
         val descriptionText = "Description 1"
         val importance = NotificationManager.IMPORTANCE_LOW
-        val channel = NotificationChannel(CHANNEL_ID, name, importance ).apply{
+        val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
             description = descriptionText
             lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
         }
@@ -167,6 +180,10 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
     private fun playbackAction(actionNumber: Int): PendingIntent? {
         val playbackAction = Intent(this, RadioPlayerService::class.java)
         when (actionNumber) {
+            -1 -> {
+                playbackAction.action = ACTION_CANCEL
+                return PendingIntent.getService(this,actionNumber,playbackAction,0)
+            }
             0 -> {
                 playbackAction.action = ACTION_PLAY
                 return PendingIntent.getService(this, actionNumber, playbackAction, 0)
@@ -186,6 +203,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
             playMedia()
         } else if (actionString == ACTION_PAUSE) {
             pauseMedia()
+        } else if (actionString == ACTION_CANCEL) {
+            removeNotifityMedia()
         }
     }
 
@@ -327,6 +346,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         if (mediaPlayer!!.isPlaying) {
             mediaPlayer!!.stop()
             dataModelInner.stateIsPlaying.value = mediaPlayer!!.isPlaying
+            dataModelInner.preparedStateComplete.value = false
         }
     }
 
@@ -349,15 +369,27 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         }
     }
 
-    fun reloadMedia() {
+    fun removeNotifityMedia(){
+        pauseMedia()
+        removeNotification()
+    }
+
+    //todo как правильно завершить сервис?
+    fun resetService(){
+        mediaPlayer?.stop()
+        dataModelInner.stateIsPlaying.value = mediaPlayer!!.isPlaying
+        mediaPlayer?.reset()
+        mediaPlayer?.release()
         dataModelInner.preparedStateComplete.value = false
-        if (mediaPlayer == null) return
-        if (mediaPlayer!!.isPlaying) {
-            mediaPlayer!!.stop()
-            dataModelInner.stateIsPlaying.value = isPlaying()
-            mediaPlayer!!.release()
+        removeAudioFocus()
+        if (phoneStateListener != null) {
+            telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE)
         }
-        initMediaPlayer()
+        removeNotification()
+        dataModelInner.stateServiceBound.value = false
+        unregisterReceiver(broadcastReceiver)
+        stopSelf()
+
     }
 
     fun isPlaying(): Boolean {
@@ -369,9 +401,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         }
     }
 //------------------------------------------------------------------------
-
-
-
 
 
     private val broadcastReceiver = object : BroadcastReceiverForPlayerSevice() {

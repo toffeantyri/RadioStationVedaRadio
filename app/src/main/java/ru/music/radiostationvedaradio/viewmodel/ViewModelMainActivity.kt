@@ -22,5 +22,11 @@ class ViewModelMainActivity : ViewModel() {
         stateIsPlaying.value = false
     }
 
+    val stateServiceBound : MutableLiveData<Boolean> by lazy {
+        MutableLiveData<Boolean>()
+    }
+    init{
+        stateServiceBound.value = false
+    }
 
 }
