@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
             Log.d("MyLog", "serviceBount = $serviceBound")
         }
 
-        playAudio(url)
+
     }
 
     override fun onPause() {
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-
+        playAudio(url)
         volumeControlStream = AudioManager.STREAM_MUSIC
         Log.d("MyLog", "MainActivity onResume")
     }

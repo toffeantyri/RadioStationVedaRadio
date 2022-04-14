@@ -262,10 +262,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
             AudioManager.AUDIOFOCUS_GAIN -> {
                 if (mediaPlayer == null) {
                     initMediaPlayer()
-                    //mediaPlayer!!.start()
                     playMedia()
                 } else if (!mediaPlayer!!.isPlaying) {
-                    //mediaPlayer!!.start()
                     playMedia()
                     mediaPlayer!!.setVolume(1.0f, 1.0f)
                 }
@@ -273,7 +271,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
             AudioManager.AUDIOFOCUS_LOSS -> {
                 if (mediaPlayer!!.isPlaying) {
                     mediaPlayer?.let {
-                        it.stop()
+                        stopMedia()
                         it.release()
                     }
                     mediaPlayer = null
@@ -281,7 +279,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
             }
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
                 if (mediaPlayer!!.isPlaying) {
-                    //mediaPlayer!!.pause()
                     pauseMedia()
                 }
             }
@@ -343,11 +340,9 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
 
     fun stopMedia() {
         if (mediaPlayer == null) return
-        if (mediaPlayer!!.isPlaying) {
             mediaPlayer!!.stop()
             dataModelInner.stateIsPlaying.value = mediaPlayer!!.isPlaying
             dataModelInner.preparedStateComplete.value = false
-        }
     }
 
     fun pauseMedia() {
@@ -372,24 +367,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
     fun removeNotifityMedia(){
         pauseMedia()
         removeNotification()
-    }
-
-    //todo как правильно завершить сервис?
-    fun resetService(){
-        mediaPlayer?.stop()
-        dataModelInner.stateIsPlaying.value = mediaPlayer!!.isPlaying
-        mediaPlayer?.reset()
-        mediaPlayer?.release()
-        dataModelInner.preparedStateComplete.value = false
-        removeAudioFocus()
-        if (phoneStateListener != null) {
-            telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE)
-        }
-        removeNotification()
-        dataModelInner.stateServiceBound.value = false
-        unregisterReceiver(broadcastReceiver)
-        stopSelf()
-
     }
 
     fun isPlaying(): Boolean {
