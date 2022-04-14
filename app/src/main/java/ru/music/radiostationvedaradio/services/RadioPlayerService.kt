@@ -136,7 +136,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         val largeIcon: Bitmap = BitmapFactory.decodeResource(resources, largeIconDrawble)
 
         val notificationBuilder: NotificationCompat.Builder = NotificationCompat.Builder(this, CHANNEL_ID)
-
+            .setDefaults(0)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setShowWhen(false)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -155,19 +155,13 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
 
         val name = "Channel 1"
         val descriptionText = "Description 1"
-        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val importance = NotificationManager.IMPORTANCE_LOW
         val channel = NotificationChannel(CHANNEL_ID, name, importance ).apply{
             description = descriptionText
             lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
         }
         notificationManager.createNotificationChannel(channel)
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
-    }
-
-    private fun removeNotification() {
-        val notificationManager: NotificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.cancel(NOTIFICATION_ID)
     }
 
     private fun playbackAction(actionNumber: Int): PendingIntent? {
@@ -195,6 +189,11 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         }
     }
 
+    private fun removeNotification() {
+        val notificationManager: NotificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(NOTIFICATION_ID)
+    }
 
     override fun onBind(intent: Intent): IBinder {
         return iBinder
@@ -244,9 +243,11 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
             AudioManager.AUDIOFOCUS_GAIN -> {
                 if (mediaPlayer == null) {
                     initMediaPlayer()
-                    mediaPlayer!!.start()
+                    //mediaPlayer!!.start()
+                    playMedia()
                 } else if (!mediaPlayer!!.isPlaying) {
-                    mediaPlayer!!.start()
+                    //mediaPlayer!!.start()
+                    playMedia()
                     mediaPlayer!!.setVolume(1.0f, 1.0f)
                 }
             }
@@ -261,7 +262,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
             }
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
                 if (mediaPlayer!!.isPlaying) {
-                    mediaPlayer!!.pause()
+                    //mediaPlayer!!.pause()
+                    pauseMedia()
                 }
             }
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
