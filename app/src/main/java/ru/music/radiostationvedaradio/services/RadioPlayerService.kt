@@ -37,6 +37,9 @@ const val CHANNEL_ID = "ru.music.vedaradio.ID"
 
 const val NOTIFICATION_ID = 101
 
+// -1 - неинициализирован, 0 - инициализируется, 1 - инициализирован
+var STATE_INIT_MEDIAPLAYER = InitStatusMediaPlayer.IDLE
+
 class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener,
     MediaPlayer.OnErrorListener, MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnInfoListener,
     MediaPlayer.OnBufferingUpdateListener, AudioManager.OnAudioFocusChangeListener {
@@ -73,6 +76,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
             )
             if (urlString != null) setDataSource(urlString)
         }
+        STATE_INIT_MEDIAPLAYER = InitStatusMediaPlayer.INITIALISATION
         mediaPlayer?.prepareAsync()
         Log.d("MyLog", "initMEdiaPlayer")
     }
@@ -231,8 +235,11 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
 
     override fun onPrepared(mp: MediaPlayer?) {
         if (mediaPlayer == null) return
-        if (mediaPlayer != null) {dataModelInner.preparedStateComplete.value = true
-            Log.d("MyLog", "onPrepader: ${dataModelInner.preparedStateComplete.value}")}
+        if (mediaPlayer != null) {
+            dataModelInner.preparedStateComplete.value = true
+            Log.d("MyLog", "onPrepader: ${dataModelInner.preparedStateComplete.value}")
+        }
+        STATE_INIT_MEDIAPLAYER = InitStatusMediaPlayer.INIT_COMPLETE
         playMedia()
         Log.d("MyLog", "Service ready for play")
     }
@@ -279,9 +286,10 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
                 if (mediaPlayer!!.isPlaying) {
                     mediaPlayer?.let {
                         stopMedia()
+
                     }
                     mediaPlayer?.release()
-
+                    STATE_INIT_MEDIAPLAYER = InitStatusMediaPlayer.IDLE
                     mediaPlayer = null
                 }
             }
@@ -317,14 +325,16 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
         } catch (e: NullPointerException) {
             stopSelf()
         }
-        Log.d("MyLog, ","onStartCommand requestAudioFocus: ${requestAudioFocus()}")
+        Log.d("MyLog, ", "onStartCommand requestAudioFocus: ${requestAudioFocus()}")
         if (!requestAudioFocus()) {
             stopSelf()
         }
         if (mediaSessionManager == null) {
             try {
                 initMediaSession()
-                initMediaPlayer()
+                if (STATE_INIT_MEDIAPLAYER == InitStatusMediaPlayer.IDLE) {
+                    initMediaPlayer()
+                }
             } catch (e: RemoteException) {
                 e.printStackTrace()
                 stopSelf()
@@ -350,6 +360,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
     fun stopMedia() {
         if (mediaPlayer == null) return
         mediaPlayer?.stop()
+        STATE_INIT_MEDIAPLAYER = InitStatusMediaPlayer.IDLE
         dataModelInner.stateIsPlaying.value = mediaPlayer!!.isPlaying
         dataModelInner.preparedStateComplete.value = false
         Log.d("MyLog", "stopMedia: ${dataModelInner.preparedStateComplete.value}")
@@ -402,15 +413,18 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
     private val broadcastReceiverNewAudio = object : BroadcastReceiverForPlayerSevice() {
         override fun onReceive(context: Context?, intent: Intent?) {
             Log.d("MyLog", "onReceive 2 broadcastReseiver")
+            if (STATE_INIT_MEDIAPLAYER == InitStatusMediaPlayer.INITIALISATION) return
+
             stopMedia()
             mediaPlayer?.reset()
             initMediaPlayer()
             updateMetaData()
             buildNotification(Playbackstatus.PLAYING)
+
         }
     }
 
-    private fun registerPlayNewAudio(){
+    private fun registerPlayNewAudio() {
         val filter = IntentFilter(Broadcast_NEW_AUDIO)
         registerReceiver(broadcastReceiverNewAudio, filter)
     }
@@ -460,6 +474,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener, MediaPla
             stopMedia()
             mediaPlayer!!.release()
         }
+        STATE_INIT_MEDIAPLAYER = InitStatusMediaPlayer.IDLE
         dataModelInner.preparedStateComplete.value = false
         Log.d("MyLog", "onDestroy: ${dataModelInner.preparedStateComplete.value}")
         removeAudioFocus()

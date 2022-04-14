@@ -12,8 +12,10 @@ import androidx.appcompat.app.AppCompatActivity
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.services.RadioPlayerService
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
+import kotlin.properties.Delegates
 
 const val Broadcast_NEW_AUDIO = "ru.music.vedaradio.NEW_AUDIO"
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -100,7 +102,6 @@ class MainActivity : AppCompatActivity() {
                     serviceBound && mediaService!!.isPlaying() -> mediaService?.pauseMedia()
                 }
             }
-
             else if (!dataModel.preparedStateComplete.value!!) {
                 when {
                     serviceBound  -> playAudio(url)
