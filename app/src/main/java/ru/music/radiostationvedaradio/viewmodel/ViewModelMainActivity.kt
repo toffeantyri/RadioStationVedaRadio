@@ -3,30 +3,24 @@ package ru.music.radiostationvedaradio.viewmodel
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import ru.music.radiostationvedaradio.services.InitStatusMediaPlayer
 
 class ViewModelMainActivity : ViewModel() {
-
-    val preparedStateComplete: MutableLiveData<Boolean> by lazy {
-        MutableLiveData<Boolean>()
-    }
-
-    init {
-        preparedStateComplete.value = false
-    }
 
     val stateIsPlaying: MutableLiveData<Boolean> by lazy {
         MutableLiveData<Boolean>()
     }
-
     init {
         stateIsPlaying.value = false
     }
 
-    val stateServiceBound : MutableLiveData<Boolean> by lazy {
-        MutableLiveData<Boolean>()
+
+    val statusMediaPlayer : MutableLiveData<InitStatusMediaPlayer> by lazy {
+        MutableLiveData<InitStatusMediaPlayer>()
     }
-    init{
-        stateServiceBound.value = false
+    init {
+        statusMediaPlayer.value = InitStatusMediaPlayer.IDLE
     }
+
 
 }

@@ -34,15 +34,19 @@ const val CHANNEL_ID = "ru.music.vedaradio.ID"
 
 const val NOTIFICATION_ID = 101
 
-var STATE_INIT_MEDIAPLAYER = InitStatusMediaPlayer.IDLE
-
 class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     MediaPlayer.OnPreparedListener,
     MediaPlayer.OnErrorListener, MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnInfoListener,
     MediaPlayer.OnBufferingUpdateListener, AudioManager.OnAudioFocusChangeListener {
 
-    private val iBinder: IBinder = LocalBinder()
+    inner class LocalBinder : Binder() {
+        fun getService(dataModel: ViewModelMainActivity): RadioPlayerService {
+            dataModelInner = dataModel
+            return this@RadioPlayerService
+        }
+    }
 
+    private val iBinder: IBinder = LocalBinder()
     var urlString: String? = null
 
     private var resumePosition: Int = 0
@@ -58,7 +62,9 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     private var transportControls: MediaControllerCompat.TransportControls? = null
 
     private fun initMediaPlayer() {
-        if (STATE_INIT_MEDIAPLAYER == InitStatusMediaPlayer.INITIALISATION) return
+        Log.d("MyLog", "initMediaPlayer start ${dataModelInner?.statusMediaPlayer?.value}")
+        //if (dataModelInner?.statusMediaPlayer?.value == InitStatusMediaPlayer.INITIALISATION) return
+        dataModelInner?.statusMediaPlayer?.value = InitStatusMediaPlayer.INITIALISATION
         mediaPlayer = MediaPlayer()
         mediaPlayer?.apply {
             setOnCompletionListener(this@RadioPlayerService)
@@ -74,10 +80,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
             )
             if (urlString != null) setDataSource(urlString)
         }
-
-        STATE_INIT_MEDIAPLAYER = InitStatusMediaPlayer.INITIALISATION
         mediaPlayer?.prepareAsync()
-        Log.d("MyLog", "initMediaPlayer")
+        Log.d("MyLog", "initMediaPlayer end ${dataModelInner?.statusMediaPlayer?.value}")
     }
 
     private fun initMediaSession() {
@@ -237,28 +241,20 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     override fun onCompletion(mp: MediaPlayer?) {
         stopMedia()
-        dataModelInner?.preparedStateComplete?.value = false
         stopSelf()
-        Log.d("MyLog", "onComplition prep: ${dataModelInner?.preparedStateComplete?.value}")
     }
 
     override fun onPrepared(mp: MediaPlayer?) {
         if (mediaPlayer == null) return
-        if (mediaPlayer != null) {
-            dataModelInner?.preparedStateComplete?.value = true
-            Log.d("MyLog", "onPrepader prep: ${dataModelInner?.preparedStateComplete?.value}")
-        }
-        STATE_INIT_MEDIAPLAYER = InitStatusMediaPlayer.INIT_COMPLETE
+        dataModelInner?.statusMediaPlayer?.value = InitStatusMediaPlayer.INIT_COMPLETE
         playMedia()
         Log.d("MyLog", "Service ready for play")
     }
 
     override fun onError(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
-        dataModelInner?.preparedStateComplete?.value = false
+        dataModelInner?.statusMediaPlayer?.value = InitStatusMediaPlayer.IDLE
         Log.d("MyLog", "onError what:  $what + extra : $extra")
         dataModelInner?.stateIsPlaying?.value = mediaPlayer?.isPlaying
-        STATE_INIT_MEDIAPLAYER = InitStatusMediaPlayer.IDLE
-
         when (what) {
             MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK -> {
                 Log.d("MyLog", "error : not valid progressive playback + $extra")
@@ -280,7 +276,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
             -38 -> {
                 Log.d("MyLog", "error : -38 + $extra")
                 mediaPlayer = null
-                Toast.makeText(this, "Ошибка соединения", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Ошибка загрузки", Toast.LENGTH_SHORT).show()
                 //todo broadcast stop service
             }
         }
@@ -315,7 +311,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                     mediaPlayer?.let { stopMedia() }
                     //mediaPlayer?.release()
                     mediaPlayer?.reset()
-                    STATE_INIT_MEDIAPLAYER = InitStatusMediaPlayer.IDLE
+                    dataModelInner?.statusMediaPlayer?.value = InitStatusMediaPlayer.IDLE
                     mediaPlayer = null
                 }
             }
@@ -362,11 +358,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         if (mediaSessionManager == null) {
             try {
                 initMediaSession()
-                Log.d("MyLog", "onStartCommand InitStatusPlayer : $STATE_INIT_MEDIAPLAYER")
-                if (STATE_INIT_MEDIAPLAYER == InitStatusMediaPlayer.IDLE) {
-                    mediaPlayer = null
-                    initMediaPlayer()
-                }
+                    //mediaPlayer = null
+                initMediaPlayer()
             } catch (e: RemoteException) {
                 e.printStackTrace()
                 stopSelf()
@@ -392,12 +385,9 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     fun stopMedia() {
         if (mediaPlayer == null) return
         mediaPlayer?.stop()
-        //mediaPlayer?.reset()
-        STATE_INIT_MEDIAPLAYER = InitStatusMediaPlayer.IDLE
+        dataModelInner?.statusMediaPlayer?.value = InitStatusMediaPlayer.IDLE
         dataModelInner?.stateIsPlaying?.value = mediaPlayer!!.isPlaying
-        dataModelInner?.preparedStateComplete?.value = false
         transportControls?.stop()
-        Log.d("MyLog", "stopMedia prep: ${dataModelInner?.preparedStateComplete?.value}")
     }
 
     fun pauseMedia() {
@@ -446,7 +436,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     private val broadcastReceiverNewAudio = object : BroadcastReceiverForPlayerService() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d("MyLog", "onReceive broadcastReceiver NewAudio state: $STATE_INIT_MEDIAPLAYER")
+            Log.d("MyLog", "onReceive broadcastReceiver NewAudio state: ${dataModelInner?.statusMediaPlayer?.value}")
             //if (STATE_INIT_MEDIAPLAYER == InitStatusMediaPlayer.INITIALISATION) return
             try {
                 urlString = intent!!.getStringExtra("url")
@@ -512,9 +502,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
             stopMedia()
             mediaPlayer!!.release()
         }
-        STATE_INIT_MEDIAPLAYER = InitStatusMediaPlayer.IDLE
-        dataModelInner?.preparedStateComplete?.value = false
-        Log.d("MyLog", "onDestroy prep: ${dataModelInner?.preparedStateComplete?.value}")
+        dataModelInner?.statusMediaPlayer?.value = InitStatusMediaPlayer.IDLE
         removeAudioFocus()
         if (phoneStateListener != null) {
             telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE)
@@ -525,10 +513,4 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         super.onDestroy()
     }
 
-    inner class LocalBinder : Binder() {
-        fun getService(dataModel: ViewModelMainActivity): RadioPlayerService {
-            dataModelInner = dataModel
-            return this@RadioPlayerService
-        }
-    }
 }

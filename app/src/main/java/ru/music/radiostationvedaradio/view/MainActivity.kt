@@ -4,21 +4,19 @@ import android.content.*
 import android.media.AudioManager
 import android.os.Bundle
 import android.os.IBinder
-import android.os.PersistableBundle
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.services.BroadcastReceiverForPlayerService
+import ru.music.radiostationvedaradio.services.InitStatusMediaPlayer
 import ru.music.radiostationvedaradio.services.RadioPlayerService
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
-import kotlin.properties.Delegates
 
 const val Broadcast_NEW_AUDIO = "ru.music.vedaradio.NEW_AUDIO"
 const val Broadcast_StateService = "ru.music.vedaradio.STATE_SERVICE"
-
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,7 +32,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var url: String
 
     lateinit var btnPlay: MenuItem
-    lateinit var btnNone: MenuItem
+    lateinit var btnRefresh: MenuItem
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -56,13 +54,17 @@ class MainActivity : AppCompatActivity() {
         setUpActionBar()
         url = getString(R.string.veda_radio_stream_link)
         registerBroadcastStateService()
-
+        dataModel.statusMediaPlayer.value = InitStatusMediaPlayer.INITIALISATION
         playAudio(url)
     }
 
     override fun onPause() {
         super.onPause()
         Log.d("MyLog", "Mainactivity onPause")
+    }
+
+    override fun onStart() {
+        super.onStart()
     }
 
     override fun onResume() {
@@ -73,28 +75,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         if (serviceBound) {
             unbindService(serviceConnection)
             mediaService?.stopSelf()
         }
+        super.onDestroy()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
         btnPlay = menu?.getItem(1)!!
-        btnNone = menu.getItem(0)!!
+        btnRefresh = menu.getItem(0)!!
         dataModel.stateIsPlaying.observe(this) {
             if (it) btnPlay.setIcon(R.drawable.ic_baseline_pause_circle_filled_24)
             if (!it) btnPlay.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
         }
-        dataModel.preparedStateComplete.observe(this) {
-            if (it) {
-                btnNone.collapseActionView()
-                btnNone.actionView = null
+
+        dataModel.statusMediaPlayer.observe(this) {
+            if (it == InitStatusMediaPlayer.INITIALISATION) {
+                btnRefresh.setActionView(R.layout.action_progressbar)
+                btnRefresh.expandActionView()
             } else {
-                btnNone.setActionView(R.layout.action_progressbar)
-                btnNone.expandActionView()
+                btnRefresh.actionView = null
             }
         }
         return super.onCreateOptionsMenu(menu)
@@ -103,19 +105,21 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_play && mediaService != null) {
             Log.d("MyLog", "action_play click. isPlaying: ${mediaService!!.isPlaying()}")
-            if (dataModel.preparedStateComplete.value!!) {
-                when {
-                    serviceBound && !mediaService!!.isPlaying() -> mediaService?.playMedia()
-                    serviceBound && mediaService!!.isPlaying() -> mediaService?.pauseMedia()
+            when (dataModel.statusMediaPlayer.value) {
+                InitStatusMediaPlayer.INIT_COMPLETE -> {
+                    when {
+                        serviceBound && !mediaService!!.isPlaying() -> mediaService?.playMedia()
+                        serviceBound && mediaService!!.isPlaying() -> mediaService?.pauseMedia()
+                    }
                 }
-            } else if (!dataModel.preparedStateComplete.value!!) {
-                when {
-                    serviceBound -> playAudio(url)
+                InitStatusMediaPlayer.IDLE -> {
+                    if (serviceBound) playAudio(url)
+                }
+                InitStatusMediaPlayer.INITIALISATION -> {
+                    Toast.makeText(this, "Loading", Toast.LENGTH_SHORT).show()
                 }
             }
-
         }
-
         return super.onOptionsItemSelected(item)
     }
 
