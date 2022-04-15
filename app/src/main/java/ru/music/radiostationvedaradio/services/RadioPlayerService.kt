@@ -63,7 +63,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     private fun initMediaPlayer() {
         Log.d("MyLog", "initMediaPlayer start ${dataModelInner?.statusMediaPlayer?.value}")
-        //if (dataModelInner?.statusMediaPlayer?.value == InitStatusMediaPlayer.INITIALISATION) return
         dataModelInner?.statusMediaPlayer?.value = InitStatusMediaPlayer.INITIALISATION
         mediaPlayer = MediaPlayer()
         mediaPlayer?.apply {
@@ -81,7 +80,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
             if (urlString != null) setDataSource(urlString)
         }
         mediaPlayer?.prepareAsync()
-        Log.d("MyLog", "initMediaPlayer end ${dataModelInner?.statusMediaPlayer?.value}")
     }
 
     private fun initMediaSession() {
@@ -110,7 +108,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 super.onStop()
                 Log.d("MyLog", "onStop callback")
                 removeNotification()
-                stopSelf()
+                //stopSelf()
             }
 
             override fun onSeekTo(pos: Long) {
@@ -308,8 +306,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                     mediaPlayer?.let {
                         pauseMedia()
                     }
-                    mediaPlayer?.let { stopMedia() }
-                    //mediaPlayer?.release()
+                    stopMedia()
                     mediaPlayer?.reset()
                     dataModelInner?.statusMediaPlayer?.value = InitStatusMediaPlayer.IDLE
                     mediaPlayer = null
@@ -436,8 +433,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     private val broadcastReceiverNewAudio = object : BroadcastReceiverForPlayerService() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d("MyLog", "onReceive broadcastReceiver NewAudio state: ${dataModelInner?.statusMediaPlayer?.value}")
-            //if (STATE_INIT_MEDIAPLAYER == InitStatusMediaPlayer.INITIALISATION) return
             try {
                 urlString = intent!!.getStringExtra("url")
             } catch (e: NullPointerException) {
