@@ -7,9 +7,7 @@ import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.media.AudioAttributes
-import android.media.AudioManager
-import android.media.MediaPlayer
+import android.media.*
 import android.media.session.MediaSessionManager
 import android.os.Binder
 import android.os.IBinder
@@ -86,7 +84,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     private fun initMediaSession() {
         if (mediaSessionManager != null) return
         mediaSessionManager = getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
-        mediaSession = MediaSessionCompat(applicationContext, "Audio Player")
+        mediaSession = MediaSessionCompat(applicationContext, "RadioPlayer")
         transportControls = mediaSession?.controller?.transportControls
         mediaSession?.isActive = true
         mediaSession?.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS)
@@ -120,17 +118,17 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     }
 
     private fun updateMetaData() {
-        val bitmap = BitmapFactory.decodeResource(resources, R.drawable.ic_baseline_radio_24)
-        //todo bitmap
-        mediaSession?.setMetadata(
-            MediaMetadataCompat.Builder()
-                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
-                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "Artist")
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, "ALBUM")
-                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "Title").build()
+        //val bitmap = BitmapFactory.decodeResource(resources, R.drawable.ic_baseline_radio_24)
+        //if (mediaSession == null) return
+        Log.d("MyLog", "updateMetaData")
+        val metaDataBuilder = MediaMetadataCompat.Builder().apply {
+                //putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
+                putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "Artist")
+                putString(MediaMetadataCompat.METADATA_KEY_ALBUM, "ALBUM")
+                putString(MediaMetadataCompat.METADATA_KEY_TITLE, "Title")
+        }
+        mediaSession?.setMetadata(metaDataBuilder.build())
 
-
-        )
     }
 
     private fun buildNotification(playbackstatus: Playbackstatus) {
@@ -166,7 +164,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 .setSmallIcon(notificationAction)
                 .setContentText("N:Text")
                 .setContentTitle("N:Title")
-                //.setContentInfo("N:Title")
                 .addAction(notificationAction, titleButton, playpauseAction)
                 .addAction(cancelDrawable, "Cancel", playbackAction(10))
                 .setStyle(
@@ -182,7 +179,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
         val name = "Channel 1"
         val descriptionText = "Description 1"
         val importance = NotificationManager.IMPORTANCE_LOW
@@ -190,6 +186,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
             description = descriptionText
             lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
         }
+        updateMetaData()
         notificationManager.createNotificationChannel(channel)
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
     }
@@ -416,7 +413,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     }
 
     private fun removeNotifityMedia() {
-        pauseMedia()
         removeNotification()
     }
 
