@@ -24,6 +24,7 @@ import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.view.Broadcast_NEW_AUDIO
+import ru.music.radiostationvedaradio.view.MainActivity
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 const val ACTION_PLAY = "ru.music.vedaradio.ACTION_PLAY"
@@ -137,6 +138,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         var playpauseAction: PendingIntent? = null
         var titleButton: String = ""
         var notRemoveOnSwipe = true
+        val contentIntent = Intent(applicationContext, MainActivity::class.java)
 
         if (playbackstatus == Playbackstatus.PLAYING) {
             notificationAction = android.R.drawable.ic_media_pause
@@ -148,7 +150,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
             playpauseAction = playbackAction(0)
             titleButton = "Pause"
             notRemoveOnSwipe = false
-
         }
 
         val cancelDrawable = android.R.drawable.ic_menu_close_clear_cancel
@@ -163,9 +164,9 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setLargeIcon(largeIcon)
                 .setSmallIcon(notificationAction)
-                .setContentText("N:Artist")
-                .setContentTitle("N:Album")
-                .setContentInfo("N:Title")
+                .setContentText("N:Text")
+                .setContentTitle("N:Title")
+                //.setContentInfo("N:Title")
                 .addAction(notificationAction, titleButton, playpauseAction)
                 .addAction(cancelDrawable, "Cancel", playbackAction(10))
                 .setStyle(
@@ -176,6 +177,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 .setOngoing(notRemoveOnSwipe)
                 .setColor(Color.GREEN)
                 .setColorized(true)
+                .setContentIntent(PendingIntent.getActivity(this, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT))
 
 
         val notificationManager =
@@ -223,6 +225,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
             ACTION_CANCEL -> {
                 removeNotifityMedia()
                 stopMedia()
+                //todo check если теряется фокусА затем вышел в другое пространство, затем вернулся и в Notif нажал cancel
+                stopSelf()
             }
         }
     }
