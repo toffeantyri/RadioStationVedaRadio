@@ -254,28 +254,34 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         Log.d("MyLog", "onError what:  $what + extra : $extra")
         dataModelInner?.stateIsPlaying?.value = mediaPlayer?.isPlaying
         when (what) {
+            //todo адекватное действие на ошибку?
             MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK -> {
                 Log.d("MyLog", "error : not valid progressive playback + $extra")
                 Toast.makeText(this, "Неверный формат аудио", Toast.LENGTH_SHORT).show()
-                //todo broadcast stop service
+                stopSelf()
             }
             MediaPlayer.MEDIA_ERROR_SERVER_DIED -> {
                 Log.d("MyLog", "error : server died + $extra")
                 Toast.makeText(this, "Сервер недоступен", Toast.LENGTH_SHORT).show()
-                //todo broadcast stop service
+                stopSelf()
             }
             MediaPlayer.MEDIA_ERROR_UNKNOWN -> {
                 Log.d("MyLog", "error : unknow + $extra")
                 mediaPlayer = null
                 Toast.makeText(this, "Ошибка соединения", Toast.LENGTH_SHORT).show()
-
-                //todo broadcast stop service
+                stopSelf()
             }
-            -38 -> {
+            MediaPlayer.MEDIA_ERROR_TIMED_OUT -> {
+                Log.d("MyLog", "error : time out")
+                mediaPlayer = null
+                Toast.makeText(this, "Превышено время ожидания ответа сервера", Toast.LENGTH_SHORT).show()
+                stopSelf()
+            }
+            else -> {
                 Log.d("MyLog", "error : -38 + $extra")
                 mediaPlayer = null
                 Toast.makeText(this, "Ошибка загрузки", Toast.LENGTH_SHORT).show()
-                //todo broadcast stop service
+                stopSelf()
             }
         }
         return false
@@ -355,7 +361,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         if (mediaSessionManager == null) {
             try {
                 initMediaSession()
-                    //mediaPlayer = null
                 initMediaPlayer()
             } catch (e: RemoteException) {
                 e.printStackTrace()

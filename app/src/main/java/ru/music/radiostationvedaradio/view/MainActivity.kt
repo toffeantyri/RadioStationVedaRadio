@@ -120,6 +120,9 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        if(item.itemId == R.id.action_refresh) {
+            playAudio(url)
+        }
         return super.onOptionsItemSelected(item)
     }
 
