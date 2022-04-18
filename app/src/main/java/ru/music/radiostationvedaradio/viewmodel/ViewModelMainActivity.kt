@@ -7,13 +7,6 @@ import ru.music.radiostationvedaradio.services.InitStatusMediaPlayer
 
 class ViewModelMainActivity : ViewModel() {
 
-    val stateIsPlaying: MutableLiveData<Boolean> by lazy {
-        MutableLiveData<Boolean>()
-    }
-    init {
-        stateIsPlaying.value = false
-    }
-
 
     val statusMediaPlayer : MutableLiveData<InitStatusMediaPlayer> by lazy {
         MutableLiveData<InitStatusMediaPlayer>()

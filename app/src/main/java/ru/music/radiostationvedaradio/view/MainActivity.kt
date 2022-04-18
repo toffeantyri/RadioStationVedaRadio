@@ -9,18 +9,17 @@ import android.view.*
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.services.BroadcastReceiverForPlayerService
-import ru.music.radiostationvedaradio.services.InitStatusMediaPlayer
-import ru.music.radiostationvedaradio.services.RadioPlayerService
-import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
-const val Broadcast_NEW_AUDIO = "ru.music.vedaradio.NEW_AUDIO"
-const val Broadcast_StateService = "ru.music.vedaradio.STATE_SERVICE"
+import ru.music.radiostationvedaradio.R
+import ru.music.radiostationvedaradio.services.*
+import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 class MainActivity : AppCompatActivity() {
 
     val dataModel: ViewModelMainActivity by viewModels()
+    var STATE_OF_SERVICE_A = InitStatusMediaPlayer.IDLE
+    set(value) {field = value
+    dataModel.statusMediaPlayer.value = value}
 
     var serviceBound = false
         set(value) {
@@ -86,9 +85,9 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu, menu)
         btnPlay = menu?.getItem(1)!!
         btnRefresh = menu.getItem(0)!!
-        dataModel.stateIsPlaying.observe(this) {
-            if (it) btnPlay.setIcon(R.drawable.ic_baseline_pause_circle_filled_24)
-            if (!it) btnPlay.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
+        dataModel.statusMediaPlayer.observe(this) {
+            if (it == InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_baseline_pause_circle_filled_24)
+            if (it != InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
         }
 
         dataModel.statusMediaPlayer.observe(this) {
@@ -104,17 +103,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_play && mediaService != null) {
-            Log.d("MyLog", "action_play click. isPlaying: ${mediaService!!.isPlaying()}")
+            Log.d("MyLog", "action_play click. isPlaying: ${dataModel.statusMediaPlayer.value}")
             when (dataModel.statusMediaPlayer.value) {
-                InitStatusMediaPlayer.INIT_COMPLETE -> {
-                    when {
-                        serviceBound && !mediaService!!.isPlaying() -> mediaService?.playMedia()
-                        serviceBound && mediaService!!.isPlaying() -> mediaService?.pauseMedia()
-                    }
-                }
-                InitStatusMediaPlayer.IDLE -> {
-                    if (serviceBound) playAudio(url)
-                }
+                InitStatusMediaPlayer.INIT_COMPLETE ->  mediaService?.playMedia()
+                InitStatusMediaPlayer.PLAYING -> mediaService?.pauseMedia()
+                InitStatusMediaPlayer.IDLE -> playAudio(url)
                 InitStatusMediaPlayer.INITIALISATION -> {
                     Toast.makeText(this, "Loading", Toast.LENGTH_SHORT).show()
                 }
@@ -144,7 +137,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             Log.d("MyLog", "service is already bound")
             val broadcastIntent: Intent = Intent(Broadcast_NEW_AUDIO)
-            broadcastIntent.putExtra("url", urlStream)
+            broadcastIntent.putExtra(TAG_NEW_AUDIO_URL, urlStream)
             sendBroadcast(broadcastIntent)
         }
     }
@@ -152,12 +145,13 @@ class MainActivity : AppCompatActivity() {
 
     private val broadcastStateServiceListener = object : BroadcastReceiverForPlayerService() {
         override fun onReceive(context: Context?, intent: Intent?) {
-
+            Log.d("MyLog", "intent: ${intent!=null}")
+            STATE_OF_SERVICE_A = intent?.getSerializableExtra(TAG_STATE_SERVICE) as InitStatusMediaPlayer
         }
     }
 
     private fun registerBroadcastStateService() {
-        val filter = IntentFilter(Broadcast_StateService)
+        val filter = IntentFilter(Broadcast_STATE_SERVICE)
         registerReceiver(broadcastStateServiceListener, filter)
     }
 }

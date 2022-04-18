@@ -21,17 +21,16 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.view.Broadcast_NEW_AUDIO
 import ru.music.radiostationvedaradio.view.MainActivity
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 const val ACTION_PLAY = "ru.music.vedaradio.ACTION_PLAY"
 const val ACTION_PAUSE = "ru.music.vedaradio.ACTION_PAUSE"
 const val ACTION_CANCEL = "ru.music.vedaradio.ACTION_CANCEL"
-
 const val CHANNEL_ID = "ru.music.vedaradio.ID"
-
 const val NOTIFICATION_ID = 101
+
+
 
 class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     MediaPlayer.OnPreparedListener,
@@ -40,9 +39,13 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     inner class LocalBinder : Binder() {
         fun getService(dataModel: ViewModelMainActivity): RadioPlayerService {
-            dataModelInner = dataModel
+            //dataModelInner = dataModel
             return this@RadioPlayerService
         }
+    }
+
+    override fun onBind(intent: Intent): IBinder {
+        return iBinder
     }
 
     private val iBinder: IBinder = LocalBinder()
@@ -50,8 +53,14 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     private var resumePosition: Int = 0
     private var mediaPlayer: MediaPlayer? = null
+
+    var STATE_OF_SERVICE = InitStatusMediaPlayer.IDLE
+        set(value) {
+            field = value
+            broadcastTellNewStatus()
+        }
     private var audioManager: AudioManager? = null
-    var dataModelInner: ViewModelMainActivity? = null
+
     private var onIncomingCall = false
     private var phoneStateListener: PhoneStateListener? = null
     private var telephonyManager: TelephonyManager? = null
@@ -61,8 +70,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     private var transportControls: MediaControllerCompat.TransportControls? = null
 
     private fun initMediaPlayer() {
-        Log.d("MyLog", "initMediaPlayer start ${dataModelInner?.statusMediaPlayer?.value}")
-        dataModelInner?.statusMediaPlayer?.value = InitStatusMediaPlayer.INITIALISATION
+        Log.d("MyLog", "initMediaPlayer start $STATE_OF_SERVICE")
+        STATE_OF_SERVICE = InitStatusMediaPlayer.INITIALISATION
         mediaPlayer = MediaPlayer()
         mediaPlayer?.apply {
             setOnCompletionListener(this@RadioPlayerService)
@@ -94,6 +103,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
             override fun onPlay() {
                 super.onPlay()
                 playMedia()
+                updateMetaData()
                 buildNotification(Playbackstatus.PLAYING)
             }
 
@@ -105,27 +115,21 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
             override fun onStop() {
                 super.onStop()
-                Log.d("MyLog", "onStop callback")
+                stopMedia()
                 removeNotification()
-                //stopSelf()
-            }
-
-            override fun onSeekTo(pos: Long) {
-                super.onSeekTo(pos)
+                stopSelf()
             }
         })
         Log.d("MyLog", "initMediaSession")
     }
 
     private fun updateMetaData() {
-        //val bitmap = BitmapFactory.decodeResource(resources, R.drawable.ic_baseline_radio_24)
-        //if (mediaSession == null) return
         Log.d("MyLog", "updateMetaData")
         val metaDataBuilder = MediaMetadataCompat.Builder().apply {
-                //putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
-                putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "Artist")
-                putString(MediaMetadataCompat.METADATA_KEY_ALBUM, "ALBUM")
-                putString(MediaMetadataCompat.METADATA_KEY_TITLE, "Title")
+            //putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
+            putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "Artist")
+            putString(MediaMetadataCompat.METADATA_KEY_ALBUM, "ALBUM")
+            putString(MediaMetadataCompat.METADATA_KEY_TITLE, "Title")
         }
         mediaSession?.setMetadata(metaDataBuilder.build())
 
@@ -136,7 +140,18 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         var playpauseAction: PendingIntent? = null
         var titleButton: String = ""
         var notRemoveOnSwipe = true
+
         val contentIntent = Intent(applicationContext, MainActivity::class.java)
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val name = "Channel"
+        val descriptionText = "DescriptionChannel"
+        val importance = NotificationManager.IMPORTANCE_LOW
+        val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+            description = descriptionText
+            lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
+        }
+        notificationManager.createNotificationChannel(channel)
 
         if (playbackstatus == Playbackstatus.PLAYING) {
             notificationAction = android.R.drawable.ic_media_pause
@@ -156,9 +171,16 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
         val notificationBuilder: NotificationCompat.Builder =
             NotificationCompat.Builder(this, CHANNEL_ID)
-                .setDefaults(0)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setShowWhen(false)
+                .setStyle(
+                    androidx.media.app.NotificationCompat.MediaStyle()
+                        .setMediaSession(mediaSession?.sessionToken)
+                        .setShowActionsInCompactView(0, 1)
+                )
+                .setDefaults(0)
+                .setColor(Color.GREEN)
+                .setColorized(true)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setLargeIcon(largeIcon)
                 .setSmallIcon(notificationAction)
@@ -166,29 +188,11 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 .setContentTitle("N:Title")
                 .addAction(notificationAction, titleButton, playpauseAction)
                 .addAction(cancelDrawable, "Cancel", playbackAction(10))
-                .setStyle(
-                    androidx.media.app.NotificationCompat.MediaStyle()
-                        .setMediaSession(mediaSession?.sessionToken)
-                        .setShowActionsInCompactView(0, 1)
-                )
                 .setOngoing(notRemoveOnSwipe)
-                .setColor(Color.GREEN)
-                .setColorized(true)
                 .setContentIntent(PendingIntent.getActivity(this, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT))
 
-
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val name = "Channel 1"
-        val descriptionText = "Description 1"
-        val importance = NotificationManager.IMPORTANCE_LOW
-        val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-            description = descriptionText
-            lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
-        }
-        updateMetaData()
-        notificationManager.createNotificationChannel(channel)
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
+        updateMetaData()
     }
 
     private fun playbackAction(actionNumber: Int): PendingIntent? {
@@ -214,16 +218,13 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         if (playbackAction.action == null) return
         when (playbackAction.action!!) {
             ACTION_PLAY -> {
-                playMedia()
+                transportControls?.play()
             }
             ACTION_PAUSE -> {
-                pauseMedia()
+                transportControls?.pause()
             }
             ACTION_CANCEL -> {
-                removeNotifityMedia()
-                stopMedia()
-                //todo check если теряется фокусА затем вышел в другое пространство, затем вернулся и в Notif нажал cancel
-                stopSelf()
+                transportControls?.stop()
             }
         }
     }
@@ -234,10 +235,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         notificationManager.cancel(NOTIFICATION_ID)
     }
 
-    override fun onBind(intent: Intent): IBinder {
-        return iBinder
-    }
-
     override fun onCompletion(mp: MediaPlayer?) {
         stopMedia()
         stopSelf()
@@ -245,17 +242,15 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     override fun onPrepared(mp: MediaPlayer?) {
         if (mediaPlayer == null) return
-        dataModelInner?.statusMediaPlayer?.value = InitStatusMediaPlayer.INIT_COMPLETE
+        STATE_OF_SERVICE = InitStatusMediaPlayer.INIT_COMPLETE
         playMedia()
         Log.d("MyLog", "Service ready for play")
     }
 
     override fun onError(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
-        dataModelInner?.statusMediaPlayer?.value = InitStatusMediaPlayer.IDLE
+        STATE_OF_SERVICE = InitStatusMediaPlayer.IDLE
         Log.d("MyLog", "onError what:  $what + extra : $extra")
-        dataModelInner?.stateIsPlaying?.value = mediaPlayer?.isPlaying
         when (what) {
-            //todo адекватное действие на ошибку?
             MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK -> {
                 Log.d("MyLog", "error : not valid progressive playback + $extra")
                 Toast.makeText(this, "Неверный формат аудио", Toast.LENGTH_SHORT).show()
@@ -303,29 +298,26 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
             AudioManager.AUDIOFOCUS_GAIN -> {
                 if (mediaPlayer == null) {
                     initMediaPlayer()
-                } else if (!mediaPlayer!!.isPlaying) {
+                } else if (STATE_OF_SERVICE == InitStatusMediaPlayer.INIT_COMPLETE) {
                     playMedia()
                     mediaPlayer!!.setVolume(1.0f, 1.0f)
                 }
             }
             AudioManager.AUDIOFOCUS_LOSS -> {
-                if (mediaPlayer?.isPlaying == true) {
-                    mediaPlayer?.let {
-                        pauseMedia()
-                    }
-                    stopMedia()
-                    mediaPlayer?.reset()
-                    dataModelInner?.statusMediaPlayer?.value = InitStatusMediaPlayer.IDLE
-                    mediaPlayer = null
-                }
+                //todo может оставить на паузе???
+                stopMedia()
+                mediaPlayer?.reset()
+                STATE_OF_SERVICE = InitStatusMediaPlayer.IDLE
+                mediaPlayer = null
+
             }
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
-                if (mediaPlayer?.isPlaying == true) {
+                if (STATE_OF_SERVICE == InitStatusMediaPlayer.PLAYING) {
                     pauseMedia()
                 }
             }
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
-                if (mediaPlayer?.isPlaying == true) {
+                if (STATE_OF_SERVICE == InitStatusMediaPlayer.PLAYING) {
                     mediaPlayer?.setVolume(0.1f, 0.1f)
                 }
             }
@@ -378,88 +370,65 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     fun playMedia() {
         if (mediaPlayer == null) return
-        if (!mediaPlayer!!.isPlaying) {
-            mediaPlayer!!.start()
-            dataModelInner?.stateIsPlaying?.value = mediaPlayer!!.isPlaying
-            transportControls?.play()
+        if (STATE_OF_SERVICE == InitStatusMediaPlayer.INIT_COMPLETE) {
+            mediaPlayer?.start()
+            STATE_OF_SERVICE = InitStatusMediaPlayer.PLAYING
+            buildNotification(Playbackstatus.PLAYING)
         }
     }
 
     fun stopMedia() {
         if (mediaPlayer == null) return
         mediaPlayer?.stop()
-        dataModelInner?.statusMediaPlayer?.value = InitStatusMediaPlayer.IDLE
-        dataModelInner?.stateIsPlaying?.value = mediaPlayer!!.isPlaying
-        transportControls?.stop()
+        STATE_OF_SERVICE = InitStatusMediaPlayer.IDLE
+        removeNotification()
     }
 
     fun pauseMedia() {
         if (mediaPlayer == null) return
-        if (mediaPlayer!!.isPlaying) {
-            mediaPlayer!!.pause()
+        if (STATE_OF_SERVICE == InitStatusMediaPlayer.PLAYING) {
+            mediaPlayer?.pause()
             resumePosition = mediaPlayer!!.currentPosition
-            dataModelInner?.stateIsPlaying?.value = mediaPlayer!!.isPlaying
-            transportControls?.pause()
+            STATE_OF_SERVICE = InitStatusMediaPlayer.INIT_COMPLETE
+            buildNotification(Playbackstatus.PAUSED)
         }
     }
 
     fun resumeMedia() {
         if (mediaPlayer == null) return
-        if (!mediaPlayer!!.isPlaying) {
+        if (STATE_OF_SERVICE == InitStatusMediaPlayer.INIT_COMPLETE) {
             mediaPlayer!!.seekTo(resumePosition)
             mediaPlayer!!.start()
-            dataModelInner?.stateIsPlaying?.value = mediaPlayer!!.isPlaying
-        }
-    }
-
-    private fun removeNotifityMedia() {
-        removeNotification()
-    }
-
-    fun isPlaying(): Boolean {
-        return when {
-            mediaPlayer == null -> false
-            !mediaPlayer?.isPlaying!! -> false
-            mediaPlayer!!.isPlaying -> true
-            else -> false
+            STATE_OF_SERVICE = InitStatusMediaPlayer.PLAYING
+            buildNotification(Playbackstatus.PLAYING)
         }
     }
 
 //------------------------------------------------------------------------
 
-
-    private val broadcastReceiver = object : BroadcastReceiverForPlayerService() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d("MyLog", "onReceive 1 broadcastReseiver")
-            pauseMedia()
-            buildNotification(Playbackstatus.PAUSED)
-        }
-    }
-
     private val broadcastReceiverNewAudio = object : BroadcastReceiverForPlayerService() {
         override fun onReceive(context: Context?, intent: Intent?) {
             try {
-                urlString = intent!!.getStringExtra("url")
+                urlString = intent!!.getStringExtra(TAG_NEW_AUDIO_URL)
             } catch (e: NullPointerException) {
                 stopSelf()
             }
             stopMedia()
             mediaPlayer?.reset()
             initMediaPlayer()
-            updateMetaData()
             buildNotification(Playbackstatus.PLAYING)
-
         }
+    }
+
+    private fun broadcastTellNewStatus(){
+        val broadcastIntent: Intent = Intent(Broadcast_STATE_SERVICE)
+        broadcastIntent.putExtra(TAG_STATE_SERVICE, STATE_OF_SERVICE)
+        sendBroadcast(broadcastIntent)
     }
 
     private fun registerPlayNewAudio() {
         val filter = IntentFilter(Broadcast_NEW_AUDIO)
         registerReceiver(broadcastReceiverNewAudio, filter)
-    }
-
-    private fun registerBroadcastListener() {
-        val intentFilter: IntentFilter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
-        registerReceiver(broadcastReceiver, intentFilter)
     }
 
     private fun callStateListener() {
@@ -492,7 +461,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     override fun onCreate() {
         super.onCreate()
         callStateListener()
-        registerBroadcastListener()
         registerPlayNewAudio()
     }
 
@@ -502,14 +470,12 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
             stopMedia()
             mediaPlayer!!.release()
         }
-        dataModelInner?.statusMediaPlayer?.value = InitStatusMediaPlayer.IDLE
+        STATE_OF_SERVICE = InitStatusMediaPlayer.IDLE
         removeAudioFocus()
         if (phoneStateListener != null) {
             telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE)
         }
-        unregisterReceiver(broadcastReceiver)
         unregisterReceiver(broadcastReceiverNewAudio)
-        dataModelInner = null
         super.onDestroy()
     }
 
