@@ -17,9 +17,8 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.Source
-import ru.music.radiostationvedaradio.StreamVedaradioJSONClass
-import ru.music.radiostationvedaradio.VedaradioService
+import ru.music.radiostationvedaradio.retrofit.metaDataOfVedaradio.StreamVedaradioJSONClass
+import ru.music.radiostationvedaradio.retrofit.metaDataOfVedaradio.VedaradioRetrofitService
 import ru.music.radiostationvedaradio.services.*
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
@@ -89,7 +88,7 @@ class MainActivity : AppCompatActivity() {
             .baseUrl("https://stream.vedaradio.fm")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        val vedaradioService = retrofit.create(VedaradioService::class.java)
+        val vedaradioService = retrofit.create(VedaradioRetrofitService::class.java)
         vedaradioService.jsonPlease().enqueue(object : Callback<StreamVedaradioJSONClass>{
             override fun onResponse(
                 call: Call<StreamVedaradioJSONClass>,
