@@ -2,10 +2,15 @@
 <resources>
     <string name="app_name">Veda Radio</string>
 
+    <string name="veda_radio_stream_link_medium_8000">https://listen.vedaradio.fm:8000/medium</string>
+
 
     <string name="veda_radio_stream_link">https://stream.vedaradio.fm/high?1649590462300</string>
-    <string name="veda_radio_stream_link_medium">https://listen.vedaradio.fm:8000/medium</string>
-    <string name="veda_radio_stream_link_medium_m3u">https://listen.vedaradio.fm:8000/medium.m3u</string>
+
+    <string name="veda_radio_stream_link_high">https://stream.vedaradio.fm/high?</string>
+    <string name="veda_radio_stream_link_medium">https://stream.vedaradio.fm/medium?</string>
+    <string name="veda_radio_stream_link_low">https://stream.vedaradio.fm/low?</string>
+
 
 
 

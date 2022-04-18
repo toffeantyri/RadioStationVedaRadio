@@ -5,15 +5,21 @@ import android.media.AudioManager
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.SimpleExoPlayer
-
+import kotlinx.android.synthetic.main.activity_main.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import ru.music.radiostationvedaradio.R
+import ru.music.radiostationvedaradio.Source
+import ru.music.radiostationvedaradio.StreamVedaradioJSONClass
+import ru.music.radiostationvedaradio.VedaradioService
 import ru.music.radiostationvedaradio.services.*
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
@@ -56,24 +62,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setUpActionBar()
-        url = getString(R.string.veda_radio_stream_link)
+        url = getString(R.string.veda_radio_stream_link_low)
         registerBroadcastStateService()
         playAudio(url)
 
-
-        //init exoplayer
-
-//        val exoPlayer =  SimpleExoPlayer.Builder(this).build()
-//        val mediaItem : MediaItem = MediaItem.fromUri(url)
-//        exoPlayer.setMediaItem(mediaItem)
-//        exoPlayer.prepare()
-//        exoPlayer.playWhenReady = true
 
     }
 
     override fun onPause() {
         super.onPause()
-        Log.d("MyLog", "Mainactivity onPause")
+        Log.d("MyLog", "MainActivity onPause")
     }
 
     override fun onStart() {
@@ -82,9 +80,33 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-
         volumeControlStream = AudioManager.STREAM_MUSIC
         Log.d("MyLog", "MainActivity onResume")
+
+
+
+        val retrofit : Retrofit = Retrofit.Builder()
+            .baseUrl("https://stream.vedaradio.fm")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val vedaradioService = retrofit.create(VedaradioService::class.java)
+        vedaradioService.jsonPlease().enqueue(object : Callback<StreamVedaradioJSONClass>{
+            override fun onResponse(
+                call: Call<StreamVedaradioJSONClass>,
+                response: Response<StreamVedaradioJSONClass>
+            ) {
+                Log.d("MyLog", "onResponse: $call - ${response.body()?.icestats?.source?.get(0)?.title}")
+                response.body()?.icestats?.source?.get(0)?.title.let { tv_mmr.text = it }
+            }
+
+            override fun onFailure(call: Call<StreamVedaradioJSONClass>, t: Throwable) {
+                Log.d("MyLog", "onFailure: $call - ${t.message}")
+            }
+
+        })
+
+
+
     }
 
     override fun onDestroy() {
