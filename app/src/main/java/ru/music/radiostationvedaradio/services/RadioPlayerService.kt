@@ -50,6 +50,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     private val iBinder: IBinder = LocalBinder()
     var urlString: String? = null
+    var artist = "null artist"
+    var song = "null song"
 
     private var resumePosition: Int = 0
     private var mediaPlayer: MediaPlayer? = null
@@ -97,7 +99,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         transportControls = mediaSession?.controller?.transportControls
         mediaSession?.isActive = true
         mediaSession?.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS)
-        updateMetaData()
 
         mediaSession?.setCallback(object : MediaSessionCompat.Callback() {
             override fun onPlay() {
@@ -127,11 +128,11 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         Log.d("MyLog", "updateMetaData")
         val metaDataBuilder = MediaMetadataCompat.Builder().apply {
             //putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
-            putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "Artist")
-            putString(MediaMetadataCompat.METADATA_KEY_ALBUM, "ALBUM")
-            putString(MediaMetadataCompat.METADATA_KEY_TITLE, "Title")
+            putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
+            putString(MediaMetadataCompat.METADATA_KEY_TITLE, song)
         }
-        mediaSession?.setMetadata(metaDataBuilder.build())
+        val metadata = metaDataBuilder.build()
+        mediaSession?.setMetadata(metadata)
 
     }
 
@@ -174,7 +175,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 .setShowWhen(false)
                 .setStyle(
                     androidx.media.app.NotificationCompat.MediaStyle()
-                        .setMediaSession(mediaSession?.sessionToken)
+                        .setMediaSession(mediaSession!!.sessionToken)
                         .setShowActionsInCompactView(0, 1)
                 )
                 .setDefaults(0)
@@ -184,15 +185,16 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setLargeIcon(largeIcon)
                 .setSmallIcon(notificationAction)
-                .setContentText("N:Text")
-                .setContentTitle("N:Title")
+                .setContentTitle(artist)
+                .setContentText(song)
                 .addAction(notificationAction, titleButton, playpauseAction)
                 .addAction(cancelDrawable, "Cancel", playbackAction(10))
                 .setOngoing(notRemoveOnSwipe)
                 .setContentIntent(PendingIntent.getActivity(this, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT))
 
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
-        updateMetaData()
+
+
     }
 
     private fun playbackAction(actionNumber: Int): PendingIntent? {
@@ -374,6 +376,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
             mediaPlayer?.start()
             STATE_OF_SERVICE = InitStatusMediaPlayer.PLAYING
             buildNotification(Playbackstatus.PLAYING)
+            updateMetaData()
         }
     }
 

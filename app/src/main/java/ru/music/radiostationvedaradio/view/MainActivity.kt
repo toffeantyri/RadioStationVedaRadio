@@ -9,6 +9,9 @@ import android.view.*
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.SimpleExoPlayer
 
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.services.*
@@ -18,8 +21,10 @@ class MainActivity : AppCompatActivity() {
 
     val dataModel: ViewModelMainActivity by viewModels()
     var STATE_OF_SERVICE_A = InitStatusMediaPlayer.IDLE
-    set(value) {field = value
-    dataModel.statusMediaPlayer.value = value}
+        set(value) {
+            field = value
+            dataModel.statusMediaPlayer.value = value
+        }
 
     var serviceBound = false
         set(value) {
@@ -53,8 +58,17 @@ class MainActivity : AppCompatActivity() {
         setUpActionBar()
         url = getString(R.string.veda_radio_stream_link)
         registerBroadcastStateService()
-        dataModel.statusMediaPlayer.value = InitStatusMediaPlayer.INITIALISATION
         playAudio(url)
+
+
+        //init exoplayer
+
+//        val exoPlayer =  SimpleExoPlayer.Builder(this).build()
+//        val mediaItem : MediaItem = MediaItem.fromUri(url)
+//        exoPlayer.setMediaItem(mediaItem)
+//        exoPlayer.prepare()
+//        exoPlayer.playWhenReady = true
+
     }
 
     override fun onPause() {
@@ -105,7 +119,7 @@ class MainActivity : AppCompatActivity() {
         if (item.itemId == R.id.action_play && mediaService != null) {
             Log.d("MyLog", "action_play click. isPlaying: ${dataModel.statusMediaPlayer.value}")
             when (dataModel.statusMediaPlayer.value) {
-                InitStatusMediaPlayer.INIT_COMPLETE ->  mediaService?.playMedia()
+                InitStatusMediaPlayer.INIT_COMPLETE -> mediaService?.playMedia()
                 InitStatusMediaPlayer.PLAYING -> mediaService?.pauseMedia()
                 InitStatusMediaPlayer.IDLE -> playAudio(url)
                 InitStatusMediaPlayer.INITIALISATION -> {
@@ -113,7 +127,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        if(item.itemId == R.id.action_refresh) {
+        if (item.itemId == R.id.action_refresh) {
             playAudio(url)
         }
         return super.onOptionsItemSelected(item)
@@ -145,7 +159,7 @@ class MainActivity : AppCompatActivity() {
 
     private val broadcastStateServiceListener = object : BroadcastReceiverForPlayerService() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d("MyLog", "intent: ${intent!=null}")
+            Log.d("MyLog", "intent: ${intent != null}")
             STATE_OF_SERVICE_A = intent?.getSerializableExtra(TAG_STATE_SERVICE) as InitStatusMediaPlayer
         }
     }
