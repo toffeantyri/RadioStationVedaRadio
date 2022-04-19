@@ -165,7 +165,6 @@ class MainActivity : AppCompatActivity() {
 
     private val broadcastStateServiceListener = object : BroadcastReceiverForPlayerService() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d("MyLog", "intent: ${intent != null}")
             STATE_OF_SERVICE_A = intent?.getSerializableExtra(TAG_STATE_SERVICE) as InitStatusMediaPlayer
         }
     }

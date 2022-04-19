@@ -9,10 +9,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.media.*
 import android.media.session.MediaSessionManager
-import android.os.Binder
-import android.os.IBinder
-import android.os.PowerManager
-import android.os.RemoteException
+import android.os.*
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
@@ -21,7 +18,6 @@ import android.telephony.TelephonyManager
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -35,7 +31,6 @@ import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.retrofit.metaDataOfVedaradio.StreamVedaradioJSONClass
 import ru.music.radiostationvedaradio.retrofit.metaDataOfVedaradio.VedaradioRetrofitService
 import ru.music.radiostationvedaradio.view.MainActivity
-import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 const val ACTION_PLAY = "ru.music.vedaradio.ACTION_PLAY"
 const val ACTION_PAUSE = "ru.music.vedaradio.ACTION_PAUSE"
@@ -51,6 +46,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     inner class LocalBinder : Binder() {
         fun getService(): RadioPlayerService {
+            startUpdateAlbumData(60000)
             return this@RadioPlayerService
         }
     }
@@ -59,6 +55,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         return iBinder
     }
 
+    private val handler = Handler()
     private var job: Job? = null
     private val iBinder: IBinder = LocalBinder()
     var urlString: String? = null
@@ -72,6 +69,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         set(value) {
             field = value
             broadcastTellNewStatus()
+            Log.d("MyLog", "service new state: $value")
         }
     private var audioManager: AudioManager? = null
 
@@ -84,7 +82,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     private var transportControls: MediaControllerCompat.TransportControls? = null
 
     private fun initMediaPlayer() {
-        Log.d("MyLog", "initMediaPlayer start $STATE_OF_SERVICE")
         STATE_OF_SERVICE = InitStatusMediaPlayer.INITIALISATION
         mediaPlayer = MediaPlayer()
         mediaPlayer?.apply {
@@ -117,7 +114,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
             override fun onPlay() {
                 super.onPlay()
                 playMedia()
-                updateMetaData()
                 buildNotification(Playbackstatus.PLAYING)
             }
 
@@ -138,7 +134,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     }
 
     private fun updateMetaData() {
-        updateArtistVedaRadio()
         Log.d("MyLog", "updateMetaData")
         val metaDataBuilder = MediaMetadataCompat.Builder().apply {
             //putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
@@ -211,7 +206,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     }
 
-    fun updateArtistVedaRadio() {
+    fun startUpdateAlbumData(timeUntilUpdate: Long) {
         job?.cancel()
         job = CoroutineScope(Dispatchers.Main).launch {
             val retrofit: Retrofit = Retrofit.Builder()
@@ -251,6 +246,9 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                             removeNotification()
                         }
                     }
+
+                    Log.d("MyLog", "$artist         $song")
+                    handler.postDelayed({startUpdateAlbumData(timeUntilUpdate)}, timeUntilUpdate)
                 }
 
                 override fun onFailure(call: Call<StreamVedaradioJSONClass>, t: Throwable) {
@@ -423,7 +421,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 e.printStackTrace()
                 stopSelf()
             }
-            buildNotification(Playbackstatus.PAUSED)
         }
         if (intent != null) handleIncomingAction(intent)
 
