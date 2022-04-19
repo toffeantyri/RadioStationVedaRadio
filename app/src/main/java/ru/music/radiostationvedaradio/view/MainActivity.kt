@@ -11,6 +11,10 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -23,6 +27,7 @@ import ru.music.radiostationvedaradio.services.*
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 class MainActivity : AppCompatActivity() {
+
 
     val dataModel: ViewModelMainActivity by viewModels()
     var STATE_OF_SERVICE_A = InitStatusMediaPlayer.IDLE
@@ -52,7 +57,6 @@ class MainActivity : AppCompatActivity() {
 
         override fun onServiceDisconnected(name: ComponentName?) {
             serviceBound = false
-            Log.d("MyLog", "onServiceDisconnected")
         }
     }
 
@@ -82,31 +86,12 @@ class MainActivity : AppCompatActivity() {
         volumeControlStream = AudioManager.STREAM_MUSIC
         Log.d("MyLog", "MainActivity onResume")
 
-
-
-        val retrofit : Retrofit = Retrofit.Builder()
-            .baseUrl("https://stream.vedaradio.fm")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val vedaradioService = retrofit.create(VedaradioRetrofitService::class.java)
-        vedaradioService.jsonPlease().enqueue(object : Callback<StreamVedaradioJSONClass>{
-            override fun onResponse(
-                call: Call<StreamVedaradioJSONClass>,
-                response: Response<StreamVedaradioJSONClass>
-            ) {
-                Log.d("MyLog", "onResponse: $call - ${response.body()?.icestats?.source?.get(0)?.title}")
-                response.body()?.icestats?.source?.get(0)?.title.let { tv_mmr.text = it }
-            }
-
-            override fun onFailure(call: Call<StreamVedaradioJSONClass>, t: Throwable) {
-                Log.d("MyLog", "onFailure: $call - ${t.message}")
-            }
-
-        })
-
-
-
     }
+
+    var artist = ""
+    var song = ""
+
+
 
     override fun onDestroy() {
         if (serviceBound) {
