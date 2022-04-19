@@ -11,6 +11,7 @@ import android.media.*
 import android.media.session.MediaSessionManager
 import android.os.Binder
 import android.os.IBinder
+import android.os.PowerManager
 import android.os.RemoteException
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
@@ -20,7 +21,19 @@ import android.telephony.TelephonyManager
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import ru.music.radiostationvedaradio.R
+import ru.music.radiostationvedaradio.retrofit.metaDataOfVedaradio.StreamVedaradioJSONClass
+import ru.music.radiostationvedaradio.retrofit.metaDataOfVedaradio.VedaradioRetrofitService
 import ru.music.radiostationvedaradio.view.MainActivity
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
@@ -31,15 +44,13 @@ const val CHANNEL_ID = "ru.music.vedaradio.ID"
 const val NOTIFICATION_ID = 101
 
 
-
 class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     MediaPlayer.OnPreparedListener,
     MediaPlayer.OnErrorListener, MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnInfoListener,
     MediaPlayer.OnBufferingUpdateListener, AudioManager.OnAudioFocusChangeListener {
 
     inner class LocalBinder : Binder() {
-        fun getService(dataModel: ViewModelMainActivity): RadioPlayerService {
-            //dataModelInner = dataModel
+        fun getService(): RadioPlayerService {
             return this@RadioPlayerService
         }
     }
@@ -48,10 +59,11 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         return iBinder
     }
 
+    private var job: Job? = null
     private val iBinder: IBinder = LocalBinder()
     var urlString: String? = null
-    var artist = "null artist"
-    var song = "null song"
+    var artist = "Veda Radio"
+    var song = "From Heart to Heart"
 
     private var resumePosition: Int = 0
     private var mediaPlayer: MediaPlayer? = null
@@ -82,6 +94,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
             setOnBufferingUpdateListener(this@RadioPlayerService)
             setOnSeekCompleteListener(this@RadioPlayerService)
             setOnInfoListener(this@RadioPlayerService)
+            setWakeMode(this@RadioPlayerService, PowerManager.PARTIAL_WAKE_LOCK)
             reset()
             setAudioAttributes(
                 AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
@@ -125,6 +138,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     }
 
     private fun updateMetaData() {
+        updateArtistVedaRadio()
         Log.d("MyLog", "updateMetaData")
         val metaDataBuilder = MediaMetadataCompat.Builder().apply {
             //putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
@@ -195,6 +209,58 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
 
 
+    }
+
+    fun updateArtistVedaRadio() {
+        job?.cancel()
+        job = CoroutineScope(Dispatchers.Main).launch {
+            val retrofit: Retrofit = Retrofit.Builder()
+                .baseUrl("https://stream.vedaradio.fm")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+            val vedaradioService = retrofit.create(VedaradioRetrofitService::class.java)
+            vedaradioService.jsonPlease().enqueue(object : Callback<StreamVedaradioJSONClass> {
+                override fun onResponse(
+                    call: Call<StreamVedaradioJSONClass>,
+                    response: Response<StreamVedaradioJSONClass>
+                ) {
+                    response.body()?.icestats?.source?.get(0)?.title?.let {
+                        val list = it.split("-")
+                        when (list.size) {
+                            1 -> {
+                                song = list[0]
+                            }
+                            2 -> {
+                                artist = list[0]
+                                song = list[1]
+                            }
+                            3 -> {
+                                artist = list[0]
+                                song = list[1] + list[2]
+                            }
+                        }
+                    }
+                    when (STATE_OF_SERVICE) {
+                        InitStatusMediaPlayer.PLAYING -> {
+                            buildNotification(Playbackstatus.PLAYING)
+                        }
+                        InitStatusMediaPlayer.INIT_COMPLETE -> {
+                            buildNotification(Playbackstatus.PAUSED)
+                        }
+                        else -> {
+                            removeNotification()
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<StreamVedaradioJSONClass>, t: Throwable) {
+                    artist = "veda radio"
+                    song = "From Heart to Heart"
+                    job?.cancel()
+
+                }
+            })
+        }
     }
 
     private fun playbackAction(actionNumber: Int): PendingIntent? {
@@ -306,12 +372,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 }
             }
             AudioManager.AUDIOFOCUS_LOSS -> {
-                //todo может оставить на паузе???
                 stopMedia()
-                mediaPlayer?.reset()
                 STATE_OF_SERVICE = InitStatusMediaPlayer.IDLE
-                mediaPlayer = null
-
             }
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
                 if (STATE_OF_SERVICE == InitStatusMediaPlayer.PLAYING) {
@@ -385,6 +447,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         mediaPlayer?.stop()
         STATE_OF_SERVICE = InitStatusMediaPlayer.IDLE
         removeNotification()
+        mediaPlayer?.release()
+        mediaPlayer = null
     }
 
     fun pauseMedia() {
@@ -423,7 +487,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         }
     }
 
-    private fun broadcastTellNewStatus(){
+    private fun broadcastTellNewStatus() {
         val broadcastIntent: Intent = Intent(Broadcast_STATE_SERVICE)
         broadcastIntent.putExtra(TAG_STATE_SERVICE, STATE_OF_SERVICE)
         sendBroadcast(broadcastIntent)

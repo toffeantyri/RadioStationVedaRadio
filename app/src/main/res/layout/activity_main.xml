@@ -13,11 +13,19 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/tv_mmr"
+            android:id="@+id/tv_mmr_name"
             android:layout_marginTop="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="null"
+            android:text=""
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:id="@+id/tv_mmr_song"
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
             android:layout_gravity="center_horizontal"/>
 
 
