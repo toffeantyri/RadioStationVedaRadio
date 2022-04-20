@@ -223,6 +223,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                         val list = it.split("-")
                         when (list.size) {
                             1 -> {
+                                artist = "Veda Radio"
                                 song = list[0]
                             }
                             2 -> {
@@ -252,7 +253,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 }
 
                 override fun onFailure(call: Call<StreamVedaradioJSONClass>, t: Throwable) {
-                    artist = "veda radio"
+                    artist = "Veda radio"
                     song = "From Heart to Heart"
                     job?.cancel()
 
@@ -404,12 +405,13 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        try {
-            urlString = intent?.extras?.getString("url")
-        } catch (e: NullPointerException) {
-            stopSelf()
-        }
-        Log.d("MyLog, ", "onStartCommand requestAudioFocus: ${requestAudioFocus()}")
+
+            intent?.extras?.getString(TAG_NEW_AUDIO_URL).let {
+                if(it!=null || it!="") urlString = it
+                Log.d("MyLog", "onStartCommand: intent string : $it")
+            }
+
+        //Log.d("MyLog, ", "onStartCommand requestAudioFocus: ${requestAudioFocus()}")
         if (!requestAudioFocus()) {
             stopSelf()
         }
@@ -422,7 +424,9 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 stopSelf()
             }
         }
-        if (intent != null) handleIncomingAction(intent)
+        if (intent != null) {
+            handleIncomingAction(intent)
+        }
 
         return super.onStartCommand(intent, flags, startId)
     }

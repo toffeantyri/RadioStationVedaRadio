@@ -151,7 +151,7 @@ class MainActivity : AppCompatActivity() {
         if (!serviceBound) {
             Log.d("MyLog", "StartService")
             val playerIntent = Intent(this, RadioPlayerService::class.java)
-            playerIntent.putExtra("url", urlStream)
+            playerIntent.putExtra(TAG_NEW_AUDIO_URL, urlStream)
             startService(playerIntent)
             bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE)
         } else {
