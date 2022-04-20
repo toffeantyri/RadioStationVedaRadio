@@ -5,7 +5,6 @@
     tools:context=".view.MainActivity">
 
 
-
     <item
         android:id="@+id/action_play"
         android:icon="@drawable/ic_baseline_play_circle_filled_24"
@@ -20,10 +19,29 @@
         app:showAsAction="ifRoom"
         android:iconTint="@color/black"
         android:title="Refresh"
-        android:icon="@drawable/ic_autorenew_black_24dp"
-        />
+        android:icon="@drawable/ic_autorenew_black_24dp" />
 
+    <group
+        android:id="@+id/action_quality_container"
+        android:menuCategory="container">
 
+        <item
+            android:id="@+id/action_low_quality"
+            android:checkable="true"
+            android:title="@string/text_low_quality"
+            app:showAsAction="never" />
+        <item
+            android:id="@+id/action_medium_quality"
+            android:checkable="true"
+            android:title="@string/text_medium_quality"
+            app:showAsAction="never" />
+        <item
+            android:id="@+id/action_high_quality"
+            android:checkable="true"
+            android:title="@string/text_high_quality"
+            app:showAsAction="never" />
+
+    </group>
 
 
 

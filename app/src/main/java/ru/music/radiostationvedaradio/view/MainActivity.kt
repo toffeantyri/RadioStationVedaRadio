@@ -28,7 +28,6 @@ import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 class MainActivity : AppCompatActivity() {
 
-
     val dataModel: ViewModelMainActivity by viewModels()
     var STATE_OF_SERVICE_A = InitStatusMediaPlayer.IDLE
         set(value) {
@@ -43,8 +42,13 @@ class MainActivity : AppCompatActivity() {
         }
     var mediaService: RadioPlayerService? = null
 
-    lateinit var url: String
+    var url: String = ""
+        set(value) {
+            field = value
+            updateCheckGroupQuality(value)
+        }
 
+    var myMenu: Menu? = null
     lateinit var btnPlay: MenuItem
     lateinit var btnRefresh: MenuItem
 
@@ -88,11 +92,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    var artist = ""
-    var song = ""
-
-
-
     override fun onDestroy() {
         if (serviceBound) {
             unbindService(serviceConnection)
@@ -103,14 +102,19 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
-        btnPlay = menu?.getItem(1)!!
-        btnRefresh = menu.getItem(0)!!
+        myMenu = menu!!
+        updateCheckGroupQuality(url)
+        btnPlay = menu?.findItem(R.id.action_play)!!
+        btnRefresh = menu?.findItem(R.id.action_refresh)!!
+
         dataModel.statusMediaPlayer.observe(this) {
+            Log.d("MyLog", "observe: $it")
             if (it == InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_baseline_pause_circle_filled_24)
             if (it != InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
         }
 
         dataModel.statusMediaPlayer.observe(this) {
+            Log.d("MyLog", "observe: $it")
             if (it == InitStatusMediaPlayer.INITIALISATION) {
                 btnRefresh.setActionView(R.layout.action_progressbar)
                 btnRefresh.expandActionView()
@@ -135,6 +139,20 @@ class MainActivity : AppCompatActivity() {
         }
         if (item.itemId == R.id.action_refresh) {
             playAudio(url)
+        }
+        when (item.itemId) {
+            R.id.action_low_quality -> {
+                url = getString(R.string.veda_radio_stream_link_low)
+                playAudio(url)
+            }
+            R.id.action_medium_quality -> {
+                url = getString(R.string.veda_radio_stream_link_medium)
+                playAudio(url)
+            }
+            R.id.action_high_quality -> {
+                url = getString(R.string.veda_radio_stream_link_high)
+                playAudio(url)
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -172,5 +190,26 @@ class MainActivity : AppCompatActivity() {
     private fun registerBroadcastStateService() {
         val filter = IntentFilter(Broadcast_STATE_SERVICE)
         registerReceiver(broadcastStateServiceListener, filter)
+    }
+
+    private fun updateCheckGroupQuality(url: String) {
+        if (myMenu==null) return
+        when (url) {
+            getString(R.string.veda_radio_stream_link_low) -> {
+                myMenu?.findItem(R.id.action_low_quality)?.isChecked = true
+                myMenu?.findItem(R.id.action_medium_quality)?.isChecked = false
+                myMenu?.findItem(R.id.action_high_quality)?.isChecked = false
+            }
+            getString(R.string.veda_radio_stream_link_medium) -> {
+                myMenu?.findItem(R.id.action_low_quality)?.isChecked = false
+                myMenu?.findItem(R.id.action_medium_quality)?.isChecked = true
+                myMenu?.findItem(R.id.action_high_quality)?.isChecked = false
+            }
+            getString(R.string.veda_radio_stream_link_high) -> {
+                myMenu?.findItem(R.id.action_low_quality)?.isChecked = false
+                myMenu?.findItem(R.id.action_medium_quality)?.isChecked = false
+                myMenu?.findItem(R.id.action_high_quality)?.isChecked = true
+            }
+        }
     }
 }
