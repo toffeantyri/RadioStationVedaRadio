@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <item android:title="Category 1">
+        <menu>
+            <item android:id="@+id/item1"  android:title="Item 1" android:icon="@drawable/googleg_disabled_color_18"/>
+            <item android:id="@+id/item12"  android:title="Item 12" android:icon="@drawable/googleg_disabled_color_18"/>
+            <item android:id="@+id/item13"  android:title="Item 13" android:icon="@drawable/googleg_disabled_color_18"/>
+        </menu>
+    </item>
+
+    <item android:title="Category 2">
+        <menu>
+            <item android:id="@+id/item10"  android:title="Item 10" android:icon="@drawable/googleg_disabled_color_18"/>
+            <item android:id="@+id/item120"  android:title="Item 120" android:icon="@drawable/googleg_disabled_color_18"/>
+            <item android:id="@+id/item130"  android:title="Item 130" android:icon="@drawable/googleg_disabled_color_18"/>
+
+        </menu>
+    </item>
+
+
+
+</menu>

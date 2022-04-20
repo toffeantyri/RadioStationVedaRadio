@@ -5,11 +5,13 @@ import android.media.AudioManager
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,6 +53,7 @@ class MainActivity : AppCompatActivity() {
     var myMenu: Menu? = null
     lateinit var btnPlay: MenuItem
     lateinit var btnRefresh: MenuItem
+    lateinit var btnHome: MenuItem
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -72,7 +75,6 @@ class MainActivity : AppCompatActivity() {
         url = getString(R.string.veda_radio_stream_link_low)
         registerBroadcastStateService()
         playAudio(url)
-
 
     }
 
@@ -106,6 +108,9 @@ class MainActivity : AppCompatActivity() {
         updateCheckGroupQuality(url)
         btnPlay = menu?.findItem(R.id.action_play)!!
         btnRefresh = menu?.findItem(R.id.action_refresh)!!
+
+
+
 
         dataModel.statusMediaPlayer.observe(this) {
             Log.d("MyLog", "observe: $it")
@@ -153,6 +158,9 @@ class MainActivity : AppCompatActivity() {
                 url = getString(R.string.veda_radio_stream_link_high)
                 playAudio(url)
             }
+            android.R.id.home -> {
+               drawer_menu.openDrawer(GravityCompat.START)
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -160,8 +168,9 @@ class MainActivity : AppCompatActivity() {
     private fun setUpActionBar() {
         val ab = supportActionBar
         ab?.apply {
+            setHomeButtonEnabled(true)
             setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_baseline_radio_24)
+            setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp)
         }
     }
 
