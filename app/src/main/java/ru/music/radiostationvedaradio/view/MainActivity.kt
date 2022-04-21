@@ -5,7 +5,6 @@ import android.media.AudioManager
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -13,18 +12,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.retrofit.metaDataOfVedaradio.StreamVedaradioJSONClass
-import ru.music.radiostationvedaradio.retrofit.metaDataOfVedaradio.VedaradioRetrofitService
 import ru.music.radiostationvedaradio.services.*
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
@@ -53,7 +41,6 @@ class MainActivity : AppCompatActivity() {
     var myMenu: Menu? = null
     lateinit var btnPlay: MenuItem
     lateinit var btnRefresh: MenuItem
-    lateinit var btnHome: MenuItem
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -109,9 +96,6 @@ class MainActivity : AppCompatActivity() {
         btnPlay = menu?.findItem(R.id.action_play)!!
         btnRefresh = menu?.findItem(R.id.action_refresh)!!
 
-
-
-
         dataModel.statusMediaPlayer.observe(this) {
             Log.d("MyLog", "observe: $it")
             if (it == InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_baseline_pause_circle_filled_24)
@@ -159,7 +143,8 @@ class MainActivity : AppCompatActivity() {
                 playAudio(url)
             }
             android.R.id.home -> {
-               drawer_menu.openDrawer(GravityCompat.START)
+                if (drawer_menu.isDrawerOpen(GravityCompat.START)) drawer_menu.closeDrawer(GravityCompat.START)
+                 else drawer_menu.openDrawer(GravityCompat.START)
             }
         }
         return super.onOptionsItemSelected(item)
@@ -202,7 +187,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateCheckGroupQuality(url: String) {
-        if (myMenu==null) return
+        if (myMenu == null) return
         when (url) {
             getString(R.string.veda_radio_stream_link_low) -> {
                 myMenu?.findItem(R.id.action_low_quality)?.isChecked = true
