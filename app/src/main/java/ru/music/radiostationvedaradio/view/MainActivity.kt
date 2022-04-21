@@ -1,5 +1,6 @@
 package ru.music.radiostationvedaradio.view
 
+import android.app.ActivityManager
 import android.content.*
 import android.media.AudioManager
 import android.os.Bundle
@@ -47,10 +48,12 @@ class MainActivity : AppCompatActivity() {
             val binder = service as RadioPlayerService.LocalBinder
             mediaService = binder.getService()
             serviceBound = true
+            STATE_OF_SERVICE_A = mediaService?.getStatusMediaMplayer() ?: InitStatusMediaPlayer.IDLE
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
             serviceBound = false
+            mediaService = null
         }
     }
 
@@ -61,9 +64,16 @@ class MainActivity : AppCompatActivity() {
         setUpActionBar()
         url = getString(R.string.veda_radio_stream_link_low)
         registerBroadcastStateService()
-        playAudio(url)
 
+        Log.d("MyLog", "service is RUNNED: ${this.isServiceRunning(RadioPlayerService::class.java)}")
+        playAudio(url)
+        Log.d("MyLog", "service is RUNNED: ${this.isServiceRunning(RadioPlayerService::class.java)}")
     }
+
+    fun <T> Context.isServiceRunning(service: Class<T>) = (getSystemService(ACTIVITY_SERVICE) as ActivityManager)
+        .getRunningServices(Integer.MAX_VALUE)
+        .any { it.service.className == service.name }
+
 
     override fun onPause() {
         super.onPause()
@@ -84,7 +94,6 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         if (serviceBound) {
             unbindService(serviceConnection)
-            mediaService?.stopSelf()
         }
         super.onDestroy()
     }
@@ -97,13 +106,13 @@ class MainActivity : AppCompatActivity() {
         btnRefresh = menu?.findItem(R.id.action_refresh)!!
 
         dataModel.statusMediaPlayer.observe(this) {
-            Log.d("MyLog", "observe: $it")
+            Log.d("MyLog", "observe btn play: $it")
             if (it == InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_baseline_pause_circle_filled_24)
             if (it != InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
         }
 
         dataModel.statusMediaPlayer.observe(this) {
-            Log.d("MyLog", "observe: $it")
+            Log.d("MyLog", "observe btn refresh: $it")
             if (it == InitStatusMediaPlayer.INITIALISATION) {
                 btnRefresh.setActionView(R.layout.action_progressbar)
                 btnRefresh.expandActionView()
@@ -144,7 +153,7 @@ class MainActivity : AppCompatActivity() {
             }
             android.R.id.home -> {
                 if (drawer_menu.isDrawerOpen(GravityCompat.START)) drawer_menu.closeDrawer(GravityCompat.START)
-                 else drawer_menu.openDrawer(GravityCompat.START)
+                else drawer_menu.openDrawer(GravityCompat.START)
             }
         }
         return super.onOptionsItemSelected(item)
@@ -164,12 +173,19 @@ class MainActivity : AppCompatActivity() {
             Log.d("MyLog", "StartService")
             val playerIntent = Intent(this, RadioPlayerService::class.java)
             playerIntent.putExtra(TAG_NEW_AUDIO_URL, urlStream)
-            startService(playerIntent)
+            if (this.isServiceRunning(RadioPlayerService::class.java)) {
+                playerIntent.putExtra("first_run", false)
+
+            } else {
+                playerIntent.putExtra("first_run", true)
+            }
+            applicationContext.startForegroundService(playerIntent)
             bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE)
         } else {
             Log.d("MyLog", "service is already bound")
             val broadcastIntent: Intent = Intent(Broadcast_NEW_AUDIO)
             broadcastIntent.putExtra(TAG_NEW_AUDIO_URL, urlStream)
+            broadcastIntent.putExtra("first_run", false)
             sendBroadcast(broadcastIntent)
         }
     }

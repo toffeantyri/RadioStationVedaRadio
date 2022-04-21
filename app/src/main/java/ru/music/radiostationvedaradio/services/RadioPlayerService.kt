@@ -36,7 +36,7 @@ const val ACTION_PLAY = "ru.music.vedaradio.ACTION_PLAY"
 const val ACTION_PAUSE = "ru.music.vedaradio.ACTION_PAUSE"
 const val ACTION_CANCEL = "ru.music.vedaradio.ACTION_CANCEL"
 const val CHANNEL_ID = "ru.music.vedaradio.ID"
-const val NOTIFICATION_ID = 101
+const val NOTIFICATION_ID = 77777
 
 
 class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
@@ -46,7 +46,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     inner class LocalBinder : Binder() {
         fun getService(): RadioPlayerService {
-            startUpdateAlbumData(60000)
             return this@RadioPlayerService
         }
     }
@@ -145,7 +144,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     }
 
-    private fun buildNotification(playbackstatus: Playbackstatus) {
+    private fun buildNotification(playbackstatus: Playbackstatus): NotificationCompat.Builder {
         var notificationAction = android.R.drawable.ic_media_pause
         var playpauseAction: PendingIntent? = null
         var titleButton: String = ""
@@ -202,8 +201,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 .setContentIntent(PendingIntent.getActivity(this, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT))
 
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
-
-
+        return notificationBuilder
     }
 
     fun startUpdateAlbumData(timeUntilUpdate: Long) {
@@ -249,7 +247,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                     }
 
                     Log.d("MyLog", "$artist         $song")
-                    handler.postDelayed({startUpdateAlbumData(timeUntilUpdate)}, timeUntilUpdate)
+                    handler.postDelayed({ startUpdateAlbumData(timeUntilUpdate) }, timeUntilUpdate)
                 }
 
                 override fun onFailure(call: Call<StreamVedaradioJSONClass>, t: Throwable) {
@@ -405,13 +403,12 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
-            intent?.extras?.getString(TAG_NEW_AUDIO_URL).let {
-                if(it!=null || it!="") urlString = it
-                Log.d("MyLog", "onStartCommand: intent string : $it")
-            }
-
-        //Log.d("MyLog, ", "onStartCommand requestAudioFocus: ${requestAudioFocus()}")
+        val firstRun = intent?.extras?.getBoolean("first_run") ?: false
+        Log.d("MyLog", "onStartCommand: intent firstRun: $firstRun")
+        intent?.extras?.getString(TAG_NEW_AUDIO_URL).let {
+            if (it != null || it != "") urlString = it
+            Log.d("MyLog", "onStartCommand: intent URL: $it")
+        }
         if (!requestAudioFocus()) {
             stopSelf()
         }
@@ -419,6 +416,10 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
             try {
                 initMediaSession()
                 initMediaPlayer()
+                if (firstRun){
+                    startForeground(NOTIFICATION_ID, buildNotification(Playbackstatus.PAUSED).build())
+                    startUpdateAlbumData(60000)
+                }
             } catch (e: RemoteException) {
                 e.printStackTrace()
                 stopSelf()
@@ -471,6 +472,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
             buildNotification(Playbackstatus.PLAYING)
         }
     }
+
+    fun getStatusMediaMplayer(): InitStatusMediaPlayer = STATE_OF_SERVICE
 
 //------------------------------------------------------------------------
 
