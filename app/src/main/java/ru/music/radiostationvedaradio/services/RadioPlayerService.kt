@@ -369,8 +369,9 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 }
             }
             AudioManager.AUDIOFOCUS_LOSS -> {
-                stopMedia()
-                STATE_OF_SERVICE = InitStatusMediaPlayer.IDLE
+                if (STATE_OF_SERVICE == InitStatusMediaPlayer.PLAYING) {
+                    pauseMedia()
+                }
             }
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
                 if (STATE_OF_SERVICE == InitStatusMediaPlayer.PLAYING) {
@@ -406,7 +407,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         val firstRun = intent?.extras?.getBoolean("first_run") ?: false
         Log.d("MyLog", "onStartCommand: intent firstRun: $firstRun")
         intent?.extras?.getString(TAG_NEW_AUDIO_URL).let {
-            if (it != null || it != "") urlString = it
+            if (it != null && it != "") urlString = it
             Log.d("MyLog", "onStartCommand: intent URL: $it")
         }
         if (!requestAudioFocus()) {
@@ -474,6 +475,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     }
 
     fun getStatusMediaMplayer(): InitStatusMediaPlayer = STATE_OF_SERVICE
+
+    fun getPlayingURL() : String? = urlString
 
 //------------------------------------------------------------------------
 

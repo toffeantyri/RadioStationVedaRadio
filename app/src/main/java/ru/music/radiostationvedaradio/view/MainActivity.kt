@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
 
     var url: String = ""
         set(value) {
+            Log.d("MyLog", "Activity : url -> $value")
             field = value
             updateCheckGroupQuality(value)
         }
@@ -49,6 +50,7 @@ class MainActivity : AppCompatActivity() {
             mediaService = binder.getService()
             serviceBound = true
             STATE_OF_SERVICE_A = mediaService?.getStatusMediaMplayer() ?: InitStatusMediaPlayer.IDLE
+            url = mediaService?.getPlayingURL() ?: ""
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -172,12 +174,11 @@ class MainActivity : AppCompatActivity() {
         if (!serviceBound) {
             Log.d("MyLog", "StartService")
             val playerIntent = Intent(this, RadioPlayerService::class.java)
-            playerIntent.putExtra(TAG_NEW_AUDIO_URL, urlStream)
             if (this.isServiceRunning(RadioPlayerService::class.java)) {
                 playerIntent.putExtra("first_run", false)
-
             } else {
                 playerIntent.putExtra("first_run", true)
+                playerIntent.putExtra(TAG_NEW_AUDIO_URL, urlStream)
             }
             applicationContext.startForegroundService(playerIntent)
             bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE)
@@ -219,6 +220,11 @@ class MainActivity : AppCompatActivity() {
                 myMenu?.findItem(R.id.action_low_quality)?.isChecked = false
                 myMenu?.findItem(R.id.action_medium_quality)?.isChecked = false
                 myMenu?.findItem(R.id.action_high_quality)?.isChecked = true
+            }
+            else -> {
+                myMenu?.findItem(R.id.action_low_quality)?.isChecked = false
+                myMenu?.findItem(R.id.action_medium_quality)?.isChecked = false
+                myMenu?.findItem(R.id.action_high_quality)?.isChecked = false
             }
         }
     }
