@@ -54,12 +54,12 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         return iBinder
     }
 
-    private val handler = Handler()
+    private var handler : Handler? = Handler()
     private var job: Job? = null
     private val iBinder: IBinder = LocalBinder()
-    var urlString: String? = null
-    var artist = "Veda Radio"
-    var song = "From Heart to Heart"
+    private var urlString: String? = null
+    private var artist = "Veda Radio"
+    private var song = "From Heart to Heart"
 
     private var resumePosition: Int = 0
     private var mediaPlayer: MediaPlayer? = null
@@ -126,6 +126,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 super.onStop()
                 stopMedia()
                 removeNotification()
+                stopForeground(true)
                 stopSelf()
             }
         })
@@ -247,7 +248,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                     }
 
                     Log.d("MyLog", "$artist         $song")
-                    handler.postDelayed({ startUpdateAlbumData(timeUntilUpdate) }, timeUntilUpdate)
+                    handler?.postDelayed({ startUpdateAlbumData(timeUntilUpdate) }, timeUntilUpdate)
                 }
 
                 override fun onFailure(call: Call<StreamVedaradioJSONClass>, t: Throwable) {
@@ -540,6 +541,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     override fun onDestroy() {
         removeNotification()
+        handler = null
         if (mediaPlayer != null) {
             stopMedia()
             mediaPlayer!!.release()

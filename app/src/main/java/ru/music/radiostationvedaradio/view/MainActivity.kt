@@ -66,10 +66,7 @@ class MainActivity : AppCompatActivity() {
         setUpActionBar()
         url = getString(R.string.veda_radio_stream_link_low)
         registerBroadcastStateService()
-
-        Log.d("MyLog", "service is RUNNED: ${this.isServiceRunning(RadioPlayerService::class.java)}")
         playAudio(url)
-        Log.d("MyLog", "service is RUNNED: ${this.isServiceRunning(RadioPlayerService::class.java)}")
     }
 
     fun <T> Context.isServiceRunning(service: Class<T>) = (getSystemService(ACTIVITY_SERVICE) as ActivityManager)
@@ -108,13 +105,13 @@ class MainActivity : AppCompatActivity() {
         btnRefresh = menu?.findItem(R.id.action_refresh)!!
 
         dataModel.statusMediaPlayer.observe(this) {
-            Log.d("MyLog", "observe btn play: $it")
+            //Log.d("MyLog", "observe btn play: $it")
             if (it == InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_baseline_pause_circle_filled_24)
             if (it != InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
         }
 
         dataModel.statusMediaPlayer.observe(this) {
-            Log.d("MyLog", "observe btn refresh: $it")
+            //Log.d("MyLog", "observe btn refresh: $it")
             if (it == InitStatusMediaPlayer.INITIALISATION) {
                 btnRefresh.setActionView(R.layout.action_progressbar)
                 btnRefresh.expandActionView()
