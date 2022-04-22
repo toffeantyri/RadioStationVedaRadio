@@ -54,7 +54,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         return iBinder
     }
 
-    private var handler : Handler? = Handler()
+    private var handler: Handler? = Handler()
     private var job: Job? = null
     private val iBinder: IBinder = LocalBinder()
     private var urlString: String? = null
@@ -134,15 +134,10 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     }
 
     private fun updateMetaData() {
-        Log.d("MyLog", "updateMetaData")
-        val metaDataBuilder = MediaMetadataCompat.Builder().apply {
-            //putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
+        mediaSession?.setMetadata(MediaMetadataCompat.Builder().apply {
             putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
             putString(MediaMetadataCompat.METADATA_KEY_TITLE, song)
-        }
-        val metadata = metaDataBuilder.build()
-        mediaSession?.setMetadata(metadata)
-
+        }.build())
     }
 
     private fun buildNotification(playbackstatus: Playbackstatus): NotificationCompat.Builder {
@@ -150,7 +145,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         var playpauseAction: PendingIntent? = null
         var titleButton: String = ""
         var notRemoveOnSwipe = true
-
         val contentIntent = Intent(applicationContext, MainActivity::class.java)
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -246,8 +240,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                             removeNotification()
                         }
                     }
-
-                    Log.d("MyLog", "$artist         $song")
+                    Log.d("MyLog", "update : $artist         $song")
                     handler?.postDelayed({ startUpdateAlbumData(timeUntilUpdate) }, timeUntilUpdate)
                 }
 
@@ -283,15 +276,9 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     private fun handleIncomingAction(playbackAction: Intent) {
         if (playbackAction.action == null) return
         when (playbackAction.action!!) {
-            ACTION_PLAY -> {
-                transportControls?.play()
-            }
-            ACTION_PAUSE -> {
-                transportControls?.pause()
-            }
-            ACTION_CANCEL -> {
-                transportControls?.stop()
-            }
+            ACTION_PLAY -> transportControls?.play()
+            ACTION_PAUSE -> transportControls?.pause()
+            ACTION_CANCEL -> transportControls?.stop()
         }
     }
 
@@ -303,6 +290,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     override fun onCompletion(mp: MediaPlayer?) {
         stopMedia()
+        stopForeground(true)
         stopSelf()
     }
 
@@ -310,39 +298,42 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         if (mediaPlayer == null) return
         STATE_OF_SERVICE = InitStatusMediaPlayer.INIT_COMPLETE
         playMedia()
-        Log.d("MyLog", "Service ready for play")
     }
 
     override fun onError(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
         STATE_OF_SERVICE = InitStatusMediaPlayer.IDLE
-        Log.d("MyLog", "onError what:  $what + extra : $extra")
         when (what) {
             MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK -> {
-                Log.d("MyLog", "error : not valid progressive playback + $extra")
+                Log.d("MyLog", "error : not valid progressive playback $what  $extra")
                 Toast.makeText(this, "Неверный формат аудио", Toast.LENGTH_SHORT).show()
+                stopForeground(true)
                 stopSelf()
             }
             MediaPlayer.MEDIA_ERROR_SERVER_DIED -> {
-                Log.d("MyLog", "error : server died + $extra")
+                Log.d("MyLog", "error : server died $what  $extra")
                 Toast.makeText(this, "Сервер недоступен", Toast.LENGTH_SHORT).show()
+                stopForeground(true)
                 stopSelf()
             }
             MediaPlayer.MEDIA_ERROR_UNKNOWN -> {
-                Log.d("MyLog", "error : unknow + $extra")
+                Log.d("MyLog", "error : unknow $what $extra")
                 mediaPlayer = null
-                Toast.makeText(this, "Ошибка соединения", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Неизвестная ошибка", Toast.LENGTH_SHORT).show()
+                stopForeground(true)
                 stopSelf()
             }
             MediaPlayer.MEDIA_ERROR_TIMED_OUT -> {
-                Log.d("MyLog", "error : time out")
+                Log.d("MyLog", "error : time out $what  $extra")
                 mediaPlayer = null
                 Toast.makeText(this, "Превышено время ожидания ответа сервера", Toast.LENGTH_SHORT).show()
+                stopForeground(true)
                 stopSelf()
             }
             else -> {
-                Log.d("MyLog", "error : -38 + $extra")
+                Log.d("MyLog", "error : $what  $extra")
                 mediaPlayer = null
                 Toast.makeText(this, "Ошибка загрузки", Toast.LENGTH_SHORT).show()
+                stopForeground(true)
                 stopSelf()
             }
         }
@@ -370,19 +361,13 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 }
             }
             AudioManager.AUDIOFOCUS_LOSS -> {
-                if (STATE_OF_SERVICE == InitStatusMediaPlayer.PLAYING) {
-                    pauseMedia()
-                }
+                if (STATE_OF_SERVICE == InitStatusMediaPlayer.PLAYING) pauseMedia()
             }
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
-                if (STATE_OF_SERVICE == InitStatusMediaPlayer.PLAYING) {
-                    pauseMedia()
-                }
+                if (STATE_OF_SERVICE == InitStatusMediaPlayer.PLAYING) pauseMedia()
             }
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
-                if (STATE_OF_SERVICE == InitStatusMediaPlayer.PLAYING) {
-                    mediaPlayer?.setVolume(0.1f, 0.1f)
-                }
+                if (STATE_OF_SERVICE == InitStatusMediaPlayer.PLAYING) mediaPlayer?.setVolume(0.1f, 0.1f)
             }
         }
     }
@@ -400,12 +385,10 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         return false
     }
 
-    private fun removeAudioFocus(): Boolean {
-        return AudioManager.AUDIOFOCUS_REQUEST_GRANTED == audioManager?.abandonAudioFocus(this)
-    }
+    private fun removeAudioFocus() = AudioManager.AUDIOFOCUS_REQUEST_GRANTED == audioManager?.abandonAudioFocus(this)
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val firstRun = intent?.extras?.getBoolean("first_run") ?: false
+        val firstRun = intent?.extras?.getBoolean(TAG_FIRST_RUN) ?: false
         Log.d("MyLog", "onStartCommand: intent firstRun: $firstRun")
         intent?.extras?.getString(TAG_NEW_AUDIO_URL).let {
             if (it != null && it != "") urlString = it
@@ -418,7 +401,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
             try {
                 initMediaSession()
                 initMediaPlayer()
-                if (firstRun){
+                if (firstRun) {
                     startForeground(NOTIFICATION_ID, buildNotification(Playbackstatus.PAUSED).build())
                     startUpdateAlbumData(60000)
                 }
@@ -430,7 +413,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         if (intent != null) {
             handleIncomingAction(intent)
         }
-
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -447,9 +429,9 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     }
 
     fun stopMedia() {
+        STATE_OF_SERVICE = InitStatusMediaPlayer.IDLE
         if (mediaPlayer == null) return
         mediaPlayer?.stop()
-        STATE_OF_SERVICE = InitStatusMediaPlayer.IDLE
         removeNotification()
         mediaPlayer?.release()
         mediaPlayer = null
@@ -465,45 +447,27 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         }
     }
 
-    fun resumeMedia() {
-        if (mediaPlayer == null) return
-        if (STATE_OF_SERVICE == InitStatusMediaPlayer.INIT_COMPLETE) {
-            mediaPlayer!!.seekTo(resumePosition)
-            mediaPlayer!!.start()
-            STATE_OF_SERVICE = InitStatusMediaPlayer.PLAYING
-            buildNotification(Playbackstatus.PLAYING)
-        }
-    }
-
     fun getStatusMediaMplayer(): InitStatusMediaPlayer = STATE_OF_SERVICE
 
-    fun getPlayingURL() : String? = urlString
+    fun getPlayingURL(): String? = urlString
 
 //------------------------------------------------------------------------
 
     private val broadcastReceiverNewAudio = object : BroadcastReceiverForPlayerService() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            try {
-                urlString = intent!!.getStringExtra(TAG_NEW_AUDIO_URL)
-            } catch (e: NullPointerException) {
-                stopSelf()
-            }
+            urlString = intent?.getStringExtra(TAG_NEW_AUDIO_URL)
             stopMedia()
             mediaPlayer?.reset()
             initMediaPlayer()
-            buildNotification(Playbackstatus.PLAYING)
         }
     }
 
     private fun broadcastTellNewStatus() {
-        val broadcastIntent: Intent = Intent(Broadcast_STATE_SERVICE)
-        broadcastIntent.putExtra(TAG_STATE_SERVICE, STATE_OF_SERVICE)
-        sendBroadcast(broadcastIntent)
+        sendBroadcast(Intent(Broadcast_STATE_SERVICE).putExtra(TAG_STATE_SERVICE, STATE_OF_SERVICE))
     }
 
     private fun registerPlayNewAudio() {
-        val filter = IntentFilter(Broadcast_NEW_AUDIO)
-        registerReceiver(broadcastReceiverNewAudio, filter)
+        registerReceiver(broadcastReceiverNewAudio, IntentFilter(Broadcast_NEW_AUDIO))
     }
 
     private fun callStateListener() {
@@ -541,12 +505,12 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     override fun onDestroy() {
         removeNotification()
+        STATE_OF_SERVICE = InitStatusMediaPlayer.IDLE
         handler = null
         if (mediaPlayer != null) {
             stopMedia()
             mediaPlayer!!.release()
         }
-        STATE_OF_SERVICE = InitStatusMediaPlayer.IDLE
         removeAudioFocus()
         if (phoneStateListener != null) {
             telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE)

@@ -153,9 +153,9 @@ class MainActivity : AppCompatActivity() {
             Log.d("MyLog", "StartService")
             val playerIntent = Intent(this, RadioPlayerService::class.java)
             if (this.isServiceRunning(RadioPlayerService::class.java)) {
-                playerIntent.putExtra("first_run", false)
+                playerIntent.putExtra(TAG_FIRST_RUN, false)
             } else {
-                playerIntent.putExtra("first_run", true)
+                playerIntent.putExtra(TAG_FIRST_RUN, true)
                 playerIntent.putExtra(TAG_NEW_AUDIO_URL, urlStream)
             }
             applicationContext.startForegroundService(playerIntent)
@@ -164,7 +164,7 @@ class MainActivity : AppCompatActivity() {
             Log.d("MyLog", "service is already bound")
             val broadcastIntent: Intent = Intent(Broadcast_NEW_AUDIO)
             broadcastIntent.putExtra(TAG_NEW_AUDIO_URL, urlStream)
-            broadcastIntent.putExtra("first_run", false)
+            broadcastIntent.putExtra(TAG_FIRST_RUN, false)
             sendBroadcast(broadcastIntent)
         }
     }
