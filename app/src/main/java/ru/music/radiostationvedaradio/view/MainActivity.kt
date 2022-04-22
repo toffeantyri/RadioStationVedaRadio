@@ -19,30 +19,30 @@ import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 class MainActivity : AppCompatActivity() {
 
-    val dataModel: ViewModelMainActivity by viewModels()
-    var STATE_OF_SERVICE_A = InitStatusMediaPlayer.IDLE
+    private val dataModel: ViewModelMainActivity by viewModels()
+    private var STATE_OF_SERVICE_A = InitStatusMediaPlayer.IDLE
         set(value) {
             field = value
             dataModel.statusMediaPlayer.value = value
         }
 
-    var serviceBound = false
+    private var serviceBound = false
         set(value) {
             field = value
             Log.d("MyLog", "serviceBound -> $value")
         }
-    var mediaService: RadioPlayerService? = null
+    private var mediaService: RadioPlayerService? = null
 
-    var url: String = ""
+    private var url: String = ""
         set(value) {
-            Log.d("MyLog", "Activity : url -> $value")
             field = value
             updateCheckGroupQuality(value)
+            Log.d("MyLog", "Activity : url -> $value")
         }
 
-    var myMenu: Menu? = null
-    lateinit var btnPlay: MenuItem
-    lateinit var btnRefresh: MenuItem
+    private var myMenu: Menu? = null
+    private lateinit var btnPlay: MenuItem
+    private lateinit var btnRefresh: MenuItem
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -59,7 +59,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -69,18 +68,9 @@ class MainActivity : AppCompatActivity() {
         playAudio(url)
     }
 
-    fun <T> Context.isServiceRunning(service: Class<T>) = (getSystemService(ACTIVITY_SERVICE) as ActivityManager)
-        .getRunningServices(Integer.MAX_VALUE)
-        .any { it.service.className == service.name }
-
-
     override fun onPause() {
         super.onPause()
         Log.d("MyLog", "MainActivity onPause")
-    }
-
-    override fun onStart() {
-        super.onStart()
     }
 
     override fun onResume() {
@@ -99,25 +89,24 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
-        myMenu = menu!!
-        updateCheckGroupQuality(url)
-        btnPlay = menu?.findItem(R.id.action_play)!!
-        btnRefresh = menu?.findItem(R.id.action_refresh)!!
-
-        dataModel.statusMediaPlayer.observe(this) {
-            //Log.d("MyLog", "observe btn play: $it")
-            if (it == InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_baseline_pause_circle_filled_24)
-            if (it != InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
+        if (menu == null) {
+            return super.onCreateOptionsMenu(menu)
         }
+        myMenu = menu
+        updateCheckGroupQuality(url)
+        btnPlay = menu.findItem(R.id.action_play)
+        btnRefresh = menu.findItem(R.id.action_refresh)
 
         dataModel.statusMediaPlayer.observe(this) {
-            //Log.d("MyLog", "observe btn refresh: $it")
+            if (it == InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_baseline_pause_circle_filled_24)
+            else if (it != InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
+        }
+        dataModel.statusMediaPlayer.observe(this) {
             if (it == InitStatusMediaPlayer.INITIALISATION) {
                 btnRefresh.setActionView(R.layout.action_progressbar)
                 btnRefresh.expandActionView()
-            } else {
-                btnRefresh.actionView = null
-            }
+            } else btnRefresh.actionView = null
+
         }
         return super.onCreateOptionsMenu(menu)
     }
@@ -133,34 +122,26 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Loading", Toast.LENGTH_SHORT).show()
                 }
             }
-        }
-        if (item.itemId == R.id.action_refresh) {
+        } else if (item.itemId == R.id.action_refresh) {
             playAudio(url)
-        }
-        when (item.itemId) {
-            R.id.action_low_quality -> {
-                url = getString(R.string.veda_radio_stream_link_low)
-                playAudio(url)
-            }
-            R.id.action_medium_quality -> {
-                url = getString(R.string.veda_radio_stream_link_medium)
-                playAudio(url)
-            }
-            R.id.action_high_quality -> {
-                url = getString(R.string.veda_radio_stream_link_high)
-                playAudio(url)
-            }
-            android.R.id.home -> {
-                if (drawer_menu.isDrawerOpen(GravityCompat.START)) drawer_menu.closeDrawer(GravityCompat.START)
-                else drawer_menu.openDrawer(GravityCompat.START)
-            }
+        } else if (item.itemId == R.id.action_low_quality) {
+            url = getString(R.string.veda_radio_stream_link_low)
+            playAudio(url)
+        } else if (item.itemId == R.id.action_medium_quality) {
+            url = getString(R.string.veda_radio_stream_link_medium)
+            playAudio(url)
+        } else if (item.itemId == R.id.action_high_quality) {
+            url = getString(R.string.veda_radio_stream_link_high)
+            playAudio(url)
+        } else if (item.itemId == android.R.id.home) {
+            if (drawer_menu.isDrawerOpen(GravityCompat.START)) drawer_menu.closeDrawer(GravityCompat.START)
+            else drawer_menu.openDrawer(GravityCompat.START)
         }
         return super.onOptionsItemSelected(item)
     }
 
     private fun setUpActionBar() {
-        val ab = supportActionBar
-        ab?.apply {
+        supportActionBar?.apply {
             setHomeButtonEnabled(true)
             setDisplayHomeAsUpEnabled(true)
             setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp)
@@ -188,7 +169,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     private val broadcastStateServiceListener = object : BroadcastReceiverForPlayerService() {
         override fun onReceive(context: Context?, intent: Intent?) {
             STATE_OF_SERVICE_A = intent?.getSerializableExtra(TAG_STATE_SERVICE) as InitStatusMediaPlayer
@@ -196,33 +176,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun registerBroadcastStateService() {
-        val filter = IntentFilter(Broadcast_STATE_SERVICE)
-        registerReceiver(broadcastStateServiceListener, filter)
+        registerReceiver(broadcastStateServiceListener, IntentFilter(Broadcast_STATE_SERVICE))
     }
 
     private fun updateCheckGroupQuality(url: String) {
         if (myMenu == null) return
+        myMenu?.apply {
+            findItem(R.id.action_low_quality)?.isChecked = false
+            findItem(R.id.action_medium_quality)?.isChecked = false
+            findItem(R.id.action_high_quality)?.isChecked = false
+        }
         when (url) {
             getString(R.string.veda_radio_stream_link_low) -> {
                 myMenu?.findItem(R.id.action_low_quality)?.isChecked = true
-                myMenu?.findItem(R.id.action_medium_quality)?.isChecked = false
-                myMenu?.findItem(R.id.action_high_quality)?.isChecked = false
             }
             getString(R.string.veda_radio_stream_link_medium) -> {
-                myMenu?.findItem(R.id.action_low_quality)?.isChecked = false
                 myMenu?.findItem(R.id.action_medium_quality)?.isChecked = true
-                myMenu?.findItem(R.id.action_high_quality)?.isChecked = false
             }
             getString(R.string.veda_radio_stream_link_high) -> {
-                myMenu?.findItem(R.id.action_low_quality)?.isChecked = false
-                myMenu?.findItem(R.id.action_medium_quality)?.isChecked = false
                 myMenu?.findItem(R.id.action_high_quality)?.isChecked = true
-            }
-            else -> {
-                myMenu?.findItem(R.id.action_low_quality)?.isChecked = false
-                myMenu?.findItem(R.id.action_medium_quality)?.isChecked = false
-                myMenu?.findItem(R.id.action_high_quality)?.isChecked = false
             }
         }
     }
+
+    private fun <T> Context.isServiceRunning(service: Class<T>) = (getSystemService(ACTIVITY_SERVICE) as ActivityManager)
+        .getRunningServices(Integer.MAX_VALUE)
+        .any { it.service.className == service.name }
 }
