@@ -12,6 +12,10 @@
 
     <string name="error_loading">Переподключение…</string>
 
+    <string name="nav_option">Дополнительно</string>
+    <string name="item_exit">Выход</string>
+    <string name="item_about_app">Оценить приложение</string>
+
 
 
 </resources>

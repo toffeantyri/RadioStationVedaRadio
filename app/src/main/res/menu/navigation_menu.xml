@@ -1,25 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".view.MainActivity"
+    tools:showIn="">
 
-    <item android:title="Category 1">
+    <item android:title="Ведические знания">
         <menu>
-            <item android:id="@+id/item1"  android:title="Item 1" android:icon="@drawable/googleg_disabled_color_18"/>
-            <item android:id="@+id/item12"  android:title="Item 12" android:icon="@drawable/googleg_disabled_color_18"/>
-            <item android:id="@+id/item13"  android:title="Item 13" android:icon="@drawable/googleg_disabled_color_18"/>
+            <item
+                android:id="@+id/item1"
+                android:icon="@drawable/googleg_disabled_color_18"
+                android:title="Item 1" />
+            <item
+                android:id="@+id/item12"
+                android:icon="@drawable/googleg_disabled_color_18"
+                android:title="Item 12" />
+            <item
+                android:id="@+id/item13"
+                android:icon="@drawable/googleg_disabled_color_18"
+                android:title="Item 13" />
         </menu>
     </item>
 
-    <item android:title="Category 2">
+    <item android:title="@string/nav_option">
         <menu>
-            <item android:id="@+id/item10"  android:title="Item 10" android:icon="@drawable/googleg_disabled_color_18"/>
-            <item android:id="@+id/item120"  android:title="Item 120" android:icon="@drawable/googleg_disabled_color_18"/>
-            <item android:id="@+id/item130"  android:title="Item 130" android:icon="@drawable/googleg_disabled_color_18"/>
+            <item
+                android:id="@+id/nav_item_rate_app"
+                android:icon="@drawable/ic_baseline_star_rate_24"
+                android:title="@string/item_about_app" />
+            <item
+                android:id="@+id/nav_item_exit"
+                android:icon="@drawable/ic_baseline_exit_to_app_24"
+                android:title="@string/item_exit" />
 
         </menu>
     </item>
-
 
 
 </menu>

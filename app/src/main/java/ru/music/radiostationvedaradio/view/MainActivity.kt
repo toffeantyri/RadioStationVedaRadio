@@ -8,6 +8,7 @@ import android.os.IBinder
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -108,6 +109,12 @@ class MainActivity : AppCompatActivity() {
             } else btnRefresh.actionView = null
 
         }
+
+        val btn_exit = findViewById<View>(R.id.nav_item_exit).setOnClickListener {
+            Toast.makeText(this, "click exit", Toast.LENGTH_SHORT).show()
+        }
+
+
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -139,6 +146,7 @@ class MainActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
 
     private fun setUpActionBar() {
         supportActionBar?.apply {
@@ -202,4 +210,6 @@ class MainActivity : AppCompatActivity() {
     private fun <T> Context.isServiceRunning(service: Class<T>) = (getSystemService(ACTIVITY_SERVICE) as ActivityManager)
         .getRunningServices(Integer.MAX_VALUE)
         .any { it.service.className == service.name }
+
+
 }

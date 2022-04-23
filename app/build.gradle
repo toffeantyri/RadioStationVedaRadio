@@ -10,7 +10,7 @@ android {
         applicationId "ru.music.radiostationvedaradio"
         minSdkVersion 26
         targetSdkVersion 31
-        versionCode 1 // 4 - последний код релизной версии
+        versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
