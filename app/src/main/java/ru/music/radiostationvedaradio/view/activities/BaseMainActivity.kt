@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.view
+package ru.music.radiostationvedaradio.view.activities
 
 import android.app.ActivityManager
 import android.content.*
@@ -7,12 +7,16 @@ import android.os.IBinder
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import com.yandex.mobile.ads.banner.AdSize
+import com.yandex.mobile.ads.banner.BannerAdEventListener
+import com.yandex.mobile.ads.common.AdRequest
+import com.yandex.mobile.ads.common.AdRequestError
+import com.yandex.mobile.ads.common.ImpressionData
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.services.*
@@ -179,6 +183,38 @@ open class BaseMainActivity : AppCompatActivity() {
         }
     }
 
+    protected fun loadAndShowBanner() {
+        main_banner.apply {
+            setAdUnitId(getString(R.string.yandex_banner_desc_id_test))
+            setAdSize(AdSize.BANNER_320x50)
+        }
+        val adRequest = AdRequest.Builder().build()
+
+        main_banner.setBannerAdEventListener(object : BannerAdEventListener {
+            override fun onAdLoaded() {
+                Log.d("MyLog", "Banner Loaded Ok")
+            }
+
+            override fun onAdFailedToLoad(p0: AdRequestError) {
+                Log.d("MyLog", "Banner Load Fail")
+            }
+
+            override fun onAdClicked() {
+                Log.d("MyLog", "Ad Clicked")
+            }
+
+            override fun onLeftApplication() {
+            }
+
+            override fun onReturnedToApplication() {
+            }
+
+            override fun onImpression(p0: ImpressionData?) {
+            }
+        })
+        main_banner.loadAd(adRequest)
+    }
+
     protected fun setUpOnItemClickDrawerMenu() {
         draw_navView.setNavigationItemSelectedListener {
             when (it.itemId) {
@@ -187,26 +223,28 @@ open class BaseMainActivity : AppCompatActivity() {
                     aDialog.apply {
                         setMessage(R.string.alert_mes_exit)
                             .setCancelable(true)
-                            .setNeutralButton(
-                                R.string.alert_mes_yes,
-                                DialogInterface.OnClickListener { dialog, id -> super.onBackPressed() })
+                            .setPositiveButton(
+                                R.string.alert_mes_yes_all,
+                                DialogInterface.OnClickListener { _, _ ->
+                                    mediaService?.stopForeground(true)
+                                    mediaService?.stopSelf()
+                                    super.onBackPressed()
+                                })
                     }
-                    aDialog.setPositiveButton(
-                        R.string.alert_mes_yes_all,
-                        DialogInterface.OnClickListener { _, _ ->
-                            mediaService?.stopForeground(true)
-                            mediaService?.stopSelf()
-                            super.onBackPressed()
-                        })
-                    aDialog.setNegativeButton(
+                        aDialog.setNegativeButton(
+                            R.string.alert_mes_yes,
+                            DialogInterface.OnClickListener { dialog, id -> super.onBackPressed() })
+
+                    aDialog.setNeutralButton(
                         R.string.alert_mes_no,
                         DialogInterface.OnClickListener { dialog, id -> dialog.cancel() })
+
                     val alert = aDialog.create()
                     alert.show()
                 }
-
                 R.id.nav_item_rate_app -> {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.link_on_this_app)))
+                    val intent =
+                        Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.link_on_this_app)))
                     startActivity(intent)
                 }
 
@@ -214,5 +252,6 @@ open class BaseMainActivity : AppCompatActivity() {
             return@setNavigationItemSelectedListener true
         }
     }
+
 
 }

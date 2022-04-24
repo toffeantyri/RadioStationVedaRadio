@@ -30,7 +30,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.retrofit.metaDataOfVedaradio.StreamVedaradioJSONClass
 import ru.music.radiostationvedaradio.retrofit.metaDataOfVedaradio.VedaradioRetrofitService
-import ru.music.radiostationvedaradio.view.MainActivity
+import ru.music.radiostationvedaradio.view.activities.MainActivity
 
 const val ACTION_PLAY = "ru.music.vedaradio.ACTION_PLAY"
 const val ACTION_PAUSE = "ru.music.vedaradio.ACTION_PAUSE"
@@ -509,7 +509,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         handler = null
         if (mediaPlayer != null) {
             stopMedia()
-            mediaPlayer!!.release()
+            mediaPlayer?.release()
         }
         removeAudioFocus()
         if (phoneStateListener != null) {

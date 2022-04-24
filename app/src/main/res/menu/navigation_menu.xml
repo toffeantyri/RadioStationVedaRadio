@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".view.MainActivity"
+    tools:context=".view.activities.MainActivity"
     tools:showIn="">
 
     <item android:title="Ведические знания">
@@ -12,11 +12,11 @@
                 android:icon="@drawable/googleg_disabled_color_18"
                 android:title="Item 1" />
             <item
-                android:id="@+id/item12"
+                android:id="@+id/item2"
                 android:icon="@drawable/googleg_disabled_color_18"
                 android:title="Item 12" />
             <item
-                android:id="@+id/item13"
+                android:id="@+id/item3"
                 android:icon="@drawable/googleg_disabled_color_18"
                 android:title="Item 13" />
         </menu>
