@@ -30,9 +30,10 @@
             android:exported="false" />
 
         <service
+            android:foregroundServiceType="mediaPlayback"
             android:name=".services.RadioPlayerService"
             android:enabled="true"
-            android:exported="true"
+            android:exported="false"
             tools:ignore="ExportedService"
             android:stopWithTask="false"/>
 

@@ -8,7 +8,6 @@ import android.os.IBinder
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -29,7 +28,7 @@ open class BaseMainActivity : AppCompatActivity() {
 
 
     protected val dataModel: ViewModelMainActivity by viewModels()
-    protected var STATE_OF_SERVICE_A = InitStatusMediaPlayer.IDLE
+    protected var statusMediaPlayer = InitStatusMediaPlayer.IDLE
         set(value) {
             field = value
             dataModel.statusMediaPlayer.value = value
@@ -43,7 +42,7 @@ open class BaseMainActivity : AppCompatActivity() {
 
     protected var mediaService: RadioPlayerService? = null
 
-    val handler = Handler()
+    private val handler = Handler()
     private var myMenu: Menu? = null
     private lateinit var btnPlay: MenuItem
     private lateinit var btnRefresh: MenuItem
@@ -76,7 +75,7 @@ open class BaseMainActivity : AppCompatActivity() {
         }
     }
 
-    private fun <T> Context.isServiceRunning(service: Class<T>) =
+    fun <T> Context.isServiceRunning(service: Class<T>) =
         (getSystemService(ACTIVITY_SERVICE) as ActivityManager)
             .getRunningServices(Integer.MAX_VALUE)
             .any { it.service.className == service.name }
@@ -86,7 +85,7 @@ open class BaseMainActivity : AppCompatActivity() {
             val binder = service as RadioPlayerService.LocalBinder
             mediaService = binder.getService()
             serviceBound = true
-            STATE_OF_SERVICE_A = mediaService?.getStatusMediaMplayer() ?: InitStatusMediaPlayer.IDLE
+            statusMediaPlayer = mediaService?.getStatusMediaMplayer() ?: InitStatusMediaPlayer.IDLE
             url = mediaService?.getPlayingURL() ?: ""
         }
 
@@ -106,7 +105,7 @@ open class BaseMainActivity : AppCompatActivity() {
 
     private val broadcastStateServiceListener = object : BroadcastReceiverForPlayerService() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            STATE_OF_SERVICE_A =
+            statusMediaPlayer =
                 intent?.getSerializableExtra(TAG_STATE_SERVICE) as InitStatusMediaPlayer
         }
     }
@@ -139,55 +138,9 @@ open class BaseMainActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_play && mediaService != null) {
-            Log.d("MyLog", "action_play click. isPlaying: ${dataModel.statusMediaPlayer.value}")
-            when (dataModel.statusMediaPlayer.value) {
-                InitStatusMediaPlayer.INIT_COMPLETE -> mediaService?.playMedia()
-                InitStatusMediaPlayer.PLAYING -> mediaService?.pauseMedia()
-                InitStatusMediaPlayer.IDLE -> playAudio(url)
-                InitStatusMediaPlayer.INITIALISATION -> {
-                    Toast.makeText(this, "Loading", Toast.LENGTH_SHORT).show()
-                }
-            }
-        } else if (item.itemId == R.id.action_refresh) {
-            playAudio(url)
-        } else if (item.itemId == R.id.action_low_quality) {
-            url = getString(R.string.veda_radio_stream_link_low)
-            playAudio(url)
-        } else if (item.itemId == R.id.action_medium_quality) {
-            url = getString(R.string.veda_radio_stream_link_medium)
-            playAudio(url)
-        } else if (item.itemId == R.id.action_high_quality) {
-            url = getString(R.string.veda_radio_stream_link_high)
-            playAudio(url)
-        } else if (item.itemId == android.R.id.home) {
-            if (drawer_menu.isDrawerOpen(GravityCompat.START)) drawer_menu.closeDrawer(GravityCompat.START)
-            else drawer_menu.openDrawer(GravityCompat.START)
-        }
-        return super.onOptionsItemSelected(item)
-    }
 
-    protected fun playAudio(urlStream: String) {
-        if (!serviceBound) {
-            Log.d("MyLog", "StartService")
-            val playerIntent = Intent(this, RadioPlayerService::class.java)
-            if (this.isServiceRunning(RadioPlayerService::class.java)) {
-                playerIntent.putExtra(TAG_FIRST_RUN, false)
-            } else {
-                playerIntent.putExtra(TAG_FIRST_RUN, true)
-                playerIntent.putExtra(TAG_NEW_AUDIO_URL, urlStream)
-            }
-            applicationContext.startForegroundService(playerIntent)
-            bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE)
-        } else {
-            Log.d("MyLog", "service is already bound")
-            val broadcastIntent: Intent = Intent(Broadcast_NEW_AUDIO)
-            broadcastIntent.putExtra(TAG_NEW_AUDIO_URL, urlStream)
-            broadcastIntent.putExtra(TAG_FIRST_RUN, false)
-            sendBroadcast(broadcastIntent)
-        }
-    }
+
+
 
     protected fun loadAndShowBanner() {
         main_banner.apply {
@@ -246,25 +199,25 @@ open class BaseMainActivity : AppCompatActivity() {
     }
 
 
-    fun alertDialogExit() {
+    private fun alertDialogExit() {
         val aDialog = AlertDialog.Builder(this)
         aDialog.apply {
             setMessage(R.string.alert_mes_exit)
                 .setCancelable(true)
                 .setPositiveButton(
-                    R.string.alert_mes_yes_all,
-                    DialogInterface.OnClickListener { _, _ ->
-                        mediaService?.stopForeground(true)
-                        mediaService?.stopSelf()
-                        super.onBackPressed()
-                    })
+                    R.string.alert_mes_yes_all
+                ) { _, _ ->
+                    mediaService?.stopForeground(true)
+                    mediaService?.stopSelf()
+                    super.onBackPressed()
+                }
         }
         aDialog.setNegativeButton(
-            R.string.alert_mes_yes,
-            DialogInterface.OnClickListener { dialog, id -> super.onBackPressed() })
+            R.string.alert_mes_yes
+        ) { _, _ -> super.onBackPressed() }
         aDialog.setNeutralButton(
-            R.string.alert_mes_no,
-            DialogInterface.OnClickListener { dialog, id -> dialog.cancel() })
+            R.string.alert_mes_no
+        ) { dialog, _ -> dialog.cancel() }
         val alert = aDialog.create()
         alert.show()
 
@@ -272,18 +225,18 @@ open class BaseMainActivity : AppCompatActivity() {
 
 
     protected var fragmentIsConnected = false
-    private var double_back_press = false
+    private var doubleBackPress = false
     override fun onBackPressed() {
         if (fragmentIsConnected) {
             super.onBackPressed()
             return
         }
 
-        if (double_back_press) {
+        if (doubleBackPress) {
             super.onBackPressed()
         }
-        double_back_press = true
-        handler.postDelayed({ double_back_press = false }, 2000)
+        doubleBackPress = true
+        handler.postDelayed({ doubleBackPress = false }, 2000)
         alertDialogExit()
     }
 

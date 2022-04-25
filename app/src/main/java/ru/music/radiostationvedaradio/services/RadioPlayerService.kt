@@ -10,6 +10,7 @@ import android.graphics.Color
 import android.media.*
 import android.media.session.MediaSessionManager
 import android.os.*
+import android.os.PowerManager.WakeLock
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
@@ -31,6 +32,7 @@ import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.retrofit.metaDataOfVedaradio.StreamVedaradioJSONClass
 import ru.music.radiostationvedaradio.retrofit.metaDataOfVedaradio.VedaradioRetrofitService
 import ru.music.radiostationvedaradio.view.activities.MainActivity
+
 
 const val ACTION_PLAY = "ru.music.vedaradio.ACTION_PLAY"
 const val ACTION_PAUSE = "ru.music.vedaradio.ACTION_PAUSE"
@@ -124,6 +126,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
             override fun onStop() {
                 super.onStop()
+                Log.d("MyLog", "onStopCallBack")
                 stopMedia()
                 removeNotification()
                 stopForeground(true)
@@ -413,7 +416,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         if (intent != null) {
             handleIncomingAction(intent)
         }
-        return super.onStartCommand(intent, flags, startId)
+        return START_STICKY //super.onStartCommand(intent, flags, startId)
     }
 
 //----------------------------MediaPlayerControl-------------------------------------------
@@ -497,13 +500,26 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE)
     }
 
+
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        Log.d("MyLog", "OnTaskRemove : ${rootIntent?.action}")
+        super.onTaskRemoved(rootIntent)
+    }
+
     override fun onCreate() {
         super.onCreate()
         callStateListener()
         registerPlayNewAudio()
+        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+        val wakeLock: WakeLock = powerManager.newWakeLock(
+            PowerManager.PARTIAL_WAKE_LOCK,
+            "RadioVEDA::MyWakelockTag"
+        )
+        wakeLock.acquire(30*60*1000L /*30 minutes*/)
     }
 
     override fun onDestroy() {
+        Log.d("MyLog","onDestroyService")
         removeNotification()
         STATE_OF_SERVICE = InitStatusMediaPlayer.IDLE
         handler = null
