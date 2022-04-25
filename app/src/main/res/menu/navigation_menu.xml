@@ -8,17 +8,15 @@
     <item android:title="Ведические знания">
         <menu>
             <item
-                android:id="@+id/item1"
+                android:id="@+id/nav_item1"
                 android:icon="@drawable/googleg_disabled_color_18"
                 android:title="Item 1" />
             <item
-                android:id="@+id/item2"
-                android:icon="@drawable/googleg_disabled_color_18"
-                android:title="Item 12" />
+                android:id="@+id/nav_item2"
+                android:title="Item 2" />
             <item
-                android:id="@+id/item3"
-                android:icon="@drawable/googleg_disabled_color_18"
-                android:title="Item 13" />
+                android:id="@+id/nav_item3"
+                android:title="Item 3" />
         </menu>
     </item>
 

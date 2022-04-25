@@ -1,11 +1,17 @@
 package ru.music.radiostationvedaradio.view.activities
 
+import android.content.DialogInterface
+import android.content.Intent
 import android.media.AudioManager
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AlertDialog
+import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.view.activities.BaseMainActivity
+import ru.music.radiostationvedaradio.view.fragments.WebViewFragment
 
 class MainActivity : BaseMainActivity() {
 
@@ -19,14 +25,12 @@ class MainActivity : BaseMainActivity() {
         playAudio(url)
         loadAndShowBanner()
 
-        draw_navView.setNavigationItemSelectedListener {
-            when(it.itemId){
-                R.id.item1 -> {
-
-                }
-            }
-            return@setNavigationItemSelectedListener true
+        dataModel.statusFragmentConnected.observe(this){
+            fragmentIsConnected = it
         }
+
+
+
     }
 
     override fun onPause() {
@@ -36,7 +40,7 @@ class MainActivity : BaseMainActivity() {
 
     override fun onStart() {
         super.onStart()
-        setUpOnItemClickDrawerMenu()
+        setUpDrawerNavViewListener()
         Log.d("MyLog", "MainActivity onStart")
     }
 
@@ -53,10 +57,6 @@ class MainActivity : BaseMainActivity() {
         }
         super.onDestroy()
     }
-
-
-
-
 
 
 

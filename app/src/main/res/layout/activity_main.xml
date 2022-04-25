@@ -15,33 +15,32 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/main_banner"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            android:orientation="vertical">
+
 
             <FrameLayout
+                tools:background="@color/black"
                 android:id="@+id/container_frame_for_website"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"/>
 
         </LinearLayout>
 
-
         <com.yandex.mobile.ads.banner.BannerAdView
+            android:id="@+id/main_banner"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            tools:background="@color/black"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            tools:background="@color/black"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/main_banner"/>
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/draw_navView"
@@ -49,6 +48,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         app:menu="@menu/navigation_menu"
-        app:headerLayout="@layout/header_nav_menu"
-        />
+        app:headerLayout="@layout/header_nav_menu" />
+
 </androidx.drawerlayout.widget.DrawerLayout>

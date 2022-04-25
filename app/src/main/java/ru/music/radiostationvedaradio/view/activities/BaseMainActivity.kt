@@ -3,6 +3,7 @@ package ru.music.radiostationvedaradio.view.activities
 import android.app.ActivityManager
 import android.content.*
 import android.net.Uri
+import android.os.Handler
 import android.os.IBinder
 import android.util.Log
 import android.view.Menu
@@ -20,9 +21,11 @@ import com.yandex.mobile.ads.common.ImpressionData
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.services.*
+import ru.music.radiostationvedaradio.view.fragments.WebViewFragment
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 open class BaseMainActivity : AppCompatActivity() {
+
 
     protected val dataModel: ViewModelMainActivity by viewModels()
     protected var STATE_OF_SERVICE_A = InitStatusMediaPlayer.IDLE
@@ -39,9 +42,12 @@ open class BaseMainActivity : AppCompatActivity() {
 
     protected var mediaService: RadioPlayerService? = null
 
+    val handler = Handler()
     private var myMenu: Menu? = null
     private lateinit var btnPlay: MenuItem
     private lateinit var btnRefresh: MenuItem
+
+    val webUrl = "http://vedaradio.fm"
 
     protected var url: String = ""
         set(value) {
@@ -215,42 +221,69 @@ open class BaseMainActivity : AppCompatActivity() {
         main_banner.loadAd(adRequest)
     }
 
-    protected fun setUpOnItemClickDrawerMenu() {
+
+    protected fun setUpDrawerNavViewListener() {
         draw_navView.setNavigationItemSelectedListener {
+            Log.d("MyLog", "${it.itemId}")
             when (it.itemId) {
                 R.id.nav_item_exit -> {
-                    val aDialog = AlertDialog.Builder(this)
-                    aDialog.apply {
-                        setMessage(R.string.alert_mes_exit)
-                            .setCancelable(true)
-                            .setPositiveButton(
-                                R.string.alert_mes_yes_all,
-                                DialogInterface.OnClickListener { _, _ ->
-                                    mediaService?.stopForeground(true)
-                                    mediaService?.stopSelf()
-                                    super.onBackPressed()
-                                })
-                    }
-                        aDialog.setNegativeButton(
-                            R.string.alert_mes_yes,
-                            DialogInterface.OnClickListener { dialog, id -> super.onBackPressed() })
-
-                    aDialog.setNeutralButton(
-                        R.string.alert_mes_no,
-                        DialogInterface.OnClickListener { dialog, id -> dialog.cancel() })
-
-                    val alert = aDialog.create()
-                    alert.show()
+                    alertDialogExit()
                 }
                 R.id.nav_item_rate_app -> {
                     val intent =
                         Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.link_on_this_app)))
                     startActivity(intent)
                 }
-
+                R.id.nav_item1 -> {
+                    Log.d("MyLog", "nav click: ${it.itemId}")
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.container_frame_for_website, WebViewFragment.newInstance(webUrl)).commit()
+                }
             }
             return@setNavigationItemSelectedListener true
         }
+    }
+
+
+    fun alertDialogExit() {
+        val aDialog = AlertDialog.Builder(this)
+        aDialog.apply {
+            setMessage(R.string.alert_mes_exit)
+                .setCancelable(true)
+                .setPositiveButton(
+                    R.string.alert_mes_yes_all,
+                    DialogInterface.OnClickListener { _, _ ->
+                        mediaService?.stopForeground(true)
+                        mediaService?.stopSelf()
+                        super.onBackPressed()
+                    })
+        }
+        aDialog.setNegativeButton(
+            R.string.alert_mes_yes,
+            DialogInterface.OnClickListener { dialog, id -> super.onBackPressed() })
+        aDialog.setNeutralButton(
+            R.string.alert_mes_no,
+            DialogInterface.OnClickListener { dialog, id -> dialog.cancel() })
+        val alert = aDialog.create()
+        alert.show()
+
+    }
+
+
+    protected var fragmentIsConnected = false
+    private var double_back_press = false
+    override fun onBackPressed() {
+        if (fragmentIsConnected) {
+            super.onBackPressed()
+            return
+        }
+
+        if (double_back_press) {
+            super.onBackPressed()
+        }
+        double_back_press = true
+        handler.postDelayed({ double_back_press = false }, 2000)
+        alertDialogExit()
     }
 
 
