@@ -13,6 +13,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import com.google.android.material.navigation.NavigationView
 import com.yandex.mobile.ads.banner.AdSize
 import com.yandex.mobile.ads.banner.BannerAdEventListener
 import com.yandex.mobile.ads.common.AdRequest
@@ -47,8 +48,7 @@ open class BaseMainActivity : AppCompatActivity() {
     private lateinit var btnPlay: MenuItem
     private lateinit var btnRefresh: MenuItem
 
-    val webUrl = "http://vedaradio.fm"
-
+    protected var webUrl = ""
     protected var url: String = ""
         set(value) {
             field = value
@@ -222,8 +222,8 @@ open class BaseMainActivity : AppCompatActivity() {
     }
 
 
-    protected fun setUpDrawerNavViewListener() {
-        draw_navView.setNavigationItemSelectedListener {
+    protected fun NavigationView.setUpDrawerNavViewListener() {
+        this.setNavigationItemSelectedListener {
             Log.d("MyLog", "${it.itemId}")
             when (it.itemId) {
                 R.id.nav_item_exit -> {
@@ -238,6 +238,7 @@ open class BaseMainActivity : AppCompatActivity() {
                     Log.d("MyLog", "nav click: ${it.itemId}")
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.container_frame_for_website, WebViewFragment.newInstance(webUrl)).commit()
+                    drawer_menu.closeDrawer(GravityCompat.START)
                 }
             }
             return@setNavigationItemSelectedListener true

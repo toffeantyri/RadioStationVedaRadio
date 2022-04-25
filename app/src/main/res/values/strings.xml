@@ -6,11 +6,14 @@
     <string name="veda_radio_stream_link_medium">https://stream.vedaradio.fm/medium?</string>
     <string name="veda_radio_stream_link_low">https://stream.vedaradio.fm/low?</string>
 
+    <string name="veda_radio_site">http://vedaradio.fm</string>
+
     <string name="text_low_quality">Низкое качество(48kb/s)</string>
     <string name="text_medium_quality">Среднее качество(96/kb/s)</string>
     <string name="text_high_quality">Высокое качество(128ks/s)</string>
 
     <string name="error_loading">Переподключение…</string>
+    <string name="error_loading_error">Переподключение…</string>
 
     <string name="nav_option">Дополнительно</string>
     <string name="item_exit">Выход</string>

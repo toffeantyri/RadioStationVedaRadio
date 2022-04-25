@@ -21,6 +21,7 @@ class MainActivity : BaseMainActivity() {
         setContentView(R.layout.activity_main)
         setUpActionBar()
         url = getString(R.string.veda_radio_stream_link_low) // TODO Качество по умолчанию на релиз - MEDIUM
+        webUrl = getString(R.string.veda_radio_site)
         registerBroadcastStateService()
         playAudio(url)
         loadAndShowBanner()
@@ -28,8 +29,6 @@ class MainActivity : BaseMainActivity() {
         dataModel.statusFragmentConnected.observe(this){
             fragmentIsConnected = it
         }
-
-
 
     }
 
@@ -40,15 +39,13 @@ class MainActivity : BaseMainActivity() {
 
     override fun onStart() {
         super.onStart()
-        setUpDrawerNavViewListener()
+        draw_navView.setUpDrawerNavViewListener()
         Log.d("MyLog", "MainActivity onStart")
     }
 
     override fun onResume() {
         super.onResume()
         volumeControlStream = AudioManager.STREAM_MUSIC
-
-
     }
 
     override fun onDestroy() {

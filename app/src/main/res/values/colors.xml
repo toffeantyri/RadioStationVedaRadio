@@ -10,6 +10,7 @@
     <color name="green_500">#36852F</color>
     <color name="green_700">#097A17</color>
 
+    <color name="teal_900">#007080</color>
     <color name="teal_700">#00E2FF</color>
     <color name="teal_200">#91F3FF</color>
 </resources>

@@ -5,7 +5,19 @@
     android:layout_height="match_parent"
     tools:context=".view.fragments.WebViewFragment">
 
+   <ProgressBar
+       android:visibility="visible"
+       android:id="@+id/progress_cicle_webpage"
+       android:layout_width="100dp"
+       android:layout_height="100dp"
+       android:layout_gravity="center"
+       android:indeterminateTint="@color/green_500"
+       android:alpha="0.6"
+       android:indeterminate="true"
+       android:indeterminateBehavior="cycle"/>
+
    <WebView
+       android:visibility="gone"
        android:id="@+id/web_view1"
        android:layout_width="match_parent"
        android:layout_height="match_parent"
