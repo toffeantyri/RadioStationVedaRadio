@@ -147,6 +147,7 @@ open class BaseMainActivity : AppCompatActivity() {
             setAdUnitId(getString(R.string.yandex_banner_desc_id_test))
             setAdSize(AdSize.BANNER_320x50)
         }
+
         val adRequest = AdRequest.Builder().build()
 
         main_banner.setBannerAdEventListener(object : BannerAdEventListener {

@@ -48,6 +48,7 @@ class MainActivity : BaseMainActivity() {
     }
 
     override fun onDestroy() {
+        main_banner.destroy()
         if (serviceBound) {
             unbindService(serviceConnection)
         }
