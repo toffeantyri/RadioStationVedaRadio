@@ -10,10 +10,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebResourceError
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
@@ -23,6 +20,7 @@ import kotlinx.android.synthetic.main.fragment_web_view.view.*
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
+const val TAG_WEB_URL = "web_url"
 
 class WebViewFragment : Fragment() {
 
@@ -34,7 +32,7 @@ class WebViewFragment : Fragment() {
         @JvmStatic
         fun newInstance(urlSite: String) = WebViewFragment().apply {
             val args = Bundle()
-            args.putString("web_url", urlSite)
+            args.putString(TAG_WEB_URL, urlSite)
             arguments = args
         }
     }
@@ -49,11 +47,15 @@ class WebViewFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view0 = inflater.inflate(R.layout.fragment_web_view, container, false)
-        webUrl = arguments?.getString("web_url") ?: ""
+        webUrl = arguments?.getString(TAG_WEB_URL) ?: ""
         view0.apply {
-            web_view1.webViewClient = MyWebViewClient(this, context)
-            web_view1.settings.javaScriptEnabled = true
-            web_view1.loadUrl(webUrl)
+            web_view1.apply {
+                webViewClient = WebClientForFragment(this)
+                webChromeClient = WebChromeClientForFragment(this)
+                settings.javaScriptEnabled = true
+                loadUrl(webUrl)
+            }
+
         }
 
 
@@ -81,23 +83,4 @@ class WebViewFragment : Fragment() {
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner,onBackPressedCallback)
     }
 
-
-    class MyWebViewClient(private val rootView: View, context : Context) : WebViewClient(){
-        private val context0 = context
-        override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
-            super.onReceivedError(view, request, error)
-                Log.d("MyLog", "error loading webPage ${error?.description}")
-            //Toast.makeText(context0, error?.description , Toast.LENGTH_SHORT).show()
-        }
-
-        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-            super.onPageStarted(view, url, favicon)
-            view?.visibility = View.VISIBLE
-            rootView.progress_cicle_webpage.visibility = View.GONE
-        }
-
-        override fun onPageFinished(view: WebView?, url: String?) {
-            super.onPageFinished(view, url)
-        }
-    }
 }
