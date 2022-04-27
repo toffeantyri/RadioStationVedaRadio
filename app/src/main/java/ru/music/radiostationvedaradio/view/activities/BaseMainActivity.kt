@@ -311,16 +311,16 @@ open class BaseMainActivity : AppCompatActivity() {
         listDataHeader.add(item1)
 
         val item2 = ExpandedMenuModel()
-        item1.apply {
+        item2.apply {
             setIconName("heading2")
-            item1.setIconImage(R.drawable.ic_baseline_radio_24)
+            item2.setIconImage(R.drawable.ic_baseline_radio_24)
         }
         listDataHeader.add(item2)
 
         val item3 = ExpandedMenuModel()
-        item1.apply {
+        item3.apply {
             setIconName("heading3")
-            item1.setIconImage(R.drawable.ic_baseline_radio_24)
+            item3.setIconImage(R.drawable.ic_baseline_radio_24)
         }
         listDataHeader.add(item3)
 

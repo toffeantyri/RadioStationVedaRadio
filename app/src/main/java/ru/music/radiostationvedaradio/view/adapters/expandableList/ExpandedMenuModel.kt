@@ -12,8 +12,8 @@ class ExpandedMenuModel {
 
     fun getIconImage() = iconImage
 
-    fun setIconImage(recourseId: Int){
-        this.iconImage = recourseId
+    fun setIconImage(resourceId: Int){
+        this.iconImage = resourceId
     }
 
 }

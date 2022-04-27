@@ -50,13 +50,16 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         app:headerLayout="@layout/header_nav_menu"
-        app:menu="@menu/navigation_menu">
+        android:fitsSystemWindows="true"
+        >
 
         <ExpandableListView
-            android:background="@color/teal_200"
+            android:layout_marginTop="200dp"
             android:id="@+id/exp_list_nav_menu"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            />
+
 
     </com.google.android.material.navigation.NavigationView>
 
