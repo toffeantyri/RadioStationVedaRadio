@@ -12,6 +12,7 @@
 
 
         <TextView
+            android:layout_weight="1"
             android:paddingStart="40dp"
             android:paddingEnd="10dp"
             android:textSize="18sp"
@@ -25,6 +26,7 @@
             android:gravity="center_vertical"/>
 
         <ImageView
+            android:layout_weight="1"
             android:layout_marginStart="10dp"
             android:layout_gravity="center_vertical"
             tools:src="@drawable/ic_baseline_radio_24"

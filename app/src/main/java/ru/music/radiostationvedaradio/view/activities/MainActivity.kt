@@ -35,6 +35,7 @@ class MainActivity : BaseMainActivity() {
         mMenuAdapter = ExpandableListAdapterForNavView(this, listDataHeader, listDataChild, expandableList)
         expandableList.setAdapter(mMenuAdapter)
 
+
     }
 
     override fun onPause() {
