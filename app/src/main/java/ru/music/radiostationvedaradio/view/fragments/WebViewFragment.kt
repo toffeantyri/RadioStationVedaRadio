@@ -39,7 +39,6 @@ class WebViewFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
     override fun onCreateView(
@@ -48,15 +47,7 @@ class WebViewFragment : Fragment() {
     ): View? {
         val view0 = inflater.inflate(R.layout.fragment_web_view, container, false)
         webUrl = arguments?.getString(TAG_WEB_URL) ?: ""
-        view0.apply {
-            web_view1.apply {
-                webViewClient = WebClientForFragment(this)
-                webChromeClient = WebChromeClientForFragment(this)
-                settings.javaScriptEnabled = true
-                loadUrl(webUrl)
-            }
 
-        }
 
 
         return view0
@@ -67,7 +58,25 @@ class WebViewFragment : Fragment() {
         onBackPressed(view.web_view1)
         dataModel.statusFragmentConnected.value = true
 
+        view.apply {
+            progress_cicle_webpage.visibility = View.VISIBLE
+            web_view1.apply {
+                webViewClient = WebClientForFragment(view)
+                webChromeClient = WebChromeClientForFragment(view)
+                settings.javaScriptEnabled = true
+                settings.apply {
+                    setSupportZoom(true)
+                    builtInZoomControls = true
+                }
+                loadUrl(webUrl)
+            }
+        }
+
     }
+
+
+
+
 
     private fun onBackPressed(webView : WebView) {
         val onBackPressedCallback = object : OnBackPressedCallback(true) {

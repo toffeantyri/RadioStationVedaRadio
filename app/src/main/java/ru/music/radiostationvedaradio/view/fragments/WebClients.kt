@@ -23,4 +23,8 @@ class WebClientForFragment(private val rootView: View) : WebViewClient() {
 class WebChromeClientForFragment(private val rootView: View) : WebChromeClient() {
 
 
+    override fun onReceivedIcon(view: WebView?, icon: Bitmap?) {
+        super.onReceivedIcon(view, icon)
+
+    }
 }
