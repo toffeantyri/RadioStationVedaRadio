@@ -1,16 +1,12 @@
 package ru.music.radiostationvedaradio.view.activities
 
-import android.content.Context
-import android.content.Intent
 import android.media.AudioManager
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
-import android.widget.Toast
-import androidx.core.view.GravityCompat
+import android.widget.ExpandableListAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.services.*
+import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandableListAdapterForNavView
 
 class MainActivity : BaseMainActivity() {
 
@@ -24,10 +20,20 @@ class MainActivity : BaseMainActivity() {
         registerBroadcastStateService()
         playAudio(url)
         loadAndShowBanner()
-
         dataModel.statusFragmentConnected.observe(this){
             fragmentIsConnected = it
         }
+
+        myDrawerLayout = drawer_menu
+        expandableList = exp_list_nav_menu
+        navigationView = draw_navView
+        if(navigationView != null){
+            setupDrawerContent(navigationView)
+        }
+        prepareListData()
+
+        mMenuAdapter = ExpandableListAdapterForNavView(this, listDataHeader, listDataChild, expandableList)
+        expandableList.setAdapter(mMenuAdapter)
 
     }
 

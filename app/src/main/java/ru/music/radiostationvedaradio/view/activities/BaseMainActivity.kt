@@ -1,5 +1,6 @@
 package ru.music.radiostationvedaradio.view.activities
 
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.*
 import android.net.Uri
@@ -8,11 +9,14 @@ import android.os.IBinder
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ExpandableListView
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.yandex.mobile.ads.banner.AdSize
 import com.yandex.mobile.ads.banner.BannerAdEventListener
@@ -22,11 +26,21 @@ import com.yandex.mobile.ads.common.ImpressionData
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.services.*
+import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandableListAdapterForNavView
+import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandedMenuModel
 import ru.music.radiostationvedaradio.view.fragments.WebViewFragment
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
+@SuppressLint("Registered")
 open class BaseMainActivity : AppCompatActivity() {
 
+
+    protected lateinit var myDrawerLayout: DrawerLayout
+    protected lateinit var mMenuAdapter : ExpandableListAdapterForNavView
+    protected lateinit var expandableList : ExpandableListView
+    protected lateinit var listDataHeader: ArrayList<ExpandedMenuModel>
+    protected lateinit var listDataChild: HashMap<ExpandedMenuModel, List<String>>
+    protected lateinit var navigationView: NavigationView
 
     protected val dataModel: ViewModelMainActivity by viewModels()
     protected var statusMediaPlayer = InitStatusMediaPlayer.IDLE
@@ -139,10 +153,6 @@ open class BaseMainActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-
-
-
-
     protected fun loadAndShowBanner() {
         main_banner.apply {
             setAdUnitId(getString(R.string.yandex_banner_desc_id_test))
@@ -176,7 +186,6 @@ open class BaseMainActivity : AppCompatActivity() {
         main_banner.loadAd(adRequest)
     }
 
-
     protected fun NavigationView.setUpDrawerNavViewListener() {
         this.setNavigationItemSelectedListener {
             Log.d("MyLog", "${it.itemId}")
@@ -199,7 +208,6 @@ open class BaseMainActivity : AppCompatActivity() {
             return@setNavigationItemSelectedListener true
         }
     }
-
 
     private fun alertDialogExit() {
         val aDialog = AlertDialog.Builder(this)
@@ -224,7 +232,6 @@ open class BaseMainActivity : AppCompatActivity() {
         alert.show()
 
     }
-
 
     protected var fragmentIsConnected = false
     private var doubleBackPress = false
@@ -290,6 +297,53 @@ open class BaseMainActivity : AppCompatActivity() {
             else drawer_menu.openDrawer(GravityCompat.START)
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    protected fun prepareListData(){
+        listDataHeader = arrayListOf()
+        listDataChild = HashMap<ExpandedMenuModel, List<String>>()
+
+        val item1 = ExpandedMenuModel()
+        item1.apply {
+            setIconName("heading1")
+            item1.setIconImage(R.drawable.ic_baseline_radio_24)
+        }
+        listDataHeader.add(item1)
+
+        val item2 = ExpandedMenuModel()
+        item1.apply {
+            setIconName("heading2")
+            item1.setIconImage(R.drawable.ic_baseline_radio_24)
+        }
+        listDataHeader.add(item2)
+
+        val item3 = ExpandedMenuModel()
+        item1.apply {
+            setIconName("heading3")
+            item1.setIconImage(R.drawable.ic_baseline_radio_24)
+        }
+        listDataHeader.add(item3)
+
+        val heading1 = arrayListOf<String>()
+            heading1.add("SubMenu item 1")
+
+        val heading2 = arrayListOf<String>()
+        heading2.add("Submenu item 2")
+        heading2.add("Submenu item 2")
+        heading2.add("Submenu item 2")
+
+        listDataChild.put(listDataHeader[0], heading1)
+        listDataChild.put(listDataHeader[1], heading2)
+
+
+    }
+
+    protected fun setupDrawerContent(navigationView: NavigationView){
+        navigationView.setNavigationItemSelectedListener { item ->
+            item.isChecked = true
+            myDrawerLayout.closeDrawers()
+            true
+        }
     }
 
 
