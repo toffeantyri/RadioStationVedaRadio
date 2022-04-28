@@ -3,20 +3,22 @@ package ru.music.radiostationvedaradio.view.activities
 import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.*
-import android.net.Uri
 import android.os.Handler
 import android.os.IBinder
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ExpandableListView
-import android.widget.LinearLayout
+import android.widget.ListAdapter
+import android.widget.ListView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.yandex.mobile.ads.banner.AdSize
 import com.yandex.mobile.ads.banner.BannerAdEventListener
@@ -28,7 +30,7 @@ import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.services.*
 import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandableListAdapterForNavView
 import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandedMenuModel
-import ru.music.radiostationvedaradio.view.fragments.WebViewFragment
+import ru.music.radiostationvedaradio.view.adapters.listview.ListViewNavMenuAdapter
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 @SuppressLint("Registered")
@@ -40,7 +42,12 @@ open class BaseMainActivity : AppCompatActivity() {
     protected lateinit var expandableList : ExpandableListView
     protected lateinit var listDataHeader: ArrayList<ExpandedMenuModel>
     protected lateinit var listDataChild: HashMap<ExpandedMenuModel, List<String>>
+
     protected lateinit var navigationView: NavigationView
+
+    protected lateinit var listView : RecyclerView
+    protected var adapterListView  = ListViewNavMenuAdapter()
+
 
     protected val dataModel: ViewModelMainActivity by viewModels()
     protected var statusMediaPlayer = InitStatusMediaPlayer.IDLE
@@ -186,7 +193,7 @@ open class BaseMainActivity : AppCompatActivity() {
         main_banner.loadAd(adRequest)
     }
 
-    protected fun NavigationView.setUpDrawerNavViewListener() {
+  /*  protected fun NavigationView.setUpDrawerNavViewListener() {
         this.setNavigationItemSelectedListener {
             Log.d("MyLog", "${it.itemId}")
             when (it.itemId) {
@@ -207,7 +214,7 @@ open class BaseMainActivity : AppCompatActivity() {
             }
             return@setNavigationItemSelectedListener true
         }
-    }
+    }*/
 
     private fun alertDialogExit() {
         val aDialog = AlertDialog.Builder(this)
@@ -299,7 +306,20 @@ open class BaseMainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    protected fun prepareListData(){
+    protected fun setupExpandableListFromNavView(){
+        myDrawerLayout = drawer_menu
+        expandableList = exp_list_nav_menu
+        navigationView = draw_navView
+        if(navigationView != null){
+            setupDrawerContent(navigationView)
+        }
+        prepareExpListData()
+
+        mMenuAdapter = ExpandableListAdapterForNavView(this, listDataHeader, listDataChild, expandableList)
+        expandableList.setAdapter(mMenuAdapter)
+    }
+
+    private fun prepareExpListData(){
         listDataHeader = arrayListOf()
         listDataChild = HashMap<ExpandedMenuModel, List<String>>()
 
@@ -338,13 +358,29 @@ open class BaseMainActivity : AppCompatActivity() {
 
     }
 
-    protected fun setupDrawerContent(navigationView: NavigationView){
+    private fun setupDrawerContent(navigationView: NavigationView){
         navigationView.setNavigationItemSelectedListener { item ->
             item.isChecked = true
             myDrawerLayout.closeDrawers()
             true
         }
     }
+
+
+    protected fun setupListViewFromNavView(){
+        adapterListView = ListViewNavMenuAdapter()
+        listView = listview_nav_menu
+        listView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        listView.setHasFixedSize(true)
+        listView.adapter = adapterListView
+
+    }
+
+    private fun prepareListViewData(){
+
+
+    }
+
 
 
 }

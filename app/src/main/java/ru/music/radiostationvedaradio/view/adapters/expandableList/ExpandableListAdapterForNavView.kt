@@ -2,7 +2,6 @@ package ru.music.radiostationvedaradio.view.adapters.expandableList
 
 import android.content.Context
 import android.graphics.Typeface
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -66,7 +65,7 @@ class ExpandableListAdapterForNavView() : BaseExpandableListAdapter() {
         if (convertView0 == null) {
             val inflater: LayoutInflater =
                 this.context0.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            convertView0 = inflater.inflate(R.layout.list_item_header, null)
+            convertView0 = inflater.inflate(R.layout.ex_list_item_header, null)
         }
         val headerText : TextView? = convertView0?.findViewById<TextView>(R.id.tv_listitemheader)
         val headerIcon : ImageView? = convertView0?.findViewById<ImageView>(R.id.iv_listitemheader)
@@ -89,7 +88,7 @@ class ExpandableListAdapterForNavView() : BaseExpandableListAdapter() {
 
         if(convertView0 == null){
             val inflater = this.context0.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            convertView0 = inflater.inflate(R.layout.list_item_submenu, null)
+            convertView0 = inflater.inflate(R.layout.ex_list_item_submenu, null)
         }
 
         val textChild : TextView? = convertView0?.findViewById(R.id.text_submenu)

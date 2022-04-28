@@ -20,22 +20,13 @@ class MainActivity : BaseMainActivity() {
         registerBroadcastStateService()
         playAudio(url)
         loadAndShowBanner()
+
+        setupExpandableListFromNavView()
+        setupListViewFromNavView()
+
         dataModel.statusFragmentConnected.observe(this){
             fragmentIsConnected = it
         }
-
-        myDrawerLayout = drawer_menu
-        expandableList = exp_list_nav_menu
-        navigationView = draw_navView
-        if(navigationView != null){
-            setupDrawerContent(navigationView)
-        }
-        prepareListData()
-
-        mMenuAdapter = ExpandableListAdapterForNavView(this, listDataHeader, listDataChild, expandableList)
-        expandableList.setAdapter(mMenuAdapter)
-
-
     }
 
     override fun onPause() {
@@ -45,7 +36,6 @@ class MainActivity : BaseMainActivity() {
 
     override fun onStart() {
         super.onStart()
-        draw_navView.setUpDrawerNavViewListener()
         Log.d("MyLog", "MainActivity onStart")
     }
 
