@@ -9,8 +9,8 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
-    <permission android:name="android.permission.MEDIA_CONTENT_CONTROL"/>
-    <permission android:name="android.permission.POST_NOTIFICATION"/>
+    <permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
+    <permission android:name="android.permission.POST_NOTIFICATION" />
 
     <application
         android:allowBackup="true"
@@ -20,9 +20,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RadioStationVedaRadio"
-        tools:ignore="GoogleAppIndexingWarning"
         android:usesCleartextTraffic="true"
-        >
+        tools:ignore="GoogleAppIndexingWarning">
 
         <receiver
             android:name=".services.BroadcastReceiverForPlayerService"
@@ -30,12 +29,21 @@
             android:exported="false" />
 
         <service
-            android:foregroundServiceType="mediaPlayback"
             android:name=".services.RadioPlayerService"
             android:enabled="true"
             android:exported="false"
-            tools:ignore="ExportedService"
-            android:stopWithTask="false"/>
+            android:foregroundServiceType="mediaPlayback"
+            android:stopWithTask="false"
+            tools:ignore="ExportedService" />
+
+
+        <activity android:name=".SplashScreenActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".view.activities.MainActivity"
@@ -45,7 +53,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
     </application>

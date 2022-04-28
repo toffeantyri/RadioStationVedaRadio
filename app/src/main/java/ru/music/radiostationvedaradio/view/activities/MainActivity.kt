@@ -5,26 +5,40 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.ExpandableListAdapter
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandableListAdapterForNavView
+import kotlin.coroutines.CoroutineContext
 
 class MainActivity : BaseMainActivity() {
 
+    private var job: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setUpActionBar()
+
         url = getString(R.string.veda_radio_stream_link_low) // TODO Качество по умолчанию на релиз - MEDIUM
         webUrl = getString(R.string.veda_radio_site)
-        registerBroadcastStateService()
+
+        job = CoroutineScope(Dispatchers.IO).launch {
+            Log.d("MyLog", "Coroutine job : $job")
+            initExpandableListInNavView()
+            initListViewInNavView()
+            setUpActionBar()
+            registerBroadcastStateService()
+            loadAndShowBanner()
+        }
+        job?.invokeOnCompletion {
+            Log.d("MyLog", "invokeOnComplition Job")
+        }
+
+
         playAudio(url)
-        loadAndShowBanner()
-
-        initExpandableListInNavView()
-        initListViewInNavView()
-
-        dataModel.statusFragmentConnected.observe(this){
+        dataModel.statusFragmentConnected.observe(this) {
             fragmentIsConnected = it
         }
     }
@@ -36,6 +50,8 @@ class MainActivity : BaseMainActivity() {
 
     override fun onStart() {
         super.onStart()
+
+
         Log.d("MyLog", "MainActivity onStart")
     }
 
@@ -51,10 +67,6 @@ class MainActivity : BaseMainActivity() {
         }
         super.onDestroy()
     }
-
-
-
-
 
 
 }
