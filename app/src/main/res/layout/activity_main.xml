@@ -61,14 +61,18 @@
                 layout="@layout/header_nav_menu" />
 
             <ExpandableListView
+                android:divider="@color/green_200"
                 android:id="@+id/exp_list_nav_menu"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                />
 
             <ListView
+                android:divider="@color/green_200"
                 android:id="@+id/listview_nav_menu"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                tools:listitem="@layout/listview_item_navmenu"
                 />
         </LinearLayout>
     </com.google.android.material.navigation.NavigationView>

@@ -246,8 +246,7 @@ open class BaseMainActivity : AppCompatActivity() {
     }
 
 
-
-    //---------------------initNavigationView--------------------------------
+    //---------------------initNavigationView start--------------------------------
     protected fun initExpandableListInNavView() {
         myDrawerLayout = drawer_menu
         expandableList = exp_list_nav_menu
@@ -265,39 +264,20 @@ open class BaseMainActivity : AppCompatActivity() {
         listDataHeader = arrayListOf()
         listDataChild = HashMap<ExpandedMenuModel, List<String>>()
 
-        val item1 = ExpandedMenuModel()
-        item1.apply {
-            setIconName("heading1")
-            item1.setIconImage(R.drawable.ic_baseline_radio_24)
+        //header point
+        val headerItem = ExpandedMenuModel().apply {
+            setIconName(getString(R.string.link_header_name))
+            setIconImage(R.drawable.ic_baseline_radio_24)
         }
-        listDataHeader.add(item1)
+        listDataHeader.add(headerItem)
 
-        val item2 = ExpandedMenuModel()
-        item2.apply {
-            setIconName("heading2")
-            item2.setIconImage(R.drawable.ic_baseline_radio_24)
+        //subitem point
+        val subItem = arrayListOf<String>()
+        subItem.apply {
+            add(getString(R.string.veda_radio_site))
         }
-        listDataHeader.add(item2)
 
-        val item3 = ExpandedMenuModel()
-        item3.apply {
-            setIconName("heading3")
-            item3.setIconImage(R.drawable.ic_baseline_radio_24)
-        }
-        listDataHeader.add(item3)
-
-        val heading1 = arrayListOf<String>()
-        heading1.add("SubMenu item 1")
-
-        val heading2 = arrayListOf<String>()
-        heading2.add("Submenu item 2")
-        heading2.add("Submenu item 2")
-        heading2.add("Submenu item 2")
-
-        listDataChild.put(listDataHeader[0], heading1)
-        listDataChild.put(listDataHeader[1], heading2)
-
-
+        listDataChild.put(listDataHeader[0], subItem)
     }
 
     private fun setupDrawerContent(navigationView: NavigationView) {
@@ -331,7 +311,7 @@ open class BaseMainActivity : AppCompatActivity() {
         listViewData.add(exit)
     }
 
-    //---------------------initNavigationView--------------------------------
+    //---------------------initNavigationView end--------------------------------
 
 
     //---------------------initActionBar--------------------------------
@@ -396,7 +376,6 @@ open class BaseMainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
     //---------------------initActionBar--------------------------------
-
 
 
 }

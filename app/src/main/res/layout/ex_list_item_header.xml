@@ -12,33 +12,35 @@
 
 
         <TextView
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_weight="1"
-            android:paddingStart="40dp"
-            android:paddingEnd="10dp"
-            android:textSize="18sp"
-            android:textColor="@color/black"
-            tools:text="header 1"
-            android:paddingTop="3dp"
-            android:paddingBottom="3dp"
             android:id="@+id/tv_listitemheader"
             android:layout_width="wrap_content"
-            android:layout_height="45dp"
-            android:gravity="center_vertical"/>
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:paddingStart="40dp"
+            android:paddingTop="3dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="3dp"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/iv_listitemheader"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/link_header_name" />
 
         <ImageView
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/tv_listitemheader"
-            android:layout_weight="1"
-            android:layout_marginStart="10dp"
-            android:layout_gravity="center_vertical"
-            tools:src="@drawable/ic_baseline_radio_24"
+            android:id="@+id/iv_listitemheader"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:id="@+id/iv_listitemheader"/>
+            android:layout_marginEnd="10dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_baseline_radio_24" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

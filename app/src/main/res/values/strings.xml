@@ -19,6 +19,8 @@
     <string name="item_exit">Выход</string>
     <string name="item_about_app">Оценить приложение</string>
 
+    <string name="link_header_name">Информационные ресурсы</string>
+
     <string name="alert_mes_exit">Выйти из приложения?</string>
     <string name="alert_mes_yes">Выйти</string>
     <string name="alert_mes_yes_all">Выйти и выключить радио</string>
