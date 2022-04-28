@@ -21,8 +21,8 @@ class MainActivity : BaseMainActivity() {
         playAudio(url)
         loadAndShowBanner()
 
-        setupExpandableListFromNavView()
-        setupListViewFromNavView()
+        initExpandableListInNavView()
+        initListViewInNavView()
 
         dataModel.statusFragmentConnected.observe(this){
             fragmentIsConnected = it

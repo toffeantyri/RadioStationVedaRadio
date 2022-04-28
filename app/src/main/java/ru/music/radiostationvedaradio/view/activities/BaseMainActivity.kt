@@ -8,17 +8,12 @@ import android.os.IBinder
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ExpandableListView
-import android.widget.ListAdapter
-import android.widget.ListView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.yandex.mobile.ads.banner.AdSize
 import com.yandex.mobile.ads.banner.BannerAdEventListener
@@ -30,23 +25,25 @@ import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.services.*
 import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandableListAdapterForNavView
 import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandedMenuModel
-import ru.music.radiostationvedaradio.view.adapters.listview.ListViewNavMenuAdapter
+import ru.music.radiostationvedaradio.view.adapters.listview.ListViewAdapter
+import ru.music.radiostationvedaradio.view.adapters.listview.ListViewItemModel
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 @SuppressLint("Registered")
 open class BaseMainActivity : AppCompatActivity() {
 
 
-    protected lateinit var myDrawerLayout: DrawerLayout
-    protected lateinit var mMenuAdapter : ExpandableListAdapterForNavView
-    protected lateinit var expandableList : ExpandableListView
-    protected lateinit var listDataHeader: ArrayList<ExpandedMenuModel>
-    protected lateinit var listDataChild: HashMap<ExpandedMenuModel, List<String>>
+    private lateinit var myDrawerLayout: DrawerLayout
+    private lateinit var mMenuAdapter: ExpandableListAdapterForNavView
+    private lateinit var expandableList: ExpandableListView
+    private lateinit var listDataHeader: ArrayList<ExpandedMenuModel>
+    private lateinit var listDataChild: HashMap<ExpandedMenuModel, List<String>>
 
-    protected lateinit var navigationView: NavigationView
+    private lateinit var navigationView: NavigationView
 
-    protected lateinit var listView : RecyclerView
-    protected var adapterListView  = ListViewNavMenuAdapter()
+    private lateinit var listView: ListView
+    private lateinit var adapterListView: BaseAdapter
+    private lateinit var listViewData: ArrayList<ListViewItemModel>
 
 
     protected val dataModel: ViewModelMainActivity by viewModels()
@@ -102,6 +99,27 @@ open class BaseMainActivity : AppCompatActivity() {
             .getRunningServices(Integer.MAX_VALUE)
             .any { it.service.className == service.name }
 
+    protected fun playAudio(urlStream: String) {
+        if (!serviceBound) {
+            Log.d("MyLog", "StartService")
+            val playerIntent = Intent(applicationContext, RadioPlayerService::class.java)
+            if (this.isServiceRunning(RadioPlayerService::class.java)) {
+                playerIntent.putExtra(TAG_FIRST_RUN, false)
+            } else {
+                playerIntent.putExtra(TAG_FIRST_RUN, true)
+                playerIntent.putExtra(TAG_NEW_AUDIO_URL, urlStream)
+            }
+            applicationContext.startForegroundService(playerIntent)
+            bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE)
+        } else {
+            Log.d("MyLog", "service is already bound")
+            val broadcastIntent = Intent(Broadcast_NEW_AUDIO)
+            broadcastIntent.putExtra(TAG_NEW_AUDIO_URL, urlStream)
+            broadcastIntent.putExtra(TAG_FIRST_RUN, false)
+            sendBroadcast(broadcastIntent)
+        }
+    }
+
     protected val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as RadioPlayerService.LocalBinder
@@ -117,13 +135,6 @@ open class BaseMainActivity : AppCompatActivity() {
         }
     }
 
-    protected fun setUpActionBar() {
-        supportActionBar?.apply {
-            setHomeButtonEnabled(true)
-            setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp)
-        }
-    }
 
     private val broadcastStateServiceListener = object : BroadcastReceiverForPlayerService() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -134,30 +145,6 @@ open class BaseMainActivity : AppCompatActivity() {
 
     protected fun registerBroadcastStateService() {
         registerReceiver(broadcastStateServiceListener, IntentFilter(Broadcast_STATE_SERVICE))
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu, menu)
-        if (menu == null) {
-            return super.onCreateOptionsMenu(menu)
-        }
-        myMenu = menu
-        updateCheckGroupQuality(url)
-        btnPlay = menu.findItem(R.id.action_play)
-        btnRefresh = menu.findItem(R.id.action_refresh)
-
-        dataModel.statusMediaPlayer.observe(this) {
-            if (it == InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_baseline_pause_circle_filled_24)
-            else if (it != InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
-        }
-        dataModel.statusMediaPlayer.observe(this) {
-            if (it == InitStatusMediaPlayer.INITIALISATION) {
-                btnRefresh.setActionView(R.layout.action_progressbar)
-                btnRefresh.expandActionView()
-            } else btnRefresh.actionView = null
-
-        }
-        return super.onCreateOptionsMenu(menu)
     }
 
     protected fun loadAndShowBanner() {
@@ -193,28 +180,46 @@ open class BaseMainActivity : AppCompatActivity() {
         main_banner.loadAd(adRequest)
     }
 
-  /*  protected fun NavigationView.setUpDrawerNavViewListener() {
-        this.setNavigationItemSelectedListener {
-            Log.d("MyLog", "${it.itemId}")
-            when (it.itemId) {
-                R.id.nav_item_exit -> {
-                    alertDialogExit()
-                }
-                R.id.nav_item_rate_app -> {
-                    val intent =
-                        Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.link_on_this_app)))
-                    startActivity(intent)
-                }
-                R.id.nav_item1 -> {
-                    Log.d("MyLog", "nav click: ${it.itemId}")
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.container_frame_for_website, WebViewFragment.newInstance(webUrl)).commit()
-                    drawer_menu.closeDrawer(GravityCompat.START)
-                }
-            }
-            return@setNavigationItemSelectedListener true
+
+    /*  protected fun NavigationView.setUpDrawerNavViewListener() {
+          this.setNavigationItemSelectedListener {
+              Log.d("MyLog", "${it.itemId}")
+              when (it.itemId) {
+                  R.id.nav_item_exit -> {
+                      alertDialogExit()
+                  }
+                  R.id.nav_item_rate_app -> {
+                      val intent =
+                          Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.link_on_this_app)))
+                      startActivity(intent)
+                  }
+                  R.id.nav_item1 -> {
+                      Log.d("MyLog", "nav click: ${it.itemId}")
+                      supportFragmentManager.beginTransaction()
+                          .replace(R.id.container_frame_for_website, WebViewFragment.newInstance(webUrl)).commit()
+                      drawer_menu.closeDrawer(GravityCompat.START)
+                  }
+              }
+              return@setNavigationItemSelectedListener true
+          }
+      }*/
+
+
+    protected var fragmentIsConnected = false
+    private var doubleBackPress = false
+    override fun onBackPressed() {
+        if (fragmentIsConnected) {
+            super.onBackPressed()
+            return
         }
-    }*/
+
+        if (doubleBackPress) {
+            super.onBackPressed()
+        }
+        doubleBackPress = true
+        handler.postDelayed({ doubleBackPress = false }, 2000)
+        alertDialogExit()
+    }
 
     private fun alertDialogExit() {
         val aDialog = AlertDialog.Builder(this)
@@ -240,41 +245,126 @@ open class BaseMainActivity : AppCompatActivity() {
 
     }
 
-    protected var fragmentIsConnected = false
-    private var doubleBackPress = false
-    override fun onBackPressed() {
-        if (fragmentIsConnected) {
-            super.onBackPressed()
-            return
-        }
 
-        if (doubleBackPress) {
-            super.onBackPressed()
+
+    //---------------------initNavigationView--------------------------------
+    protected fun initExpandableListInNavView() {
+        myDrawerLayout = drawer_menu
+        expandableList = exp_list_nav_menu
+        navigationView = draw_navView
+        if (navigationView != null) {
+            setupDrawerContent(navigationView)
         }
-        doubleBackPress = true
-        handler.postDelayed({ doubleBackPress = false }, 2000)
-        alertDialogExit()
+        prepareExpListData()
+
+        mMenuAdapter = ExpandableListAdapterForNavView(this, listDataHeader, listDataChild, expandableList)
+        expandableList.setAdapter(mMenuAdapter)
     }
 
-    protected fun playAudio(urlStream: String) {
-        if (!serviceBound) {
-            Log.d("MyLog", "StartService")
-            val playerIntent = Intent(applicationContext, RadioPlayerService::class.java)
-            if (this.isServiceRunning(RadioPlayerService::class.java)) {
-                playerIntent.putExtra(TAG_FIRST_RUN, false)
-            } else {
-                playerIntent.putExtra(TAG_FIRST_RUN, true)
-                playerIntent.putExtra(TAG_NEW_AUDIO_URL, urlStream)
-            }
-            applicationContext.startForegroundService(playerIntent)
-            bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE)
-        } else {
-            Log.d("MyLog", "service is already bound")
-            val broadcastIntent = Intent(Broadcast_NEW_AUDIO)
-            broadcastIntent.putExtra(TAG_NEW_AUDIO_URL, urlStream)
-            broadcastIntent.putExtra(TAG_FIRST_RUN, false)
-            sendBroadcast(broadcastIntent)
+    private fun prepareExpListData() {
+        listDataHeader = arrayListOf()
+        listDataChild = HashMap<ExpandedMenuModel, List<String>>()
+
+        val item1 = ExpandedMenuModel()
+        item1.apply {
+            setIconName("heading1")
+            item1.setIconImage(R.drawable.ic_baseline_radio_24)
         }
+        listDataHeader.add(item1)
+
+        val item2 = ExpandedMenuModel()
+        item2.apply {
+            setIconName("heading2")
+            item2.setIconImage(R.drawable.ic_baseline_radio_24)
+        }
+        listDataHeader.add(item2)
+
+        val item3 = ExpandedMenuModel()
+        item3.apply {
+            setIconName("heading3")
+            item3.setIconImage(R.drawable.ic_baseline_radio_24)
+        }
+        listDataHeader.add(item3)
+
+        val heading1 = arrayListOf<String>()
+        heading1.add("SubMenu item 1")
+
+        val heading2 = arrayListOf<String>()
+        heading2.add("Submenu item 2")
+        heading2.add("Submenu item 2")
+        heading2.add("Submenu item 2")
+
+        listDataChild.put(listDataHeader[0], heading1)
+        listDataChild.put(listDataHeader[1], heading2)
+
+
+    }
+
+    private fun setupDrawerContent(navigationView: NavigationView) {
+        navigationView.setNavigationItemSelectedListener { item ->
+            item.isChecked = true
+            myDrawerLayout.closeDrawers()
+            true
+        }
+    }
+
+    protected fun initListViewInNavView() {
+        prepareListViewData()
+        adapterListView = ListViewAdapter(listViewData)
+        listView = listview_nav_menu
+        listView.adapter = adapterListView
+
+
+    }
+
+    private fun prepareListViewData() {
+        listViewData = arrayListOf<ListViewItemModel>()
+        val rate = ListViewItemModel().apply {
+            setTitle(getString(R.string.item_about_app))
+            setIconId(R.drawable.ic_baseline_star_rate_24)
+        }
+        val exit = ListViewItemModel().apply {
+            setTitle(getString(R.string.item_exit))
+            setIconId(R.drawable.ic_baseline_exit_to_app_24)
+        }
+        listViewData.add(rate)
+        listViewData.add(exit)
+    }
+
+    //---------------------initNavigationView--------------------------------
+
+
+    //---------------------initActionBar--------------------------------
+    protected fun setUpActionBar() {
+        supportActionBar?.apply {
+            setHomeButtonEnabled(true)
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        if (menu == null) {
+            return super.onCreateOptionsMenu(menu)
+        }
+        myMenu = menu
+        updateCheckGroupQuality(url)
+        btnPlay = menu.findItem(R.id.action_play)
+        btnRefresh = menu.findItem(R.id.action_refresh)
+
+        dataModel.statusMediaPlayer.observe(this) {
+            if (it == InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_baseline_pause_circle_filled_24)
+            else if (it != InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
+        }
+        dataModel.statusMediaPlayer.observe(this) {
+            if (it == InitStatusMediaPlayer.INITIALISATION) {
+                btnRefresh.setActionView(R.layout.action_progressbar)
+                btnRefresh.expandActionView()
+            } else btnRefresh.actionView = null
+
+        }
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -305,81 +395,7 @@ open class BaseMainActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
-
-    protected fun setupExpandableListFromNavView(){
-        myDrawerLayout = drawer_menu
-        expandableList = exp_list_nav_menu
-        navigationView = draw_navView
-        if(navigationView != null){
-            setupDrawerContent(navigationView)
-        }
-        prepareExpListData()
-
-        mMenuAdapter = ExpandableListAdapterForNavView(this, listDataHeader, listDataChild, expandableList)
-        expandableList.setAdapter(mMenuAdapter)
-    }
-
-    private fun prepareExpListData(){
-        listDataHeader = arrayListOf()
-        listDataChild = HashMap<ExpandedMenuModel, List<String>>()
-
-        val item1 = ExpandedMenuModel()
-        item1.apply {
-            setIconName("heading1")
-            item1.setIconImage(R.drawable.ic_baseline_radio_24)
-        }
-        listDataHeader.add(item1)
-
-        val item2 = ExpandedMenuModel()
-        item2.apply {
-            setIconName("heading2")
-            item2.setIconImage(R.drawable.ic_baseline_radio_24)
-        }
-        listDataHeader.add(item2)
-
-        val item3 = ExpandedMenuModel()
-        item3.apply {
-            setIconName("heading3")
-            item3.setIconImage(R.drawable.ic_baseline_radio_24)
-        }
-        listDataHeader.add(item3)
-
-        val heading1 = arrayListOf<String>()
-            heading1.add("SubMenu item 1")
-
-        val heading2 = arrayListOf<String>()
-        heading2.add("Submenu item 2")
-        heading2.add("Submenu item 2")
-        heading2.add("Submenu item 2")
-
-        listDataChild.put(listDataHeader[0], heading1)
-        listDataChild.put(listDataHeader[1], heading2)
-
-
-    }
-
-    private fun setupDrawerContent(navigationView: NavigationView){
-        navigationView.setNavigationItemSelectedListener { item ->
-            item.isChecked = true
-            myDrawerLayout.closeDrawers()
-            true
-        }
-    }
-
-
-    protected fun setupListViewFromNavView(){
-        adapterListView = ListViewNavMenuAdapter()
-        listView = listview_nav_menu
-        listView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        listView.setHasFixedSize(true)
-        listView.adapter = adapterListView
-
-    }
-
-    private fun prepareListViewData(){
-
-
-    }
+    //---------------------initActionBar--------------------------------
 
 
 

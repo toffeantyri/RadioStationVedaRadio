@@ -13,4 +13,6 @@
     <color name="teal_900">#007080</color>
     <color name="teal_700">#00E2FF</color>
     <color name="teal_200">#91F3FF</color>
+
+    <color name="gold_500">#FFCC35</color>
 </resources>
