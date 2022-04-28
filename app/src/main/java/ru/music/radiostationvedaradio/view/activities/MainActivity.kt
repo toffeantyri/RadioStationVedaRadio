@@ -20,9 +20,8 @@ class MainActivity : BaseMainActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         url = getString(R.string.veda_radio_stream_link_low) // TODO Качество по умолчанию на релиз - MEDIUM
-        webUrl = getString(R.string.veda_radio_site)
+
 
         job = CoroutineScope(Dispatchers.IO).launch {
             Log.d("MyLog", "Coroutine job : $job")

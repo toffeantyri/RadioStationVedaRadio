@@ -37,6 +37,7 @@ class WebViewFragment : Fragment() {
         }
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -84,8 +85,8 @@ class WebViewFragment : Fragment() {
                 if(webView.canGoBack()){
                     webView.goBack()
                 } else {
-                    activity?.supportFragmentManager?.beginTransaction()?.remove(this@WebViewFragment)?.commit()
                     dataModel.statusFragmentConnected.value = false
+                    activity?.supportFragmentManager?.beginTransaction()?.remove(this@WebViewFragment)?.commit()
                 }
             }
         }

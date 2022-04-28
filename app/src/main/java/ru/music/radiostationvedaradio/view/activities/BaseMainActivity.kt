@@ -3,11 +3,13 @@ package ru.music.radiostationvedaradio.view.activities
 import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.*
+import android.net.Uri
 import android.os.Handler
 import android.os.IBinder
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -27,6 +29,7 @@ import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandableLis
 import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandedMenuModel
 import ru.music.radiostationvedaradio.view.adapters.listview.ListViewAdapter
 import ru.music.radiostationvedaradio.view.adapters.listview.ListViewItemModel
+import ru.music.radiostationvedaradio.view.fragments.WebViewFragment
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 @SuppressLint("Registered")
@@ -180,31 +183,6 @@ open class BaseMainActivity : AppCompatActivity() {
         main_banner.loadAd(adRequest)
     }
 
-
-    /*  protected fun NavigationView.setUpDrawerNavViewListener() {
-          this.setNavigationItemSelectedListener {
-              Log.d("MyLog", "${it.itemId}")
-              when (it.itemId) {
-                  R.id.nav_item_exit -> {
-                      alertDialogExit()
-                  }
-                  R.id.nav_item_rate_app -> {
-                      val intent =
-                          Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.link_on_this_app)))
-                      startActivity(intent)
-                  }
-                  R.id.nav_item1 -> {
-                      Log.d("MyLog", "nav click: ${it.itemId}")
-                      supportFragmentManager.beginTransaction()
-                          .replace(R.id.container_frame_for_website, WebViewFragment.newInstance(webUrl)).commit()
-                      drawer_menu.closeDrawer(GravityCompat.START)
-                  }
-              }
-              return@setNavigationItemSelectedListener true
-          }
-      }*/
-
-
     protected var fragmentIsConnected = false
     private var doubleBackPress = false
     override fun onBackPressed() {
@@ -251,13 +229,35 @@ open class BaseMainActivity : AppCompatActivity() {
         myDrawerLayout = drawer_menu
         expandableList = exp_list_nav_menu
         navigationView = draw_navView
-        if (navigationView != null) {
-            setupDrawerContent(navigationView)
-        }
+        setupDrawerContent(navigationView)
         prepareExpListData()
-
         mMenuAdapter = ExpandableListAdapterForNavView(this, listDataHeader, listDataChild, expandableList)
         expandableList.setAdapter(mMenuAdapter)
+
+        expandableList.setOnChildClickListener { parent, v, groupPosition, childPosition, id ->
+            //Log.d("MyLog", "$childPosition child in $groupPosition parent ")
+            if (groupPosition == 0) {
+                when (childPosition) {
+                    0 -> {
+                        //Log.d("MyLog", "nav click: $childPosition")
+                        val newWebUrl = getString(R.string.veda_radio_site)
+                        if (webUrl != newWebUrl || !fragmentIsConnected) {
+                            webUrl = newWebUrl
+                            replaceWebFragmentWithUrl(webUrl)
+                        }
+                        drawer_menu.closeDrawer(GravityCompat.START)
+                    }
+                }
+            }
+
+            true
+        }
+    }
+
+    private fun replaceWebFragmentWithUrl(webUrl: String) {
+        container_frame_for_website.visibility = View.VISIBLE
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container_frame_for_website, WebViewFragment.newInstance(webUrl)).commit()
     }
 
     private fun prepareExpListData() {
@@ -293,7 +293,15 @@ open class BaseMainActivity : AppCompatActivity() {
         adapterListView = ListViewAdapter(listViewData)
         listView = listview_nav_menu
         listView.adapter = adapterListView
-
+        listView.setOnItemClickListener { _, _, position, _ ->
+            when (position) {
+                0 -> {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.link_on_this_app)))
+                    startActivity(intent)
+                }
+                1 -> alertDialogExit()
+            }
+        }
 
     }
 
@@ -310,6 +318,7 @@ open class BaseMainActivity : AppCompatActivity() {
         listViewData.add(rate)
         listViewData.add(exit)
     }
+
 
     //---------------------initNavigationView end--------------------------------
 
