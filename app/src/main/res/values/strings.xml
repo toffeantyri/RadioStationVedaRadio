@@ -19,6 +19,7 @@
     <string name="error_no_internet">Нет подключения к интернету</string>
 
     <string name="nav_option">Дополнительно</string>
+
     <string name="item_exit">Выход</string>
     <string name="item_about_app">Оценить приложение</string>
 
@@ -34,6 +35,11 @@
 
     <string name="yandex_banner_desc_id_test" translatable="false">R-M-DEMO-320x50</string>
     <string name="yandex_banner_desc_id" translatable="false"></string>
+
+
+
+
+    <string name="bottom_text_splash">Благодарю вас за использование этого приложения</string>
 
 
 </resources>
