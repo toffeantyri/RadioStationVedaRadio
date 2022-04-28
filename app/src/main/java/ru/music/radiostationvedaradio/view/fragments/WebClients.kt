@@ -1,15 +1,21 @@
 package ru.music.radiostationvedaradio.view.fragments
 
+import android.app.Application
 import android.graphics.Bitmap
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.webkit.*
+import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_web_view.view.*
 
 class WebClientForFragment(private val rootView: View) : WebViewClient() {
     override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
         super.onReceivedError(view, request, error)
         Log.d("MyLog", "error loading webPage ${error?.description}")
+        if(error?.description == "net::ERR_INTERNET_DISCONNECTED"){
+            Toast.makeText(view?.context, "Internet Disconnected", Toast.LENGTH_SHORT ).show()
+        }
     }
 
     override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {

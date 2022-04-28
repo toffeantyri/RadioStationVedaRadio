@@ -14,6 +14,7 @@
 
     <string name="error_loading">Переподключение…</string>
     <string name="error_loading_error">Переподключение…</string>
+    <string name="error_no_internet">Нет подключения к интернету</string>
 
     <string name="nav_option">Дополнительно</string>
     <string name="item_exit">Выход</string>

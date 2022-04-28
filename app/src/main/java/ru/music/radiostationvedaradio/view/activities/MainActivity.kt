@@ -3,6 +3,7 @@ package ru.music.radiostationvedaradio.view.activities
 import android.media.AudioManager
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.ExpandableListAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
@@ -39,6 +40,7 @@ class MainActivity : BaseMainActivity() {
         playAudio(url)
         dataModel.statusFragmentConnected.observe(this) {
             fragmentIsConnected = it
+            if(it)container_frame_for_website.visibility = View.VISIBLE else container_frame_for_website.visibility = View.GONE
         }
     }
 

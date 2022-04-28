@@ -37,7 +37,7 @@
             tools:ignore="ExportedService" />
 
 
-        <activity android:name=".SplashScreenActivity">
+        <activity android:name=".view.activities.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

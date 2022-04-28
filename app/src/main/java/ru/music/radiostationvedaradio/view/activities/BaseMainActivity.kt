@@ -255,7 +255,6 @@ open class BaseMainActivity : AppCompatActivity() {
     }
 
     private fun replaceWebFragmentWithUrl(webUrl: String) {
-        container_frame_for_website.visibility = View.VISIBLE
         supportFragmentManager.beginTransaction()
             .replace(R.id.container_frame_for_website, WebViewFragment.newInstance(webUrl)).commit()
     }

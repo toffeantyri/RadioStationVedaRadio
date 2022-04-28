@@ -1,10 +1,9 @@
-package ru.music.radiostationvedaradio
+package ru.music.radiostationvedaradio.view.activities
 
 import android.content.Intent
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_splash_screen.*
-import ru.music.radiostationvedaradio.view.activities.BaseMainActivity
-import ru.music.radiostationvedaradio.view.activities.MainActivity
+import ru.music.radiostationvedaradio.R
 
 class SplashScreenActivity : BaseMainActivity() {
 
