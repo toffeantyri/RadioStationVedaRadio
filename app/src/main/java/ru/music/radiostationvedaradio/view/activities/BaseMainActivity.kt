@@ -247,6 +247,25 @@ open class BaseMainActivity : AppCompatActivity() {
                         }
                         drawer_menu.closeDrawer(GravityCompat.START)
                     }
+                    1 -> {
+                        //Log.d("MyLog", "nav click: $childPosition")
+                        val newWebUrl = getString(R.string.torsunov_site)
+                        if (webUrl != newWebUrl || !fragmentIsConnected) {
+                            webUrl = newWebUrl
+                            replaceWebFragmentWithUrl(webUrl)
+                        }
+                        drawer_menu.closeDrawer(GravityCompat.START)
+                    }
+
+                    2 -> {
+                    //Log.d("MyLog", "nav click: $childPosition")
+                    val newWebUrl = getString(R.string.provedy_site)
+                    if (webUrl != newWebUrl || !fragmentIsConnected) {
+                        webUrl = newWebUrl
+                        replaceWebFragmentWithUrl(webUrl)
+                    }
+                    drawer_menu.closeDrawer(GravityCompat.START)
+                    }
                 }
             }
 
@@ -264,16 +283,19 @@ open class BaseMainActivity : AppCompatActivity() {
         listDataChild = HashMap<ExpandedMenuModel, List<String>>()
 
         //header point
-        val headerItem = ExpandedMenuModel().apply {
+        val headerItem1 = ExpandedMenuModel().apply {
             setIconName(getString(R.string.link_header_name))
             setIconImage(R.drawable.ic_baseline_radio_24)
         }
-        listDataHeader.add(headerItem)
+        listDataHeader.add(headerItem1)
+
 
         //subitem point
         val subItem = arrayListOf<String>()
         subItem.apply {
             add(getString(R.string.veda_radio_site))
+            add(getString(R.string.torsunov_site))
+            add(getString(R.string.provedy_site))
         }
 
         listDataChild.put(listDataHeader[0], subItem)

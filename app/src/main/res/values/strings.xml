@@ -7,6 +7,8 @@
     <string name="veda_radio_stream_link_low">https://stream.vedaradio.fm/low?</string>
 
     <string name="veda_radio_site">http://vedaradio.fm</string>
+    <string name="torsunov_site">https://torsunov.ru/</string>
+    <string name="provedy_site">https://provedy.info/</string>
 
     <string name="text_low_quality">Низкое качество(48kb/s)</string>
     <string name="text_medium_quality">Среднее качество(96/kb/s)</string>
