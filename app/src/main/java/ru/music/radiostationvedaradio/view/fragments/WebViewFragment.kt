@@ -2,6 +2,7 @@ package ru.music.radiostationvedaradio.view.fragments
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -81,6 +82,7 @@ class WebViewFragment : Fragment() {
                     loadsImagesAutomatically = true
                     mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                 }
+                setBackgroundColor(resources.getColor(R.color.green_100_alp50))
                 loadUrl(webUrl)
             }
         }
