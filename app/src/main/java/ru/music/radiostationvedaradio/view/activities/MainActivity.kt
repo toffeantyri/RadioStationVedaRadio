@@ -4,19 +4,18 @@ import android.media.AudioManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ExpandableListAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandableListAdapterForNavView
-import kotlin.coroutines.CoroutineContext
+
 
 class MainActivity : BaseMainActivity() {
 
     private var job: Job? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

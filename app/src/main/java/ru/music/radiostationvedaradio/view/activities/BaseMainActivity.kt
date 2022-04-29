@@ -9,7 +9,6 @@ import android.os.IBinder
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -35,8 +34,7 @@ import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 @SuppressLint("Registered")
 open class BaseMainActivity : AppCompatActivity() {
 
-
-    private lateinit var myDrawerLayout: DrawerLayout
+    lateinit var myDrawerLayout: DrawerLayout
     private lateinit var mMenuAdapter: ExpandableListAdapterForNavView
     private lateinit var expandableList: ExpandableListView
     private lateinit var listDataHeader: ArrayList<ExpandedMenuModel>
@@ -69,7 +67,7 @@ open class BaseMainActivity : AppCompatActivity() {
     private lateinit var btnPlay: MenuItem
     private lateinit var btnRefresh: MenuItem
 
-    protected var webUrl = ""
+    private var webUrl = ""
     protected var url: String = ""
         set(value) {
             field = value
@@ -137,7 +135,6 @@ open class BaseMainActivity : AppCompatActivity() {
             mediaService = null
         }
     }
-
 
     private val broadcastStateServiceListener = object : BroadcastReceiverForPlayerService() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -400,8 +397,8 @@ open class BaseMainActivity : AppCompatActivity() {
             url = getString(R.string.veda_radio_stream_link_high)
             playAudio(url)
         } else if (item.itemId == android.R.id.home) {
-            if (drawer_menu.isDrawerOpen(GravityCompat.START)) drawer_menu.closeDrawer(GravityCompat.START)
-            else drawer_menu.openDrawer(GravityCompat.START)
+            if (myDrawerLayout.isDrawerOpen(GravityCompat.START)) myDrawerLayout.closeDrawer(GravityCompat.START)
+            else myDrawerLayout.openDrawer(GravityCompat.START)
         }
         return super.onOptionsItemSelected(item)
     }

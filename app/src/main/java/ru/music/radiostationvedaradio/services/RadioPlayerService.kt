@@ -70,7 +70,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         set(value) {
             field = value
             broadcastTellNewStatus()
-            Log.d("MyLog", "service new state: $value")
+            Log.d("MyLogS", "service new state: $value")
         }
     private var audioManager: AudioManager? = null
 
@@ -126,14 +126,14 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
             override fun onStop() {
                 super.onStop()
-                Log.d("MyLog", "onStopCallBack")
+                Log.d("MyLogS", "onStopCallBack")
                 stopMedia()
                 removeNotification()
                 stopForeground(true)
                 stopSelf()
             }
         })
-        Log.d("MyLog", "initMediaSession")
+        Log.d("MyLogS", "initMediaSession")
     }
 
     private fun updateMetaData() {
@@ -243,7 +243,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                             removeNotification()
                         }
                     }
-                    Log.d("MyLog", "update : $artist         $song")
+                    Log.d("MyLogS", "update : $artist         $song")
                     handler?.postDelayed({ startUpdateAlbumData(timeUntilUpdate) }, timeUntilUpdate)
                 }
 
@@ -307,33 +307,33 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         STATE_OF_SERVICE = InitStatusMediaPlayer.IDLE
         when (what) {
             MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK -> {
-                Log.d("MyLog", "error : not valid progressive playback $what  $extra")
+                Log.d("MyLogS", "error : not valid progressive playback $what  $extra")
                 Toast.makeText(this, "Неверный формат аудио", Toast.LENGTH_SHORT).show()
                 stopForeground(true)
                 stopSelf()
             }
             MediaPlayer.MEDIA_ERROR_SERVER_DIED -> {
-                Log.d("MyLog", "error : server died $what  $extra")
+                Log.d("MyLogS", "error : server died $what  $extra")
                 Toast.makeText(this, "Сервер недоступен", Toast.LENGTH_SHORT).show()
                 stopForeground(true)
                 stopSelf()
             }
             MediaPlayer.MEDIA_ERROR_UNKNOWN -> {
-                Log.d("MyLog", "error : unknow $what $extra")
+                Log.d("MyLogS", "error : unknow $what $extra")
                 mediaPlayer = null
                 Toast.makeText(this, "Неизвестная ошибка", Toast.LENGTH_SHORT).show()
                 stopForeground(true)
                 stopSelf()
             }
             MediaPlayer.MEDIA_ERROR_TIMED_OUT -> {
-                Log.d("MyLog", "error : time out $what  $extra")
+                Log.d("MyLogS", "error : time out $what  $extra")
                 mediaPlayer = null
                 Toast.makeText(this, "Превышено время ожидания ответа сервера", Toast.LENGTH_SHORT).show()
                 stopForeground(true)
                 stopSelf()
             }
             else -> {
-                Log.d("MyLog", "error : $what  $extra")
+                Log.d("MyLogS", "error : $what  $extra")
                 mediaPlayer = null
                 Toast.makeText(this, "Ошибка загрузки", Toast.LENGTH_SHORT).show()
                 stopForeground(true)
@@ -392,10 +392,10 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val firstRun = intent?.extras?.getBoolean(TAG_FIRST_RUN) ?: false
-        Log.d("MyLog", "onStartCommand: intent firstRun: $firstRun")
+        Log.d("MyLogS", "onStartCommand: intent firstRun: $firstRun")
         intent?.extras?.getString(TAG_NEW_AUDIO_URL).let {
             if (it != null && it != "") urlString = it
-            Log.d("MyLog", "onStartCommand: intent URL: $it")
+            Log.d("MyLogS", "onStartCommand: intent URL: $it")
         }
         if (!requestAudioFocus()) {
             stopSelf()
@@ -502,7 +502,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        Log.d("MyLog", "OnTaskRemove : ${rootIntent?.action}")
+        Log.d("MyLogS", "OnTaskRemove : ${rootIntent?.action}")
         super.onTaskRemoved(rootIntent)
     }
 
@@ -519,7 +519,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     }
 
     override fun onDestroy() {
-        Log.d("MyLog","onDestroyService")
+        Log.d("MyLogS","onDestroyService")
         removeNotification()
         STATE_OF_SERVICE = InitStatusMediaPlayer.IDLE
         handler = null
