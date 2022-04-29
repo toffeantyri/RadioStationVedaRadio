@@ -2,6 +2,7 @@ package ru.music.radiostationvedaradio.view.adapters.expandableList
 
 import android.content.Context
 import android.graphics.Typeface
+import android.graphics.fonts.FontFamily
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -70,8 +71,9 @@ class ExpandableListAdapterForNavView() : BaseExpandableListAdapter() {
         val headerText : TextView? = convertView0?.findViewById<TextView>(R.id.tv_listitemheader)
         val headerIcon : ImageView? = convertView0?.findViewById<ImageView>(R.id.iv_listitemheader)
 
-        headerText?.setTypeface(null, Typeface.NORMAL)
-        headerText?.text = headerTitle.getIconName()
+        headerText?.apply {
+            text = headerTitle.getIconName()
+        }
         headerIcon?.setImageResource(headerTitle.getIconImage())
         return convertView0!!
     }

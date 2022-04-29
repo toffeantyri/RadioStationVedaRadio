@@ -1,5 +1,6 @@
 package ru.music.radiostationvedaradio.view.fragments
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -54,6 +55,7 @@ class WebViewFragment : Fragment() {
         return view0
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         onBackPressed(view.web_view1)

@@ -12,9 +12,10 @@
 
 
         <TextView
+            android:fontFamily="@font/romic"
             android:id="@+id/tv_listitemheader"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="45dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
             android:paddingStart="40dp"

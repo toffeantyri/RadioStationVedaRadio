@@ -311,14 +311,6 @@ open class BaseMainActivity : AppCompatActivity() {
         listDataChild.put(listDataHeader[0], subItem)
     }
 
-    private fun setupDrawerContent(navigationView: NavigationView) {
-        navigationView.setNavigationItemSelectedListener { item ->
-            item.isChecked = true
-            myDrawerLayout.closeDrawers()
-            true
-        }
-    }
-
     protected fun initListViewInNavView() {
         prepareListViewData()
         adapterListView = ListViewAdapter(listViewData)
@@ -350,6 +342,13 @@ open class BaseMainActivity : AppCompatActivity() {
         listViewData.add(exit)
     }
 
+    private fun setupDrawerContent(navigationView: NavigationView) {
+        navigationView.setNavigationItemSelectedListener { item ->
+            item.isChecked = true
+            myDrawerLayout.closeDrawers()
+            true
+        }
+    }
 
     //---------------------initNavigationView end--------------------------------
 

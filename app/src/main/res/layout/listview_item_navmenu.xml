@@ -24,6 +24,7 @@
         android:id="@+id/iv_listview_item" />
 
     <TextView
+        android:fontFamily="@font/romic"
         android:id="@+id/tv_list_view_item"
         android:layout_width="wrap_content"
         android:layout_height="45dp"
