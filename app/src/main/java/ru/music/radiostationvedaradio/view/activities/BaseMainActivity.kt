@@ -280,12 +280,11 @@ open class BaseMainActivity : AppCompatActivity() {
         listDataChild = HashMap<ExpandedMenuModel, List<String>>()
 
         //header point
-        val headerItem1 = ExpandedMenuModel().apply {
+        val headerItem0 = ExpandedMenuModel().apply {
             setIconName(getString(R.string.link_header_name))
-            setIconImage(R.drawable.ic_baseline_radio_24)
+            setIconImage(R.drawable.ic_collections_bookmark_black_24dp)
         }
-        listDataHeader.add(headerItem1)
-
+        listDataHeader.add(headerItem0)
 
         //subitem point
         val subItem = arrayListOf<String>()

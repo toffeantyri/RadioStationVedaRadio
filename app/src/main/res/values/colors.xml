@@ -6,6 +6,7 @@
 <color name="info_text">#ffffff</color>
 
 
+    <color name="green_100">#8DA786</color>
     <color name="green_200">#5F8B52</color>
     <color name="green_500">#36852F</color>
     <color name="green_700">#097A17</color>
