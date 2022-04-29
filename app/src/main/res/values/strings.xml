@@ -37,10 +37,13 @@
     <string name="yandex_banner_desc_id" translatable="false"></string>
 
 
-    <string name="bottom_text_splash">Благодарю вас за использование этого приложения</string>
+    <string name="bottom_text_splash">Благодарю вас за использование нашего приложения</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="default_text_bhagavadgita">
+«Бхагавад-гита» (в переводе с санскрита «Божественная песнь» или «Песнь Господня») – блестящий памятник ведической литературы, часть величайшего эпоса «Махабхарата», состоящий из 700 стихов.\n
+«Бхагавад-гита» – это квинтэссенция всей древней ведической философии, которая может служить лучшим практическим руководством как в духовной, так и в материальной жизни человека.
+    </string>
 
 
 </resources>

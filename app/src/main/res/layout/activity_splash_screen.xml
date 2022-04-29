@@ -38,7 +38,8 @@
     <TextView
         app:layout_constraintStart_toStartOf="@id/logo_splash"
         android:id="@+id/textView"
-        android:layout_width="wrap_content"
+        android:gravity="center"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:text="@string/bottom_text_splash"
         app:layout_constraintBottom_toBottomOf="parent"

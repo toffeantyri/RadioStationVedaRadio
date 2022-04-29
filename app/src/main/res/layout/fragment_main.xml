@@ -26,15 +26,18 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:padding="5dp"
-                    android:textStyle="normal"
-                    android:fontFamily="@font/romic"
+                   android:paddingTop="5dp"
+                    android:paddingEnd="5dp"
+                    android:paddingBottom="5dp"
+                    android:paddingStart="15dp"
                     android:id="@+id/tv_tcitata_dnya"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="где бы что ни было оно есть где то"
-                    android:textColor="@color/green_900" />
+                    android:fontFamily="@font/romic"
+                    android:textSize="17sp"
+                    android:text="@string/default_text_bhagavadgita"
+                    android:textColor="@color/green_900"
+                    android:textStyle="italic" />
 
             </androidx.cardview.widget.CardView>
 
