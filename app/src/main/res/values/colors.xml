@@ -7,9 +7,11 @@
 
 
     <color name="green_100">#8DA786</color>
+    <color name="green_100_alp50">#818DA786</color>
     <color name="green_200">#5F8B52</color>
     <color name="green_500">#36852F</color>
     <color name="green_700">#097A17</color>
+    <color name="green_900">#04420D</color>
 
     <color name="teal_900">#007080</color>
     <color name="teal_700">#00E2FF</color>

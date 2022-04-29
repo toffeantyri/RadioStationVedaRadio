@@ -22,6 +22,7 @@ class MainActivity : BaseMainActivity() {
         setContentView(R.layout.activity_main)
         url = getString(R.string.veda_radio_stream_link_low) // TODO Качество по умолчанию на релиз - MEDIUM
 
+        loadMainFragment()
 
         job = CoroutineScope(Dispatchers.IO).launch {
             Log.d("MyLog", "Coroutine job : $job")
@@ -40,11 +41,14 @@ class MainActivity : BaseMainActivity() {
         dataModel.statusFragmentConnected.observe(this) {
             fragmentIsConnected = it
             if (it) {
-                container_frame_for_website.visibility = View.VISIBLE
                 supportActionBar?.hide()
+                container_frame_for_website.visibility = View.VISIBLE
+                container_main_frame.visibility = View.GONE
             } else {
-                container_frame_for_website.visibility = View.GONE
                 supportActionBar?.show()
+                container_main_frame.visibility = View.VISIBLE
+                container_frame_for_website.visibility = View.GONE
+
             }
 
         }

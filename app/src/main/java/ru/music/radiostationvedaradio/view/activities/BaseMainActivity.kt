@@ -14,6 +14,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.core.view.isEmpty
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.yandex.mobile.ads.banner.AdSize
@@ -28,6 +29,7 @@ import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandableLis
 import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandedMenuModel
 import ru.music.radiostationvedaradio.view.adapters.listview.ListViewAdapter
 import ru.music.radiostationvedaradio.view.adapters.listview.ListViewItemModel
+import ru.music.radiostationvedaradio.view.fragments.MainFragment
 import ru.music.radiostationvedaradio.view.fragments.WebViewFragment
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
@@ -119,6 +121,18 @@ open class BaseMainActivity : AppCompatActivity() {
             broadcastIntent.putExtra(TAG_FIRST_RUN, false)
             sendBroadcast(broadcastIntent)
         }
+    }
+
+    protected fun loadMainFragment() {
+        Thread { supportFragmentManager.beginTransaction()
+            .replace(R.id.container_main_frame, MainFragment.newInstance()).commit()
+            runOnUiThread {
+                Log.d("MyLog", "${container_main_frame.isEmpty()}")
+            }
+        }.start()
+
+
+
     }
 
     protected val serviceConnection: ServiceConnection = object : ServiceConnection {
@@ -255,13 +269,13 @@ open class BaseMainActivity : AppCompatActivity() {
                     }
 
                     2 -> {
-                    //Log.d("MyLog", "nav click: $childPosition")
-                    val newWebUrl = getString(R.string.provedy_site)
-                    if (webUrl != newWebUrl || !fragmentIsConnected) {
-                        webUrl = newWebUrl
-                        replaceWebFragmentWithUrl(webUrl)
-                    }
-                    drawer_menu.closeDrawer(GravityCompat.START)
+                        //Log.d("MyLog", "nav click: $childPosition")
+                        val newWebUrl = getString(R.string.provedy_site)
+                        if (webUrl != newWebUrl || !fragmentIsConnected) {
+                            webUrl = newWebUrl
+                            replaceWebFragmentWithUrl(webUrl)
+                        }
+                        drawer_menu.closeDrawer(GravityCompat.START)
                     }
                 }
             }
