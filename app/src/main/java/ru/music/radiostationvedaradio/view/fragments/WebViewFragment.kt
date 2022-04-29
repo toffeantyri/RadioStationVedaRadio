@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.GravityCompat
@@ -63,10 +64,20 @@ class WebViewFragment : Fragment() {
             web_view1.apply {
                 webViewClient = WebClientForFragment(view)
                 webChromeClient = WebChromeClientForFragment(view)
-                settings.javaScriptEnabled = true
                 settings.apply {
                     setSupportZoom(true)
+
+                    javaScriptEnabled = true
+                    allowFileAccess = false
+
                     builtInZoomControls = true
+                    domStorageEnabled = true
+                    loadWithOverviewMode = true
+                    useWideViewPort = true
+                    defaultTextEncodingName = "utf-8"
+                    setAppCacheEnabled(true)
+                    loadsImagesAutomatically = true
+                    mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                 }
                 loadUrl(webUrl)
             }
@@ -91,7 +102,6 @@ class WebViewFragment : Fragment() {
 
     private fun View.setOnClickToolbarButton() {
         this.fr_toolb_menu.setOnClickListener {
-            Log.d("MyLog", "$drawerMenuParent and $mActivity")
             if (drawerMenuParent != null) {
                 if (drawerMenuParent!!.isDrawerOpen(GravityCompat.START)) drawerMenuParent!!.closeDrawer(GravityCompat.START)
                 else drawerMenuParent!!.openDrawer(GravityCompat.START)

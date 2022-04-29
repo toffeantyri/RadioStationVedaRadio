@@ -6,7 +6,7 @@
     <string name="veda_radio_stream_link_medium">https://stream.vedaradio.fm/medium?</string>
     <string name="veda_radio_stream_link_low">https://stream.vedaradio.fm/low?</string>
 
-    <string name="veda_radio_site">http://vedaradio.fm</string>
+    <string name="veda_radio_site">https://vedaradio.fm</string>
     <string name="torsunov_site">https://torsunov.ru/</string>
     <string name="provedy_site">https://provedy.info/</string>
 
