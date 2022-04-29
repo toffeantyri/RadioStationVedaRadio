@@ -40,7 +40,14 @@ class MainActivity : BaseMainActivity() {
         playAudio(url)
         dataModel.statusFragmentConnected.observe(this) {
             fragmentIsConnected = it
-            if(it)container_frame_for_website.visibility = View.VISIBLE else container_frame_for_website.visibility = View.GONE
+            if (it) {
+                container_frame_for_website.visibility = View.VISIBLE
+                supportActionBar?.hide()
+            } else {
+                container_frame_for_website.visibility = View.GONE
+                supportActionBar?.show()
+            }
+
         }
     }
 
@@ -59,6 +66,10 @@ class MainActivity : BaseMainActivity() {
     override fun onResume() {
         super.onResume()
         volumeControlStream = AudioManager.STREAM_MUSIC
+    }
+
+    override fun onStop() {
+        super.onStop()
     }
 
     override fun onDestroy() {

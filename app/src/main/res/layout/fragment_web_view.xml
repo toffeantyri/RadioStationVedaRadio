@@ -3,24 +3,89 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.fragments.WebViewFragment">
 
-   <ProgressBar
-       android:visibility="visible"
-       android:id="@+id/progress_cicle_webpage"
-       android:layout_width="100dp"
-       android:layout_height="100dp"
-       android:layout_gravity="center"
-       android:indeterminateTint="@color/green_500"
-       android:alpha="0.6"
-       android:indeterminate="true"
-       android:indeterminateBehavior="cycle"/>
+    <Toolbar
+        android:id="@+id/webview_toolbar_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/green_200"
+        android:elevation="10dp">
 
-   <WebView
-       android:visibility="gone"
-       android:id="@+id/web_view1"
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="fill_horizontal">
+
+            <ImageButton
+                android:layout_marginEnd="10dp"
+                android:layout_alignParentStart="true"
+                android:id="@+id/fr_toolb_menu"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@color/green_200"
+                android:src="@drawable/ic_menu_black_24dp" />
+
+            <ImageButton
+                android:layout_marginHorizontal="10dp"
+                android:id="@+id/fr_toolb_back"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_toEndOf="@id/fr_toolb_menu"
+                android:background="@color/green_200"
+                android:src="@drawable/ic_keyboard_arrow_left_black_24dp" />
+
+            <ImageButton
+                android:id="@+id/fr_toolb_forward"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="10dp"
+                android:layout_toEndOf="@+id/fr_toolb_back"
+                android:background="@color/green_200"
+                android:src="@drawable/ic_keyboard_arrow_right_black_24dp" />
+
+            <ImageButton
+                android:layout_marginHorizontal="10dp"
+                android:id="@+id/fr_toolb_cancel"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_toStartOf="@+id/fr_toolb_browser"
+                android:background="@color/green_200"
+                android:src="@drawable/ic_cancel_black_24dp" />
+
+            <ImageButton
+                android:layout_alignParentEnd="true"
+                android:id="@+id/fr_toolb_browser"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginHorizontal="10dp"
+                android:background="@color/green_200"
+                android:src="@drawable/ic_open_in_browser_black_24dp"
+                />
+
+        </RelativeLayout>
+
+
+    </Toolbar>
+
+    <ProgressBar
+        android:visibility="visible"
+        android:id="@+id/progress_cicle_webpage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/green_500"
+        android:alpha="0.6"
+        android:indeterminate="true"
+        android:indeterminateBehavior="cycle" />
+
+    <WebView
+        android:layout_marginTop="50dp"
+        android:visibility="gone"
+        android:id="@+id/web_view1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </FrameLayout>

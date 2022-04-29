@@ -18,6 +18,7 @@ import androidx.fragment.app.activityViewModels
 import kotlinx.android.synthetic.main.fragment_web_view.*
 import kotlinx.android.synthetic.main.fragment_web_view.view.*
 import ru.music.radiostationvedaradio.R
+import ru.music.radiostationvedaradio.services.InitStatusMediaPlayer
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 const val TAG_WEB_URL = "web_url"
@@ -27,7 +28,6 @@ class WebViewFragment : Fragment() {
     private val dataModel: ViewModelMainActivity by activityViewModels()
     lateinit var webUrl: String
 
-
     companion object {
         @JvmStatic
         fun newInstance(urlSite: String) = WebViewFragment().apply {
@@ -35,11 +35,6 @@ class WebViewFragment : Fragment() {
             args.putString(TAG_WEB_URL, urlSite)
             arguments = args
         }
-    }
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(
@@ -51,8 +46,8 @@ class WebViewFragment : Fragment() {
 
 
 
-        return view0
-    }
+return view0
+}
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -76,13 +71,10 @@ class WebViewFragment : Fragment() {
     }
 
 
-
-
-
-    private fun onBackPressed(webView : WebView) {
+    private fun onBackPressed(webView: WebView) {
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if(webView.canGoBack()){
+                if (webView.canGoBack()) {
                     webView.goBack()
                 } else {
                     dataModel.statusFragmentConnected.value = false
@@ -90,7 +82,7 @@ class WebViewFragment : Fragment() {
                 }
             }
         }
-        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner,onBackPressedCallback)
+        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, onBackPressedCallback)
     }
 
 }
