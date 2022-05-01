@@ -35,7 +35,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/romic"
                     android:textSize="17sp"
-                    android:text="@string/default_text_bhagavadgita"
+                    android:text="@string/tcitata_dnya"
                     android:textColor="@color/green_900"
                     android:textStyle="italic" />
 

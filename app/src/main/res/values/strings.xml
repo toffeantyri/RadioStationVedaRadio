@@ -19,6 +19,7 @@
     <string name="error_no_internet">Нет подключения к интернету</string>
 
     <string name="nav_option">Дополнительно</string>
+    <string name="tcitata_dnya">Случайная цитата из "Бхагавад-Гиты"</string>
 
     <string name="item_exit">Выход</string>
     <string name="item_about_app">Оценить приложение</string>
