@@ -19,15 +19,19 @@ import android.telephony.TelephonyManager
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import com.google.gson.Gson
+import com.google.gson.JsonElement
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.retrofit.metaDataOfVedaradio.StreamVedaradioJSONClass
 import ru.music.radiostationvedaradio.retrofit.metaDataOfVedaradio.VedaradioRetrofitService
@@ -205,17 +209,21 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     fun startUpdateAlbumData(timeUntilUpdate: Long) {
         job?.cancel()
         job = CoroutineScope(Dispatchers.Main).launch {
+            val okHttpClient = OkHttpClient.Builder().build()
+
             val retrofit: Retrofit = Retrofit.Builder()
                 .baseUrl("https://stream.vedaradio.fm")
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(ScalarsConverterFactory.create())
                 .build()
             val vedaradioService = retrofit.create(VedaradioRetrofitService::class.java)
-            vedaradioService.jsonPlease().enqueue(object : Callback<StreamVedaradioJSONClass> {
+            vedaradioService.jsonPlease().enqueue(object : Callback<String> {
                 override fun onResponse(
-                    call: Call<StreamVedaradioJSONClass>,
-                    response: Response<StreamVedaradioJSONClass>
+                    call: Call<String>,
+                    response: Response<String>
                 ) {
-                    response.body()?.icestats?.source?.get(0)?.title?.let {
+                    val gson = Gson()
+                    val streamVedaradioJSONClass :StreamVedaradioJSONClass  = gson.fromJson(response.body(), StreamVedaradioJSONClass::class.java)
+                    streamVedaradioJSONClass?.icestats?.source?.get(0)?.title?.let {
                         val list = it.split("-")
                         when (list.size) {
                             1 -> {
@@ -243,11 +251,11 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                             removeNotification()
                         }
                     }
-                    Log.d("MyLogS", "update : $artist         $song")
+                    Log.d("MyLogS", "update NowPlaying : $artist         $song")
                     handler?.postDelayed({ startUpdateAlbumData(timeUntilUpdate) }, timeUntilUpdate)
                 }
 
-                override fun onFailure(call: Call<StreamVedaradioJSONClass>, t: Throwable) {
+                override fun onFailure(call: Call<String>, t: Throwable) {
                     artist = "Veda radio"
                     song = "From Heart to Heart"
                     job?.cancel()
