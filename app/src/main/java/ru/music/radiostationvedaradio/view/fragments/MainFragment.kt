@@ -102,7 +102,6 @@ class MainFragment : Fragment() {
         btn_refresh_tcitata.setOnClickListener {
             this.tv_tcitata_dnya.loadNewTcitata()
         }
+
     }
-
-
 }

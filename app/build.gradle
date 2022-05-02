@@ -1,6 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 
 
 android {
@@ -61,4 +63,13 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.7.1'
     implementation 'com.squareup.retrofit2:converter-simplexml:2.7.1'
     implementation 'com.squareup.retrofit2:converter-scalars:2.5.0'
+
+    implementation platform('com.google.firebase:firebase-bom:29.3.1')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+
+
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.2'
 }

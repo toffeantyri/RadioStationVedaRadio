@@ -424,7 +424,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         if (intent != null) {
             handleIncomingAction(intent)
         }
-        return START_STICKY //super.onStartCommand(intent, flags, startId)
+        return START_STICKY
     }
 
 //----------------------------MediaPlayerControl-------------------------------------------

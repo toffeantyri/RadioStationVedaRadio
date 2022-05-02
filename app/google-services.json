@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "971393116756",
+    "project_id": "vedaradio-d17c2",
+    "storage_bucket": "vedaradio-d17c2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:971393116756:android:674d2cf562f84ae6101bc1",
+        "android_client_info": {
+          "package_name": "ru.music.radiostationvedaradio"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "971393116756-3t5l1n43r4lacktmmgt1ashkg032rnqk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjtPHpImmPHGsvs1noOAUVZMhTkDw5TlE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "971393116756-3t5l1n43r4lacktmmgt1ashkg032rnqk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -106,11 +106,11 @@ open class BaseMainActivity : AppCompatActivity() {
         if (!serviceBound) {
             Log.d("MyLog", "StartService")
             val playerIntent = Intent(applicationContext, RadioPlayerService::class.java)
+            playerIntent.putExtra(TAG_NEW_AUDIO_URL, urlStream)
             if (this.isServiceRunning(RadioPlayerService::class.java)) {
                 playerIntent.putExtra(TAG_FIRST_RUN, false)
             } else {
                 playerIntent.putExtra(TAG_FIRST_RUN, true)
-                playerIntent.putExtra(TAG_NEW_AUDIO_URL, urlStream)
             }
             applicationContext.startForegroundService(playerIntent)
             bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE)
