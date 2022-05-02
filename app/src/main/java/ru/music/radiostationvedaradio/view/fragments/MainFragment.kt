@@ -77,7 +77,9 @@ class MainFragment : Fragment() {
                     val regexpLine =
                         "\".[^a-z]{50,1500}\"".trimMargin() // значения в <> исключая >/ со значением +    - один или более символов
                     val found = regexpLine.toRegex().find(byte.toString())
-                    this@loadNewTcitata.text = found?.value ?: stringResult
+                    val formattedText = found?.value?.replace(". ", ".\n\n") ?: stringResult
+                    val formattedText2 = formattedText.replace("\"", " ")
+                    this@loadNewTcitata.text = formattedText2
                 }
             }
 
