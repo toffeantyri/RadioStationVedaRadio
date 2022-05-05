@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.view.activities
+package ru.music.radiostationvedaradio.activityes
 
 import android.content.Intent
 import android.os.Bundle

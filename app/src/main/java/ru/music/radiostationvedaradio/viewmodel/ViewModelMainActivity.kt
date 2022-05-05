@@ -23,5 +23,10 @@ class ViewModelMainActivity : ViewModel() {
         statusFragmentConnected.value = false
     }
 
+    val stringTcitataDnya : MutableLiveData<String> by lazy {
+        MutableLiveData<String>()
+    }
+
+
 
 }

@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.view.fragments
+package ru.music.radiostationvedaradio.fragments
 
 
 import android.os.Bundle
@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import kotlinx.android.synthetic.main.fragment_main.view.*
 import kotlinx.coroutines.*
-import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback

@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.view.activities
+package ru.music.radiostationvedaradio.activityes
 
 import android.media.AudioManager
 import android.os.Bundle
@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.music.radiostationvedaradio.R
+import ru.music.radiostationvedaradio.activityes.BaseMainActivity
 
 
 class MainActivity : BaseMainActivity() {
@@ -48,10 +49,10 @@ class MainActivity : BaseMainActivity() {
                 supportActionBar?.show()
                 container_main_frame.visibility = View.VISIBLE
                 container_frame_for_website.visibility = View.GONE
-
             }
-
         }
+
+        mainPresenter.enable()
     }
 
     override fun onPause() {

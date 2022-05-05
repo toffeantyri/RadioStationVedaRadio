@@ -1,8 +1,6 @@
-package ru.music.radiostationvedaradio.view.fragments
+package ru.music.radiostationvedaradio.fragments
 
-import android.app.Application
 import android.graphics.Bitmap
-import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.webkit.*

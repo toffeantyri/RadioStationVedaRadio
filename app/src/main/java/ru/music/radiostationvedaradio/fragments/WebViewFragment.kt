@@ -1,11 +1,9 @@
-package ru.music.radiostationvedaradio.view.fragments
+package ru.music.radiostationvedaradio.fragments
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import kotlinx.android.synthetic.main.fragment_web_view.view.*
 import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.view.activities.MainActivity
+import ru.music.radiostationvedaradio.activityes.MainActivity
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 const val TAG_WEB_URL = "web_url"

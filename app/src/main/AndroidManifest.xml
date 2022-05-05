@@ -37,7 +37,7 @@
             tools:ignore="ExportedService" />
 
 
-        <activity android:name=".view.activities.SplashScreenActivity">
+        <activity android:name=".activityes.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -46,7 +46,7 @@
         </activity>
 
         <activity
-            android:name=".view.activities.MainActivity"
+            android:name=".activityes.MainActivity"
             android:exported="true"
             android:launchMode="singleTask"
             android:screenOrientation="portrait">

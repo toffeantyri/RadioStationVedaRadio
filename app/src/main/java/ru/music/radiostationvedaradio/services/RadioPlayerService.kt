@@ -20,13 +20,11 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.google.gson.Gson
-import com.google.gson.JsonElement
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,7 +33,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.retrofit.metaDataOfVedaradio.StreamVedaradioJSONClass
 import ru.music.radiostationvedaradio.retrofit.metaDataOfVedaradio.VedaradioRetrofitService
-import ru.music.radiostationvedaradio.view.activities.MainActivity
+import ru.music.radiostationvedaradio.activityes.MainActivity
 
 
 const val ACTION_PLAY = "ru.music.vedaradio.ACTION_PLAY"

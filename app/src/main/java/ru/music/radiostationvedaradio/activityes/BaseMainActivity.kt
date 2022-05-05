@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.view.activities
+package ru.music.radiostationvedaradio.activityes
 
 import android.annotation.SuppressLint
 import android.app.ActivityManager
@@ -23,18 +23,24 @@ import com.yandex.mobile.ads.common.AdRequest
 import com.yandex.mobile.ads.common.AdRequestError
 import com.yandex.mobile.ads.common.ImpressionData
 import kotlinx.android.synthetic.main.activity_main.*
+import moxy.MvpAppCompatActivity
+import moxy.ktx.moxyPresenter
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.services.*
 import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandableListAdapterForNavView
 import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandedMenuModel
 import ru.music.radiostationvedaradio.view.adapters.listview.ListViewAdapter
 import ru.music.radiostationvedaradio.view.adapters.listview.ListViewItemModel
-import ru.music.radiostationvedaradio.view.fragments.MainFragment
-import ru.music.radiostationvedaradio.view.fragments.WebViewFragment
+import ru.music.radiostationvedaradio.fragments.MainFragment
+import ru.music.radiostationvedaradio.fragments.WebViewFragment
+import ru.music.radiostationvedaradio.presenters.MainPresenter
+import ru.music.radiostationvedaradio.view.adapters.MainView
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 @SuppressLint("Registered")
-open class BaseMainActivity : AppCompatActivity() {
+open class BaseMainActivity : MvpAppCompatActivity(), MainView {
+
+    protected val mainPresenter by moxyPresenter { MainPresenter() }
 
     lateinit var myDrawerLayout: DrawerLayout
     private lateinit var mMenuAdapter: ExpandableListAdapterForNavView
@@ -413,6 +419,21 @@ open class BaseMainActivity : AppCompatActivity() {
             else myDrawerLayout.openDrawer(GravityCompat.START)
         }
         return super.onOptionsItemSelected(item)
+    }
+
+
+    //viewMVP methods
+    override fun displayTcitataDnya(data: String) {
+        dataModel.stringTcitataDnya.value = data
+        //todo добавить наблюдателя в фрагменте когда будем получать String через repo
+    }
+
+    override fun displayError(error: Throwable) {
+
+    }
+
+    override fun setLoading(flag: Boolean) {
+
     }
     //---------------------initActionBar--------------------------------
 

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/green_100_alp50"
-    tools:context=".view.activities.MainActivity"
+    tools:context=".activityes.MainActivity"
     tools:menu="@menu/menu"
     tools:openDrawer="end">
 
