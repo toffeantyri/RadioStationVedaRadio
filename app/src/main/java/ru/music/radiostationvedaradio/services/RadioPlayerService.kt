@@ -31,8 +31,8 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.retrofit.metaDataOfVedaradio.StreamVedaradioJSONClass
-import ru.music.radiostationvedaradio.retrofit.metaDataOfVedaradio.VedaradioRetrofitService
+import ru.music.radiostationvedaradio.busines.model.metadatavedaradio.StreamVedaradioJSONClass
+import ru.music.radiostationvedaradio.busines.VedaradioRetrofitApi
 import ru.music.radiostationvedaradio.activityes.MainActivity
 
 
@@ -213,14 +213,14 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 .baseUrl("https://stream.vedaradio.fm")
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .build()
-            val vedaradioService = retrofit.create(VedaradioRetrofitService::class.java)
+            val vedaradioService = retrofit.create(VedaradioRetrofitApi::class.java)
             vedaradioService.jsonPlease().enqueue(object : Callback<String> {
                 override fun onResponse(
                     call: Call<String>,
                     response: Response<String>
                 ) {
                     val gson = Gson()
-                    val streamVedaradioJSONClass :StreamVedaradioJSONClass  = gson.fromJson(response.body(), StreamVedaradioJSONClass::class.java)
+                    val streamVedaradioJSONClass : StreamVedaradioJSONClass = gson.fromJson(response.body(), StreamVedaradioJSONClass::class.java)
                     streamVedaradioJSONClass?.icestats?.source?.get(0)?.title?.let {
                         val list = it.split("-")
                         when (list.size) {

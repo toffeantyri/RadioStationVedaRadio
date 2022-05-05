@@ -18,8 +18,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
 import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.retrofit.data_main_tcitata.EncodingInterceptor
-import ru.music.radiostationvedaradio.retrofit.data_main_tcitata.HareKrishnaService
+import ru.music.radiostationvedaradio.busines.data_main_tcitata.EncodingInterceptor
+import ru.music.radiostationvedaradio.busines.data_main_tcitata.HareKrishnaService
 
 class MainFragment : Fragment() {
 

@@ -1,7 +1,6 @@
-package ru.music.radiostationvedaradio.retrofit.data_main_tcitata
+package ru.music.radiostationvedaradio.busines.data_main_tcitata
 
 import okhttp3.Interceptor
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody
 
