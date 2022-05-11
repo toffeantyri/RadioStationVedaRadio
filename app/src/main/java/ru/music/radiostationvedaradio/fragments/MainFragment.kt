@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import kotlinx.android.synthetic.main.fragment_main.view.*
 import kotlinx.coroutines.*
+import moxy.MvpAppCompatFragment
+import moxy.ktx.moxyPresenter
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -20,25 +22,14 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.busines.data_main_tcitata.EncodingInterceptor
 import ru.music.radiostationvedaradio.busines.data_main_tcitata.HareKrishnaService
+import ru.music.radiostationvedaradio.presenters.MainFragmentPresenter
+import ru.music.radiostationvedaradio.presenters.MainPresenter
+import ru.music.radiostationvedaradio.view.adapters.MainFragmentView
+import ru.music.radiostationvedaradio.view.adapters.MainView
 
-class MainFragment : Fragment() {
+class MainFragment : MvpAppCompatFragment(), MainFragmentView {
 
-    private var jobInfoLoader: Job? = null
-
-    companion object {
-        @JvmStatic
-        fun newInstance() =
-            MainFragment().apply {
-                arguments = Bundle().apply {
-                }
-            }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-        }
-    }
+    private val mainFragmentPresenter by moxyPresenter { MainFragmentPresenter() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,59 +39,27 @@ class MainFragment : Fragment() {
         view0.apply {
             setUpOnClickStaticButton()
         }
+        mainFragmentPresenter.enable()
         return view0
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        view.tv_tcitata_dnya.loadNewTcitata()
-
-
-    }
-
-    private fun TextView.loadNewTcitata() {
-        jobInfoLoader?.cancel()
-        jobInfoLoader = CoroutineScope(Dispatchers.Main).launch {
-            val stringResult: String = getString(R.string.default_text_bhagavadgita)
-            val randomIntString = "${(1..657).random()}"
-            val retrofit: Retrofit = Retrofit.Builder()
-                .addConverterFactory(ScalarsConverterFactory.create())
-                .client(
-                    OkHttpClient.Builder()
-                        .addInterceptor(EncodingInterceptor()).build()
-                )
-                .baseUrl("http://hare108.ru")
-                .build()
-            val hareKrishnaService = retrofit.create(HareKrishnaService::class.java)
-            val response: Call<String> =
-                hareKrishnaService.getNewTcitata("http://hare108.ru/bhagavad-gita/$randomIntString.htm")
-            response.enqueue(object : Callback<String> {
-                override fun onResponse(call: Call<String>, response: Response<String>) {
-                    if (response.isSuccessful) {
-                        val byte = response.body()
-                        val regexpLine =
-                            "\".[^a-z]{50,1500}\"".trimMargin() // значения в <> исключая >/ со значением +    - один или более символов
-                        val found = regexpLine.toRegex().find(byte.toString())
-                        val formattedText = found?.value?.replace(". ", ".\n\n") ?: stringResult
-                        val formattedText2 = formattedText.replace("\"", " ")
-                        this@loadNewTcitata.text = formattedText2
-                    }
-                }
-
-                override fun onFailure(call: Call<String>, t: Throwable) {
-                    this@loadNewTcitata.text = stringResult
-                }
-            })
-        }
-        jobInfoLoader?.invokeOnCompletion {
-            Log.d("MyLog", "refresh tcitata complite")
-        }
+        mainFragmentPresenter.refreshMainFragmentInfo()
     }
 
     private fun View.setUpOnClickStaticButton() {
         btn_refresh_tcitata.setOnClickListener {
-            this.tv_tcitata_dnya.loadNewTcitata()
+            mainFragmentPresenter.refreshMainFragmentInfo()
         }
+    }
 
+    override fun showTodayNoun(data: String) {
+        view?.tv_tcitata_dnya?.text = data
+        Log.d("MyLogRx", "fragment: $data")
+    }
+
+    override fun setLoading(data: Boolean) {
     }
 }
+

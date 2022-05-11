@@ -1,11 +1,13 @@
 package ru.music.radiostationvedaradio.busines
 
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.GET
+import ru.music.radiostationvedaradio.busines.model.metadatavedaradio.StreamVedaradioJSONClass
 
 interface VedaradioRetrofitApiRx {
     @GET("/status-json.xsl")
-    fun jsonPlease() //todo RX получатель
+    suspend fun jsonPlease() : Response<StreamVedaradioJSONClass> //Response<String>
 
 
 }

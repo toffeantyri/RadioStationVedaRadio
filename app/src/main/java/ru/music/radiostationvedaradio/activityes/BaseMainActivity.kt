@@ -131,7 +131,7 @@ open class BaseMainActivity : MvpAppCompatActivity(), MainView {
 
     protected fun loadMainFragment() {
         Thread { supportFragmentManager.beginTransaction()
-            .replace(R.id.container_main_frame, MainFragment.newInstance()).commit()
+            .replace(R.id.container_main_frame, MainFragment()).commit()
             runOnUiThread {
                 Log.d("MyLog", "${container_main_frame.isEmpty()}")
             }

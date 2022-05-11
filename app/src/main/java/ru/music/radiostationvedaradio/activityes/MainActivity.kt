@@ -53,6 +53,7 @@ class MainActivity : BaseMainActivity() {
         }
 
         mainPresenter.enable()
+
     }
 
     override fun onPause() {

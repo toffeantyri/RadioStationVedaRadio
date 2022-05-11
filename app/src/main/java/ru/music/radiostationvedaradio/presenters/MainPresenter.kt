@@ -1,8 +1,14 @@
 package ru.music.radiostationvedaradio.presenters
 
+import android.util.Log
+import ru.music.radiostationvedaradio.busines.ApiProvider
+import ru.music.radiostationvedaradio.busines.repository.MainRepository
+import ru.music.radiostationvedaradio.view.adapters.MainFragmentView
 import ru.music.radiostationvedaradio.view.adapters.MainView
 
 class MainPresenter : BasePresenter<MainView>() {
+
+    private val repo = MainRepository(ApiProvider())
 
     override fun enable() {
 
@@ -10,7 +16,7 @@ class MainPresenter : BasePresenter<MainView>() {
 
     fun refreshMainFragmentInfo(){
         viewState.setLoading(true)
-        //todo Обращение к репо
+        repo.reloadMetaData()
     }
 
 
