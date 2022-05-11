@@ -68,7 +68,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     private var resumePosition: Int = 0
     private var mediaPlayer: MediaPlayer? = null
 
-    var STATE_OF_SERVICE = InitStatusMediaPlayer.IDLE
+    private var STATE_OF_SERVICE = InitStatusMediaPlayer.IDLE
         set(value) {
             field = value
             broadcastTellNewStatus()
@@ -207,8 +207,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     fun startUpdateAlbumData(timeUntilUpdate: Long) {
         job?.cancel()
         job = CoroutineScope(Dispatchers.Main).launch {
-            val okHttpClient = OkHttpClient.Builder().build()
-
             val retrofit: Retrofit = Retrofit.Builder()
                 .baseUrl("https://stream.vedaradio.fm")
                 .addConverterFactory(ScalarsConverterFactory.create())
@@ -221,7 +219,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 ) {
                     val gson = Gson()
                     val streamVedaradioJSONClass : StreamVedaradioJSONClass = gson.fromJson(response.body(), StreamVedaradioJSONClass::class.java)
-                    streamVedaradioJSONClass?.icestats?.source?.get(0)?.title?.let {
+                    streamVedaradioJSONClass.icestats.source[0].title.let {
                         val list = it.split("-")
                         when (list.size) {
                             1 -> {
@@ -249,7 +247,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                             removeNotification()
                         }
                     }
-                    Log.d("MyLogS", "update NowPlaying : $artist         $song")
+                    Log.d("MyLogS", "update NowPlaying : $artist  $song")
                     handler?.postDelayed({ startUpdateAlbumData(timeUntilUpdate) }, timeUntilUpdate)
                 }
 
@@ -505,7 +503,6 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         }
         telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE)
     }
-
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         Log.d("MyLogS", "OnTaskRemove : ${rootIntent?.action}")

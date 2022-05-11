@@ -24,19 +24,22 @@
         android:id="@+id/iv_listview_item" />
 
     <TextView
-        android:fontFamily="@font/romic"
         android:id="@+id/tv_list_view_item"
         android:layout_width="wrap_content"
-        android:layout_height="45dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/romic"
         android:gravity="center_vertical"
         android:paddingStart="40dp"
-        android:paddingTop="3dp"
+        android:paddingTop="6dp"
         android:paddingEnd="10dp"
-        android:paddingBottom="3dp"
+        android:paddingBottom="6dp"
         android:text="item lv 1"
         android:textColor="@color/black"
         android:textSize="18sp"
+        android:maxWidth="250dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/iv_listview_item"
         app:layout_constraintTop_toTopOf="parent" />
 

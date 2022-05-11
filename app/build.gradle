@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+//firebase Crashlitics
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 
@@ -69,8 +70,6 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-simplexml:2.9.0'
     implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
 
-
-
     //analitic
     implementation platform('com.google.firebase:firebase-bom:29.3.1')
     implementation 'com.google.firebase:firebase-analytics-ktx'
@@ -83,8 +82,10 @@ dependencies {
 
     //moxy
     implementation "com.github.moxy-community:moxy:2.1.2"
+    //both annotation variant
     annotationProcessor "com.github.moxy-community:moxy-compiler:2.1.2"
     kapt "com.github.moxy-community:moxy-compiler:2.1.2"
+
     implementation "com.github.moxy-community:moxy-androidx:2.1.2"
     implementation "com.github.moxy-community:moxy-material:2.1.2"
     implementation "com.github.moxy-community:moxy-ktx:2.1.2"
