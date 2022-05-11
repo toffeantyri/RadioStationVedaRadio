@@ -393,7 +393,7 @@ open class BaseMainActivity : MvpAppCompatActivity(), MainView {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_play && mediaService != null) {
+        if (item.itemId == R.id.action_play ) {
             Log.d("MyLog", "action_play click. isPlaying: ${dataModel.statusMediaPlayer.value}")
             when (dataModel.statusMediaPlayer.value) {
                 InitStatusMediaPlayer.INIT_COMPLETE -> mediaService?.playMedia()

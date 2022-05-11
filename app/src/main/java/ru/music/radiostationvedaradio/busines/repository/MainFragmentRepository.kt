@@ -10,6 +10,7 @@ class MainFragmentRepository(api : ApiProvider) : BaseRepository<String>(api) {
         val randomIntString = "${(1..657).random()}"
         val exceptionHandler = CoroutineExceptionHandler { _, exception ->
             Log.d("MyLogRx", "exceptionHandler coro: " + exception.message.toString())
+            /*todo грузим из БД*/
         }
 
         CoroutineScope(context = Dispatchers.IO).launch(exceptionHandler) {
@@ -34,10 +35,11 @@ class MainFragmentRepository(api : ApiProvider) : BaseRepository<String>(api) {
             } else {
                 withContext(Dispatchers.Main){
                     Log.d("MyLogRx", "error noun body" + response.errorBody().toString())
+                    /*todo грузим из БД*/
                 }
 
 
-                /*todo грузим из БД*/
+
             }
         }
     }
