@@ -39,12 +39,13 @@ class MainFragment : MvpAppCompatFragment(), MainFragmentView {
         view0.apply {
             setUpOnClickStaticButton()
         }
-        mainFragmentPresenter.enable()
+
         return view0
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        mainFragmentPresenter.enable()
         mainFragmentPresenter.refreshMainFragmentInfo()
     }
 

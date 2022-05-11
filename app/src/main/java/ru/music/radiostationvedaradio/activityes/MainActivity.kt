@@ -25,7 +25,7 @@ class MainActivity : BaseMainActivity() {
 
         loadMainFragment()
 
-        job = CoroutineScope(Dispatchers.IO).launch {
+        job = CoroutineScope(Dispatchers.Main).launch {
             Log.d("MyLog", "Coroutine job : $job")
             initExpandableListInNavView()
             initListViewInNavView()
@@ -38,7 +38,7 @@ class MainActivity : BaseMainActivity() {
         }
 
 
-        playAudio(url)
+        //playAudio(url)
         dataModel.statusFragmentConnected.observe(this) {
             fragmentIsConnected = it
             if (it) {

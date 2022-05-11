@@ -8,9 +8,9 @@ class MainFragmentRepository(api : ApiProvider) : BaseRepository<String>(api) {
 
     fun reloadNoun() {
         val randomIntString = "${(1..657).random()}"
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(context = Dispatchers.IO).launch {
             val response =
-                async {
+                async (context = Dispatchers.IO) {
                     api.provideNounOfToday().getNewTcitata("http://hare108.ru/bhagavad-gita/$randomIntString.htm")
                 }.await()
             if (response.isSuccessful) {
@@ -21,11 +21,14 @@ class MainFragmentRepository(api : ApiProvider) : BaseRepository<String>(api) {
 
                 /*todo сохраняем в БД*/
 
-                withContext(Dispatchers.Main){
+
                     dataEmitter.onNext(formattedText2)
-                }
+
             } else {
-                Log.d("MyLogRx", "error noun body" + response.errorBody().toString())
+
+                    Log.d("MyLogRx", "error noun body" + response.errorBody().toString())
+
+
                 /*todo грузим из БД*/
             }
         }
