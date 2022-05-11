@@ -10,7 +10,7 @@ class MainFragmentPresenter : BasePresenter<MainFragmentView>() {
     private val repo = MainFragmentRepository(ApiProvider())
 
     override fun enable() {
-        repo.dataEmitter.subscribe { response ->
+        repo.dataEmitter.subscribe { response  ->
             //Log.d("MyLogRx", "enable() dataEmitter.subscribe :" + response)
             viewState.setLoading(false)
             viewState.showTodayNoun(response)
