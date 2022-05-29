@@ -36,6 +36,8 @@ import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
 import ru.music.radiostationvedaradio.fragments.TAG_WEB_URL
+import java.lang.Exception
+import java.lang.IllegalArgumentException
 
 @SuppressLint("Registered")
 open class BaseMainActivity : MvpAppCompatActivity(), MainView {
@@ -44,14 +46,14 @@ open class BaseMainActivity : MvpAppCompatActivity(), MainView {
 
     private lateinit var mToolbar: Toolbar
     lateinit var navController: NavController
+
     lateinit var myDrawerLayout: DrawerLayout
+
     private lateinit var mMenuAdapter: ExpandableListAdapterForNavView
     private lateinit var expandableList: ExpandableListView
     private lateinit var listDataHeader: ArrayList<ExpandedMenuModel>
     private lateinit var listDataChild: HashMap<ExpandedMenuModel, List<String>>
-
     private lateinit var navigationView: NavigationView
-
     private lateinit var listView: ListView
     private lateinit var adapterListView: BaseAdapter
     private lateinit var listViewData: ArrayList<ListViewItemModel>
@@ -279,7 +281,14 @@ open class BaseMainActivity : MvpAppCompatActivity(), MainView {
     private fun replaceWebFragmentWithUrl(webUrl: String) {
         val bundle = Bundle()
         bundle.putString(TAG_WEB_URL, webUrl)
-        navController.navigate(R.id.action_mainFragment_to_webViewFragment, bundle)
+        try {
+            navController.navigate(R.id.action_webViewFragment_to_mainFragment)
+            navController.navigate(R.id.action_mainFragment_to_webViewFragment, bundle)
+        } catch (e: IllegalArgumentException){
+            Log.d("MyLog", "${e}")
+            navController.navigate(R.id.action_mainFragment_to_webViewFragment, bundle)
+        }
+
     }
 
     private fun prepareExpListData() {
@@ -368,6 +377,7 @@ open class BaseMainActivity : MvpAppCompatActivity(), MainView {
         updateCheckGroupQuality(url)
         btnPlay = menu.findItem(R.id.action_play)
         btnRefresh = menu.findItem(R.id.action_refresh)
+
 
         dataModel.statusMediaPlayer.observe(this) {
             if (it == InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_baseline_pause_circle_filled_24)

@@ -13,6 +13,7 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_web_view.view.*
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity
@@ -26,7 +27,7 @@ const val TAG_WEB_URL = "web_url"
 class WebViewFragment : Fragment() {
 
     private val dataModel: ViewModelMainActivity by activityViewModels()
-    lateinit var webUrl: String
+    private lateinit var webUrl: String
 
 
     companion object {
@@ -42,6 +43,7 @@ class WebViewFragment : Fragment() {
         val view0 = inflater.inflate(R.layout.fragment_web_view, container, false)
         webUrl = arguments?.getString(TAG_WEB_URL) ?: ""
         setHasOptionsMenu(true)
+
         return view0
     }
 
@@ -78,14 +80,16 @@ class WebViewFragment : Fragment() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
 
 
-
+    }
 
     private fun onBackPressed(webView: WebView) {
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                Log.d("MyLog", "handleOnBackpressed" )
+                Log.d("MyLog", "handleOnBackpressed")
                 if (webView.canGoBack()) {
                     webView.goBack()
                 }
@@ -97,6 +101,12 @@ class WebViewFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.web_toolbar_menu, menu)
+        menu.findItem(R.id.action_refresh).isVisible = false
+        menu.findItem(R.id.action_play).isVisible = false
+        menu.findItem(R.id.action_low_quality).isVisible = false
+        menu.findItem(R.id.action_medium_quality).isVisible = false
+        menu.findItem(R.id.action_high_quality).isVisible = false
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

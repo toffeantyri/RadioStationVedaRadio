@@ -61,6 +61,7 @@ class MainActivity : BaseMainActivity() {
     override fun onResume() {
         super.onResume()
         volumeControlStream = AudioManager.STREAM_MUSIC
+
     }
 
     override fun onStop() {
