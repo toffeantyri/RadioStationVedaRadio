@@ -4,6 +4,7 @@ import android.media.AudioManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.navigation.Navigation
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,6 +12,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.BaseMainActivity
+import ru.music.radiostationvedaradio.utils.APP_CONTEXT
 
 
 class MainActivity : BaseMainActivity() {
@@ -22,11 +24,11 @@ class MainActivity : BaseMainActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         url = getString(R.string.veda_radio_stream_link_low) // TODO Качество по умолчанию на релиз - MEDIUM
-
-        loadMainFragment()
+        APP_CONTEXT = this
 
         job = CoroutineScope(Dispatchers.Main).launch {
             Log.d("MyLog", "Coroutine job : $job")
+            navController = Navigation.findNavController(this@MainActivity, R.id.main_nav_host_fragment)
             initExpandableListInNavView()
             initListViewInNavView()
             setUpActionBar()
@@ -39,18 +41,6 @@ class MainActivity : BaseMainActivity() {
 
 
         //playAudio(url)
-        dataModel.statusFragmentConnected.observe(this) {
-            fragmentIsConnected = it
-            if (it) {
-                supportActionBar?.hide()
-                container_frame_for_website.visibility = View.VISIBLE
-                container_main_frame.visibility = View.GONE
-            } else {
-                supportActionBar?.show()
-                container_main_frame.visibility = View.VISIBLE
-                container_frame_for_website.visibility = View.GONE
-            }
-        }
 
         mainPresenter.enable()
 
@@ -82,6 +72,7 @@ class MainActivity : BaseMainActivity() {
         if (serviceBound) {
             unbindService(serviceConnection)
         }
+        APP_CONTEXT = null
         super.onDestroy()
     }
 

@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.busines.data_main_tcitata
+package ru.music.radiostationvedaradio.busines.randomnoun
 
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaTypeOrNull

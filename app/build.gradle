@@ -89,4 +89,19 @@ dependencies {
     implementation "com.github.moxy-community:moxy-androidx:2.1.2"
     implementation "com.github.moxy-community:moxy-material:2.1.2"
     implementation "com.github.moxy-community:moxy-ktx:2.1.2"
+
+
+    //navigation
+    def nav_version = "2.3.0-rc01"
+    // Java language implementation
+    implementation "androidx.navigation:navigation-fragment:$nav_version"
+    implementation "androidx.navigation:navigation-ui:$nav_version"
+    // Kotlin
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    // Feature module Support
+    implementation "androidx.navigation:navigation-dynamic-features-fragment:$nav_version"
+    // Testing Navigation
+    androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
+
 }

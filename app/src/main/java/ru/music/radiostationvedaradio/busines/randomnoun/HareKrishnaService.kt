@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.busines.data_main_tcitata
+package ru.music.radiostationvedaradio.busines.randomnoun
 
 import retrofit2.Call
 import retrofit2.http.*

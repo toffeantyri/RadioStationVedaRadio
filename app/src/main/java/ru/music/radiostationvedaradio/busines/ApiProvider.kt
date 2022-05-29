@@ -2,11 +2,10 @@ package ru.music.radiostationvedaradio.busines
 
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import ru.music.radiostationvedaradio.busines.data_main_tcitata.EncodingInterceptor
-import ru.music.radiostationvedaradio.busines.data_main_tcitata.HareKrishnaServiceCoro
+import ru.music.radiostationvedaradio.busines.randomnoun.EncodingInterceptor
+import ru.music.radiostationvedaradio.busines.randomnoun.HareKrishnaServiceCoro
 
 class ApiProvider {
 

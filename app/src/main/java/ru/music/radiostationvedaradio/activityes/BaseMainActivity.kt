@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.*
 import android.net.Uri
+import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.util.Log
@@ -12,9 +13,7 @@ import android.view.MenuItem
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
-import androidx.core.view.isEmpty
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.yandex.mobile.ads.banner.AdSize
@@ -31,17 +30,20 @@ import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandableLis
 import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandedMenuModel
 import ru.music.radiostationvedaradio.view.adapters.listview.ListViewAdapter
 import ru.music.radiostationvedaradio.view.adapters.listview.ListViewItemModel
-import ru.music.radiostationvedaradio.fragments.MainFragment
-import ru.music.radiostationvedaradio.fragments.WebViewFragment
 import ru.music.radiostationvedaradio.presenters.MainPresenter
 import ru.music.radiostationvedaradio.view.adapters.MainView
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.navigation.NavController
+import ru.music.radiostationvedaradio.fragments.TAG_WEB_URL
 
 @SuppressLint("Registered")
 open class BaseMainActivity : MvpAppCompatActivity(), MainView {
 
     protected val mainPresenter by moxyPresenter { MainPresenter() }
 
+    private lateinit var mToolbar: Toolbar
+    lateinit var navController: NavController
     lateinit var myDrawerLayout: DrawerLayout
     private lateinit var mMenuAdapter: ExpandableListAdapterForNavView
     private lateinit var expandableList: ExpandableListView
@@ -129,18 +131,6 @@ open class BaseMainActivity : MvpAppCompatActivity(), MainView {
         }
     }
 
-    protected fun loadMainFragment() {
-        Thread { supportFragmentManager.beginTransaction()
-            .replace(R.id.container_main_frame, MainFragment()).commit()
-            runOnUiThread {
-                Log.d("MyLog", "${container_main_frame.isEmpty()}")
-            }
-        }.start()
-
-
-
-    }
-
     protected val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as RadioPlayerService.LocalBinder
@@ -200,20 +190,16 @@ open class BaseMainActivity : MvpAppCompatActivity(), MainView {
         main_banner.loadAd(adRequest)
     }
 
-    protected var fragmentIsConnected = false
     private var doubleBackPress = false
     override fun onBackPressed() {
-        if (fragmentIsConnected) {
+        if (!doubleBackPress) {
             super.onBackPressed()
-            return
-        }
-
-        if (doubleBackPress) {
-            super.onBackPressed()
+        } else {
+            alertDialogExit()
         }
         doubleBackPress = true
         handler.postDelayed({ doubleBackPress = false }, 2000)
-        alertDialogExit()
+
     }
 
     private fun alertDialogExit() {
@@ -248,7 +234,8 @@ open class BaseMainActivity : MvpAppCompatActivity(), MainView {
         navigationView = draw_navView
         setupDrawerContent(navigationView)
         prepareExpListData()
-        mMenuAdapter = ExpandableListAdapterForNavView(this, listDataHeader, listDataChild, expandableList)
+        mMenuAdapter =
+            ExpandableListAdapterForNavView(this, listDataHeader, listDataChild, expandableList)
         expandableList.setAdapter(mMenuAdapter)
 
         expandableList.setOnChildClickListener { parent, v, groupPosition, childPosition, id ->
@@ -258,7 +245,7 @@ open class BaseMainActivity : MvpAppCompatActivity(), MainView {
                     0 -> {
                         //Log.d("MyLog", "nav click: $childPosition")
                         val newWebUrl = getString(R.string.veda_radio_site)
-                        if (webUrl != newWebUrl || !fragmentIsConnected) {
+                        if (webUrl != newWebUrl) {
                             webUrl = newWebUrl
                             replaceWebFragmentWithUrl(webUrl)
                         }
@@ -267,7 +254,7 @@ open class BaseMainActivity : MvpAppCompatActivity(), MainView {
                     1 -> {
                         //Log.d("MyLog", "nav click: $childPosition")
                         val newWebUrl = getString(R.string.torsunov_site)
-                        if (webUrl != newWebUrl || !fragmentIsConnected) {
+                        if (webUrl != newWebUrl) {
                             webUrl = newWebUrl
                             replaceWebFragmentWithUrl(webUrl)
                         }
@@ -277,7 +264,7 @@ open class BaseMainActivity : MvpAppCompatActivity(), MainView {
                     2 -> {
                         //Log.d("MyLog", "nav click: $childPosition")
                         val newWebUrl = getString(R.string.provedy_site)
-                        if (webUrl != newWebUrl || !fragmentIsConnected) {
+                        if (webUrl != newWebUrl) {
                             webUrl = newWebUrl
                             replaceWebFragmentWithUrl(webUrl)
                         }
@@ -285,14 +272,14 @@ open class BaseMainActivity : MvpAppCompatActivity(), MainView {
                     }
                 }
             }
-
             true
         }
     }
 
     private fun replaceWebFragmentWithUrl(webUrl: String) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.container_frame_for_website, WebViewFragment.newInstance(webUrl)).commit()
+        val bundle = Bundle()
+        bundle.putString(TAG_WEB_URL, webUrl)
+        navController.navigate(R.id.action_mainFragment_to_webViewFragment, bundle)
     }
 
     private fun prepareExpListData() {
@@ -325,7 +312,8 @@ open class BaseMainActivity : MvpAppCompatActivity(), MainView {
         listView.setOnItemClickListener { _, _, position, _ ->
             when (position) {
                 0 -> {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.link_on_this_app)))
+                    val intent =
+                        Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.link_on_this_app)))
                     startActivity(intent)
                 }
                 1 -> alertDialogExit()
@@ -342,7 +330,7 @@ open class BaseMainActivity : MvpAppCompatActivity(), MainView {
         }
         val exit = ListViewItemModel().apply {
             setTitle(getString(R.string.item_exit))
-            setIconId(R.drawable.ic_baseline_exit_to_app_24)
+            setIconId(R.drawable.ic_exit)
         }
         listViewData.add(rate)
         listViewData.add(exit)
@@ -361,11 +349,14 @@ open class BaseMainActivity : MvpAppCompatActivity(), MainView {
 
     //---------------------initActionBar--------------------------------
     protected fun setUpActionBar() {
+        mToolbar = main_toolbar
+        setSupportActionBar(mToolbar)
         supportActionBar?.apply {
             setHomeButtonEnabled(true)
             setDisplayHomeAsUpEnabled(true)
             setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp)
         }
+        title = getString(R.string.app_name)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -393,7 +384,7 @@ open class BaseMainActivity : MvpAppCompatActivity(), MainView {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_play ) {
+        if (item.itemId == R.id.action_play) {
             Log.d("MyLog", "action_play click. isPlaying: ${dataModel.statusMediaPlayer.value}")
             when (dataModel.statusMediaPlayer.value) {
                 InitStatusMediaPlayer.INIT_COMPLETE -> mediaService?.playMedia()
@@ -415,7 +406,9 @@ open class BaseMainActivity : MvpAppCompatActivity(), MainView {
             url = getString(R.string.veda_radio_stream_link_high)
             playAudio(url)
         } else if (item.itemId == android.R.id.home) {
-            if (myDrawerLayout.isDrawerOpen(GravityCompat.START)) myDrawerLayout.closeDrawer(GravityCompat.START)
+            if (myDrawerLayout.isDrawerOpen(GravityCompat.START)) myDrawerLayout.closeDrawer(
+                GravityCompat.START
+            )
             else myDrawerLayout.openDrawer(GravityCompat.START)
         }
         return super.onOptionsItemSelected(item)

@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.fragments
+package ru.music.radiostationvedaradio.busines
 
 import android.graphics.Bitmap
 import android.util.Log

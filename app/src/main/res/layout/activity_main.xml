@@ -8,35 +8,37 @@
     android:background="@color/green_100_alp50"
     tools:context=".activityes.MainActivity"
     tools:menu="@menu/menu"
-    tools:openDrawer="start">
-
-
+    tools:openDrawer="end">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/main_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@id/main_banner"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/green_200"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:menu="@menu/menu"
+            />
 
-            <FrameLayout
-                android:visibility="visible"
-                android:id="@+id/container_main_frame"
+            <fragment
+                android:id="@+id/main_nav_host_fragment"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="0dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:defaultNavHost="true"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                app:navGraph = "@navigation/navigation_graph_main"
+                app:layout_constraintBottom_toTopOf="@id/main_banner"
+                app:layout_constraintTop_toBottomOf="@id/main_toolbar"
+                />
 
-            <FrameLayout
-                android:id="@+id/container_frame_for_website"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </LinearLayout>
 
         <com.yandex.mobile.ads.banner.BannerAdView
             android:id="@+id/main_banner"
@@ -55,8 +57,8 @@
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        app:headerLayout="@layout/header_nav_menu"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/header_nav_menu">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -64,32 +66,30 @@
             android:orientation="vertical">
 
             <include
+                layout="@layout/header_nav_menu"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                layout="@layout/header_nav_menu" />
+                android:layout_height="wrap_content" />
 
             <ExpandableListView
-                android:dividerHeight="1dp"
-                android:divider="@color/green_100"
                 android:id="@+id/exp_list_nav_menu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:listitem="@layout/ex_list_item_header"
-                />
+                android:divider="@color/green_100"
+                android:dividerHeight="1dp"
+                tools:listitem="@layout/ex_list_item_header" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/green_100"/>
+                android:background="@color/green_100" />
 
             <ListView
-                android:dividerHeight="1dp"
-                android:divider="@color/green_100"
                 android:id="@+id/listview_nav_menu"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:listitem="@layout/listview_item_navmenu"
-                />
+                android:divider="@color/green_100"
+                android:dividerHeight="1dp"
+                tools:listitem="@layout/listview_item_navmenu" />
         </LinearLayout>
     </com.google.android.material.navigation.NavigationView>
 

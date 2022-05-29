@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:background="@android:color/white"
+    tools:context=".activityes.MainActivity">
+
+    <item
+        android:id="@+id/action_web_back"
+        android:icon="@drawable/ic_arrow_left"
+        android:orderInCategory="0"
+        android:title="web_back"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_web_forward"
+        android:icon="@drawable/ic_arrow_right"
+        android:orderInCategory="1"
+        android:title="web_forward"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_web_cancel"
+        android:icon="@drawable/ic_cancel"
+        android:orderInCategory="2"
+        android:title="Refresh"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_web_openbrow"
+        android:icon="@drawable/ic_open_in_browser_black_24dp"
+        android:orderInCategory="3"
+        android:title="Refresh"
+        app:showAsAction="always" />
+
+</menu>
