@@ -14,4 +14,11 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="MainToolbarStyle" parent="Widget.AppCompat.Toolbar">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:colorControlNormal">@android:color/white</item>
+        <item name="titleTextColor">@android:color/white</item>
+    </style>
+
+
 </resources>
