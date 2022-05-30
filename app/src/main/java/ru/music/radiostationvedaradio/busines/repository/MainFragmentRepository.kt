@@ -3,6 +3,7 @@ package ru.music.radiostationvedaradio.busines.repository
 import android.util.Log
 import kotlinx.coroutines.*
 import ru.music.radiostationvedaradio.busines.ApiProvider
+import ru.music.radiostationvedaradio.utils.parceNounHareKrishnaFromHtml
 
 class MainFragmentRepository(api: ApiProvider) : BaseRepository<String>(api) {
 
@@ -19,14 +20,12 @@ class MainFragmentRepository(api: ApiProvider) : BaseRepository<String>(api) {
                     api.provideNounOfToday().getNewTcitata("http://hare108.ru/bhagavad-gita/$randomIntString.htm")
                 }.await()
             if (response.isSuccessful) {
-                val regexpLine = "\".[^a-z]{50,1500}\"".trimMargin()
-                val found = regexpLine.toRegex().find(response.body().toString())
-                val formattedText = found?.value?.replace(". ", ".\n\n")
-                val formattedText2 = formattedText?.replace("\"", " ")
+                val noun = response.body()?.parceNounHareKrishnaFromHtml() ?: ""
+
                 /*todo сохраняем в БД*/
 
                 withContext(Dispatchers.Main) {
-                    dataEmitter.onNext(formattedText2)
+                    dataEmitter.onNext(noun)
                     onSuccess()
                 }
             } else {
