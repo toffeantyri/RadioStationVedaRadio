@@ -3,7 +3,6 @@ package ru.music.radiostationvedaradio.activityes
 import android.media.AudioManager
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.navigation.Navigation
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
@@ -11,7 +10,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.activityes.BaseMainActivity
 import ru.music.radiostationvedaradio.utils.APP_CONTEXT
 
 
@@ -23,7 +21,7 @@ class MainActivity : BaseMainActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        url = getString(R.string.veda_radio_stream_link_low) // TODO Качество по умолчанию на релиз - MEDIUM
+        urlRadioService = getString(R.string.veda_radio_stream_link_low) // TODO Качество по умолчанию на релиз - MEDIUM
         APP_CONTEXT = this
 
         job = CoroutineScope(Dispatchers.Main).launch {

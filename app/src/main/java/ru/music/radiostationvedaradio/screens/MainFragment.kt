@@ -2,6 +2,7 @@ package ru.music.radiostationvedaradio.screens
 
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.fragment_main.view.*
 import ru.music.radiostationvedaradio.R
+import ru.music.radiostationvedaradio.utils.TAG
 import ru.music.radiostationvedaradio.viewmodel.MainFragmentViewModel
 
 class MainFragment : Fragment() {
@@ -21,25 +23,32 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view0 = inflater.inflate(R.layout.fragment_main, container, false)
+        view0.apply {
+            setUpOnClickStaticButton()
+        }
+        return view0
+    }
+
+    override fun onStart() {
+        super.onStart()
         mViewModel = ViewModelProvider(this).get(MainFragmentViewModel::class.java)
         mViewModel.nounText.observe(this) {
             tv_tcitata_dnya.text = it
         }
-
-        view0.apply {
-            setUpOnClickStaticButton()
-        }
-
-        return view0
+        loadNoun()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-            loadNoun()
     }
 
     override fun onDestroy() {
-        mViewModel.nounText.removeObservers(this)
+        try {
+            mViewModel.nounText.removeObservers(this)
+        } catch (e: UninitializedPropertyAccessException ){
+            Log.d(TAG, "${e.message}")
+        }
+
         super.onDestroy()
     }
 

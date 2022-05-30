@@ -11,8 +11,10 @@ import android.webkit.WebView
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
 import kotlinx.android.synthetic.main.fragment_web_view.view.*
 import ru.music.radiostationvedaradio.R
+import ru.music.radiostationvedaradio.activityes.MainActivity
 import ru.music.radiostationvedaradio.busines.WebChromeClientForFragment
 import ru.music.radiostationvedaradio.busines.WebClientForFragment
 import ru.music.radiostationvedaradio.utils.APP_CONTEXT
@@ -37,8 +39,8 @@ class WebViewFragment : Fragment() {
     ): View? {
         val view0 = inflater.inflate(R.layout.fragment_web_view, container, false)
         webUrl = arguments?.getString(TAG_WEB_URL) ?: ""
+        (activity as MainActivity).webFragmentConnected = true
         setHasOptionsMenu(true)
-
         return view0
     }
 
@@ -72,14 +74,8 @@ class WebViewFragment : Fragment() {
                 loadUrl(webUrl)
             }
         }
-
     }
 
-    override fun onResume() {
-        super.onResume()
-
-
-    }
 
     private fun onBackPressed(webView: WebView) {
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
@@ -87,6 +83,11 @@ class WebViewFragment : Fragment() {
                 Log.d("MyLog", "handleOnBackpressed")
                 if (webView.canGoBack()) {
                     webView.goBack()
+                } else {
+                    (activity as MainActivity).apply {
+                        webFragmentConnected = false
+                        navController.navigate(R.id.action_webViewFragment_to_mainFragment)
+                    }
                 }
             }
         }
@@ -113,16 +114,16 @@ class WebViewFragment : Fragment() {
                 if (view?.web_view1?.canGoForward() == true) view?.web_view1?.goForward()
             }
             R.id.action_web_cancel -> {
-                APP_CONTEXT?.navController?.navigate(R.id.action_webViewFragment_to_mainFragment)
+                (activity as MainActivity).apply {
+                    webFragmentConnected = false
+                    navController.navigate(R.id.action_webViewFragment_to_mainFragment)
+                }
             }
             R.id.action_web_openbrow -> {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(view?.web_view1?.url))
                 startActivity(intent)
             }
         }
-
-
-
         return super.onOptionsItemSelected(item)
     }
 }

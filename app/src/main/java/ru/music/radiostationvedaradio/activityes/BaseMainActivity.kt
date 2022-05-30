@@ -33,17 +33,28 @@ import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.music.radiostationvedaradio.screens.TAG_WEB_URL
-import java.lang.IllegalArgumentException
+import ru.music.radiostationvedaradio.utils.TAG
 
 @SuppressLint("Registered")
 open class BaseMainActivity : AppCompatActivity() {
 
+    protected val dataModel: ViewModelMainActivity by viewModels()
 
-    private lateinit var mToolbar: Toolbar
+
+
     lateinit var navController: NavController
+    var webFragmentConnected: Boolean = false // флаг, активен ли WebFragment
+    private var webUrl = "" // url для WebFragment
 
-    lateinit var myDrawerLayout: DrawerLayout
+    //-----------------s toolbar menu-------------------
+    private lateinit var mToolbar: Toolbar
+    private var myMenu: Menu? = null
+    private lateinit var btnPlay: MenuItem
+    private lateinit var btnRefresh: MenuItem
+    //-----------------e toolbar menu-------------------
 
+    //---------------------- s drawer menu---------------------
+    private lateinit var myDrawerLayout: DrawerLayout
     private lateinit var mMenuAdapter: ExpandableListAdapterForNavView
     private lateinit var expandableList: ExpandableListView
     private lateinit var listDataHeader: ArrayList<ExpandedMenuModel>
@@ -52,9 +63,9 @@ open class BaseMainActivity : AppCompatActivity() {
     private lateinit var listView: ListView
     private lateinit var adapterListView: BaseAdapter
     private lateinit var listViewData: ArrayList<ListViewItemModel>
+    //----------------------e drawer menu---------------------
 
-
-    protected val dataModel: ViewModelMainActivity by viewModels()
+    //----------------------------s service----------------------
     protected var statusMediaPlayer = InitStatusMediaPlayer.IDLE
         set(value) {
             field = value
@@ -66,21 +77,19 @@ open class BaseMainActivity : AppCompatActivity() {
             field = value
             Log.d("MyLog", "serviceBound -> $value")
         }
-
     protected var mediaService: RadioPlayerService? = null
-
-    private val handler = Handler()
-    private var myMenu: Menu? = null
-    private lateinit var btnPlay: MenuItem
-    private lateinit var btnRefresh: MenuItem
-
-    private var webUrl = ""
-    protected var url: String = ""
+    protected var urlRadioService: String = ""
         set(value) {
             field = value
             updateCheckGroupQuality(value)
             Log.d("MyLog", "Activity : url -> $value")
         }
+    //----------------------------e service----------------------
+
+
+
+
+
 
     private fun updateCheckGroupQuality(url: String) {
         if (myMenu == null) return
@@ -134,7 +143,7 @@ open class BaseMainActivity : AppCompatActivity() {
             mediaService = binder.getService()
             serviceBound = true
             statusMediaPlayer = mediaService?.getStatusMediaMplayer() ?: InitStatusMediaPlayer.IDLE
-            url = mediaService?.getPlayingURL() ?: ""
+            urlRadioService = mediaService?.getPlayingURL() ?: ""
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -189,14 +198,20 @@ open class BaseMainActivity : AppCompatActivity() {
 
     private var doubleBackPress = false
     override fun onBackPressed() {
-        if (!doubleBackPress) {
+        if (webFragmentConnected) {
+            Log.d(TAG, "$webFragmentConnected")
             super.onBackPressed()
-        } else {
-            alertDialogExit()
+            return
         }
-        doubleBackPress = true
-        handler.postDelayed({ doubleBackPress = false }, 2000)
 
+        if (doubleBackPress) {
+            super.onBackPressed()
+        }
+
+        doubleBackPress = true
+        val handler = Handler()
+        handler.postDelayed({ doubleBackPress = false }, 2000)
+        alertDialogExit()
     }
 
     private fun alertDialogExit() {
@@ -242,7 +257,7 @@ open class BaseMainActivity : AppCompatActivity() {
                     0 -> {
                         //Log.d("MyLog", "nav click: $childPosition")
                         val newWebUrl = getString(R.string.veda_radio_site)
-                        if (webUrl != newWebUrl) {
+                        if (webUrl != newWebUrl || !webFragmentConnected) {
                             webUrl = newWebUrl
                             replaceWebFragmentWithUrl(webUrl)
                         }
@@ -251,7 +266,7 @@ open class BaseMainActivity : AppCompatActivity() {
                     1 -> {
                         //Log.d("MyLog", "nav click: $childPosition")
                         val newWebUrl = getString(R.string.torsunov_site)
-                        if (webUrl != newWebUrl) {
+                        if (webUrl != newWebUrl || !webFragmentConnected) {
                             webUrl = newWebUrl
                             replaceWebFragmentWithUrl(webUrl)
                         }
@@ -261,7 +276,7 @@ open class BaseMainActivity : AppCompatActivity() {
                     2 -> {
                         //Log.d("MyLog", "nav click: $childPosition")
                         val newWebUrl = getString(R.string.provedy_site)
-                        if (webUrl != newWebUrl) {
+                        if (webUrl != newWebUrl || !webFragmentConnected) {
                             webUrl = newWebUrl
                             replaceWebFragmentWithUrl(webUrl)
                         }
@@ -276,12 +291,15 @@ open class BaseMainActivity : AppCompatActivity() {
     private fun replaceWebFragmentWithUrl(webUrl: String) {
         val bundle = Bundle()
         bundle.putString(TAG_WEB_URL, webUrl)
-        try {
+        if (webFragmentConnected) {
+            //Log.d(TAG, "replaseWeb  " + webFragmentConnected.toString())
             navController.navigate(R.id.action_webViewFragment_to_mainFragment)
             navController.navigate(R.id.action_mainFragment_to_webViewFragment, bundle)
-        } catch (e: IllegalArgumentException){
-            Log.d("MyLog", "${e}")
+            webFragmentConnected = true
+        } else {
+            //Log.d(TAG, "replaseWeb  " + webFragmentConnected.toString())
             navController.navigate(R.id.action_mainFragment_to_webViewFragment, bundle)
+            webFragmentConnected = true
         }
 
     }
@@ -369,7 +387,7 @@ open class BaseMainActivity : AppCompatActivity() {
             return super.onCreateOptionsMenu(menu)
         }
         myMenu = menu
-        updateCheckGroupQuality(url)
+        updateCheckGroupQuality(urlRadioService)
         btnPlay = menu.findItem(R.id.action_play)
         btnRefresh = menu.findItem(R.id.action_refresh)
 
@@ -394,22 +412,22 @@ open class BaseMainActivity : AppCompatActivity() {
             when (dataModel.statusMediaPlayer.value) {
                 InitStatusMediaPlayer.INIT_COMPLETE -> mediaService?.playMedia()
                 InitStatusMediaPlayer.PLAYING -> mediaService?.pauseMedia()
-                InitStatusMediaPlayer.IDLE -> playAudio(url)
+                InitStatusMediaPlayer.IDLE -> playAudio(urlRadioService)
                 InitStatusMediaPlayer.INITIALISATION -> {
                     Toast.makeText(this, "Loading", Toast.LENGTH_SHORT).show()
                 }
             }
         } else if (item.itemId == R.id.action_refresh) {
-            playAudio(url)
+            playAudio(urlRadioService)
         } else if (item.itemId == R.id.action_low_quality) {
-            url = getString(R.string.veda_radio_stream_link_low)
-            playAudio(url)
+            urlRadioService = getString(R.string.veda_radio_stream_link_low)
+            playAudio(urlRadioService)
         } else if (item.itemId == R.id.action_medium_quality) {
-            url = getString(R.string.veda_radio_stream_link_medium)
-            playAudio(url)
+            urlRadioService = getString(R.string.veda_radio_stream_link_medium)
+            playAudio(urlRadioService)
         } else if (item.itemId == R.id.action_high_quality) {
-            url = getString(R.string.veda_radio_stream_link_high)
-            playAudio(url)
+            urlRadioService = getString(R.string.veda_radio_stream_link_high)
+            playAudio(urlRadioService)
         } else if (item.itemId == android.R.id.home) {
             if (myDrawerLayout.isDrawerOpen(GravityCompat.START)) myDrawerLayout.closeDrawer(
                 GravityCompat.START
