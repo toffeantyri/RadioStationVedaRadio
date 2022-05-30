@@ -42,8 +42,6 @@ class MainActivity : BaseMainActivity() {
 
         //playAudio(url)
 
-        mainPresenter.enable()
-
     }
 
     override fun onPause() {
@@ -53,15 +51,12 @@ class MainActivity : BaseMainActivity() {
 
     override fun onStart() {
         super.onStart()
-
-
         Log.d("MyLog", "MainActivity onStart")
     }
 
     override fun onResume() {
         super.onResume()
         volumeControlStream = AudioManager.STREAM_MUSIC
-
     }
 
     override fun onStop() {

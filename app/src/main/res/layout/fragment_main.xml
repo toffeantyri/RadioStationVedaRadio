@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragments.MainFragment"
+    tools:context=".screens.MainFragment"
     android:background="@color/green_100_alp50">
 
     <ScrollView
@@ -24,6 +24,14 @@
                 app:cardCornerRadius="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/noun_loading"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    />
 
                 <ImageButton
                     android:id="@+id/btn_refresh_tcitata"
@@ -47,7 +55,6 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/romic"
                     android:textSize="17sp"
-                    android:text="@string/tcitata_dnya"
                     android:textColor="@color/green_900"
                     android:textStyle="italic" />
             </androidx.cardview.widget.CardView>

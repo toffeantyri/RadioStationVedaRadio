@@ -1,47 +1,43 @@
 package ru.music.radiostationvedaradio.busines.repository
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.*
 import ru.music.radiostationvedaradio.busines.ApiProvider
 
-class MainFragmentRepository(api : ApiProvider) : BaseRepository<String>(api) {
+class MainFragmentRepository(api: ApiProvider) : BaseRepository<String>(api) {
 
-    fun reloadNoun() {
+    fun reloadNoun(onSuccess: () -> Unit) {
         val randomIntString = "${(1..657).random()}"
         val exceptionHandler = CoroutineExceptionHandler { _, exception ->
             Log.d("MyLogRx", "exceptionHandler coro: " + exception.message.toString())
             /*todo грузим из БД*/
+            onSuccess()
         }
-
         CoroutineScope(context = Dispatchers.IO).launch(exceptionHandler) {
             val response =
-                async (context = Dispatchers.IO) {
+                async(context = Dispatchers.IO) {
                     api.provideNounOfToday().getNewTcitata("http://hare108.ru/bhagavad-gita/$randomIntString.htm")
                 }.await()
-
             if (response.isSuccessful) {
                 val regexpLine = "\".[^a-z]{50,1500}\"".trimMargin()
                 val found = regexpLine.toRegex().find(response.body().toString())
                 val formattedText = found?.value?.replace(". ", ".\n\n")
                 val formattedText2 = formattedText?.replace("\"", " ")
-
                 /*todo сохраняем в БД*/
 
-                withContext(Dispatchers.Main){
+                withContext(Dispatchers.Main) {
                     dataEmitter.onNext(formattedText2)
+                    onSuccess()
                 }
-
-
             } else {
-                withContext(Dispatchers.Main){
+                withContext(Dispatchers.Main) {
                     Log.d("MyLogRx", "error noun body" + response.errorBody().toString())
                     /*todo грузим из БД*/
+                    onSuccess()
                 }
-
-
-
             }
         }
     }
-
 }

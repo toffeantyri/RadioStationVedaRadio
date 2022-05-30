@@ -13,6 +13,7 @@ import android.view.MenuItem
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
@@ -21,28 +22,22 @@ import com.yandex.mobile.ads.banner.BannerAdEventListener
 import com.yandex.mobile.ads.common.AdRequest
 import com.yandex.mobile.ads.common.AdRequestError
 import com.yandex.mobile.ads.common.ImpressionData
-import kotlinx.android.synthetic.main.activity_main.*
-import moxy.MvpAppCompatActivity
-import moxy.ktx.moxyPresenter
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.services.*
 import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandableListAdapterForNavView
 import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandedMenuModel
 import ru.music.radiostationvedaradio.view.adapters.listview.ListViewAdapter
 import ru.music.radiostationvedaradio.view.adapters.listview.ListViewItemModel
-import ru.music.radiostationvedaradio.presenters.MainPresenter
-import ru.music.radiostationvedaradio.view.adapters.MainView
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
-import ru.music.radiostationvedaradio.fragments.TAG_WEB_URL
-import java.lang.Exception
+import kotlinx.android.synthetic.main.activity_main.*
+import ru.music.radiostationvedaradio.screens.TAG_WEB_URL
 import java.lang.IllegalArgumentException
 
 @SuppressLint("Registered")
-open class BaseMainActivity : MvpAppCompatActivity(), MainView {
+open class BaseMainActivity : AppCompatActivity() {
 
-    protected val mainPresenter by moxyPresenter { MainPresenter() }
 
     private lateinit var mToolbar: Toolbar
     lateinit var navController: NavController
@@ -424,20 +419,6 @@ open class BaseMainActivity : MvpAppCompatActivity(), MainView {
         return super.onOptionsItemSelected(item)
     }
 
-
-    //viewMVP methods
-    override fun displayTcitataDnya(data: String) {
-        dataModel.stringTcitataDnya.value = data
-        //todo добавить наблюдателя в фрагменте когда будем получать String через repo
-    }
-
-    override fun displayError(error: Throwable) {
-
-    }
-
-    override fun setLoading(flag: Boolean) {
-
-    }
     //---------------------initActionBar--------------------------------
 
 

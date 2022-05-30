@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.fragments
+package ru.music.radiostationvedaradio.screens
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -9,14 +9,10 @@ import android.view.*
 import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.activity.OnBackPressedCallback
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_web_view.view.*
 import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.activityes.MainActivity
 import ru.music.radiostationvedaradio.busines.WebChromeClientForFragment
 import ru.music.radiostationvedaradio.busines.WebClientForFragment
 import ru.music.radiostationvedaradio.utils.APP_CONTEXT
