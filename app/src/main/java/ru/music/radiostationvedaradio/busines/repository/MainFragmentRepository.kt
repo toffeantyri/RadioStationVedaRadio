@@ -1,19 +1,17 @@
 package ru.music.radiostationvedaradio.busines.repository
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.*
 import ru.music.radiostationvedaradio.busines.ApiProvider
 
 class MainFragmentRepository(api: ApiProvider) : BaseRepository<String>(api) {
 
     fun reloadNoun(onSuccess: () -> Unit) {
-        val randomIntString = "${(1..657).random()}"
+        val randomIntString = "${(1..657).random()}"//на сайте 657 стихов
         val exceptionHandler = CoroutineExceptionHandler { _, exception ->
             Log.d("MyLogRx", "exceptionHandler coro: " + exception.message.toString())
             /*todo грузим из БД*/
-            onSuccess()
+            CoroutineScope(Dispatchers.Main).launch { onSuccess() }
         }
         CoroutineScope(context = Dispatchers.IO).launch(exceptionHandler) {
             val response =

@@ -22,7 +22,7 @@ class MainFragment : Fragment() {
     ): View? {
         val view0 = inflater.inflate(R.layout.fragment_main, container, false)
         mViewModel = ViewModelProvider(this).get(MainFragmentViewModel::class.java)
-        mViewModel.nounText.observe(this){
+        mViewModel.nounText.observe(this) {
             tv_tcitata_dnya.text = it
         }
 
@@ -35,14 +35,24 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+            loadNoun()
+    }
+
+    override fun onDestroy() {
+        mViewModel.nounText.removeObservers(this)
+        super.onDestroy()
     }
 
     private fun View.setUpOnClickStaticButton() {
         btn_refresh_tcitata.setOnClickListener {
-            setNounLoading(true)
-            mViewModel.refreshTodayNoun() {
-                setNounLoading(false)
-            }
+            loadNoun()
+        }
+    }
+
+    private fun loadNoun() {
+        setNounLoading(true)
+        mViewModel.refreshTodayNoun() {
+            setNounLoading(false)
         }
     }
 

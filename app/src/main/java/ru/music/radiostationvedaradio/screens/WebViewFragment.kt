@@ -22,7 +22,6 @@ const val TAG_WEB_URL = "web_url"
 
 class WebViewFragment : Fragment() {
 
-    private val dataModel: ViewModelMainActivity by activityViewModels()
     private lateinit var webUrl: String
 
 
