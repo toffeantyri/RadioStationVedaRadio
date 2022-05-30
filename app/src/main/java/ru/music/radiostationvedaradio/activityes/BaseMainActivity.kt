@@ -38,9 +38,7 @@ import ru.music.radiostationvedaradio.utils.TAG
 @SuppressLint("Registered")
 open class BaseMainActivity : AppCompatActivity() {
 
-    protected val dataModel: ViewModelMainActivity by viewModels()
-
-
+    private val dataModel: ViewModelMainActivity by viewModels()
 
     lateinit var navController: NavController
     var webFragmentConnected: Boolean = false // флаг, активен ли WebFragment
