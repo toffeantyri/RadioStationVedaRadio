@@ -250,7 +250,7 @@ open class BaseMainActivity : AppCompatActivity() {
             ExpandableListAdapterForNavView(this, listDataHeader, listDataChild, expandableList)
         expandableList.setAdapter(mMenuAdapter)
 
-        expandableList.setOnChildClickListener { parent, v, groupPosition, childPosition, id ->
+        expandableList.setOnChildClickListener { _, _, groupPosition, childPosition, _ ->
             //Log.d("MyLog", "$childPosition child in $groupPosition parent ")
             if (groupPosition == 0) {
                 when (childPosition) {
@@ -370,7 +370,7 @@ open class BaseMainActivity : AppCompatActivity() {
 
 
     //---------------------initActionBar--------------------------------
-    protected fun setUpActionBar() {
+    protected fun setUpToolBar() {
         mToolbar = main_toolbar
         setSupportActionBar(mToolbar)
         supportActionBar?.apply {

@@ -34,7 +34,8 @@
             android:exported="false"
             android:foregroundServiceType="mediaPlayback"
             android:stopWithTask="false"
-            tools:ignore="ExportedService" />
+            tools:ignore="ExportedService"
+            />
 
 
         <activity android:name=".activityes.SplashScreenActivity">
@@ -48,8 +49,7 @@
         <activity
             android:name=".activityes.MainActivity"
             android:exported="true"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait">
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

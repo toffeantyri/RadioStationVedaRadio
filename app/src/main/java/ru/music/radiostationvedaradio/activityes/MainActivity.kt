@@ -29,7 +29,7 @@ class MainActivity : BaseMainActivity() {
             navController = Navigation.findNavController(this@MainActivity, R.id.main_nav_host_fragment)
             initExpandableListInNavView()
             initListViewInNavView()
-            setUpActionBar()
+            setUpToolBar()
             registerBroadcastStateService()
             loadAndShowBanner()
         }
@@ -38,7 +38,7 @@ class MainActivity : BaseMainActivity() {
         }
 
 
-        //playAudio(url)
+        playAudio(urlRadioService)
 
     }
 
