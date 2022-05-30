@@ -85,10 +85,6 @@ open class BaseMainActivity : AppCompatActivity() {
     //----------------------------e service----------------------
 
 
-
-
-
-
     private fun updateCheckGroupQuality(url: String) {
         if (myMenu == null) return
         myMenu?.apply {
@@ -166,9 +162,7 @@ open class BaseMainActivity : AppCompatActivity() {
             setAdUnitId(getString(R.string.yandex_banner_desc_id_test))
             setAdSize(AdSize.BANNER_320x50)
         }
-
         val adRequest = AdRequest.Builder().build()
-
         main_banner.setBannerAdEventListener(object : BannerAdEventListener {
             override fun onAdLoaded() {
                 Log.d("MyLog", "Banner Loaded Ok")
@@ -178,18 +172,13 @@ open class BaseMainActivity : AppCompatActivity() {
                 Log.d("MyLog", "Banner Load Fail")
             }
 
-            override fun onAdClicked() {
-                Log.d("MyLog", "Ad Clicked")
-            }
+            override fun onAdClicked() {}
 
-            override fun onLeftApplication() {
-            }
+            override fun onLeftApplication() {}
 
-            override fun onReturnedToApplication() {
-            }
+            override fun onReturnedToApplication() {}
 
-            override fun onImpression(p0: ImpressionData?) {
-            }
+            override fun onImpression(p0: ImpressionData?) {}
         })
         main_banner.loadAd(adRequest)
     }
@@ -201,10 +190,7 @@ open class BaseMainActivity : AppCompatActivity() {
             super.onBackPressed()
             return
         }
-
-        if (doubleBackPress) {
-            super.onBackPressed()
-        }
+        if (doubleBackPress) super.onBackPressed()
 
         doubleBackPress = true
         val handler = Handler()
@@ -299,7 +285,6 @@ open class BaseMainActivity : AppCompatActivity() {
             navController.navigate(R.id.action_mainFragment_to_webViewFragment, bundle)
             webFragmentConnected = true
         }
-
     }
 
     private fun prepareExpListData() {
