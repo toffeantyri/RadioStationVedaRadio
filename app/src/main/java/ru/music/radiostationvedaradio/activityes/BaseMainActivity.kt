@@ -32,8 +32,12 @@ import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.music.radiostationvedaradio.screens.TAG_WEB_URL
 import ru.music.radiostationvedaradio.utils.TAG
+import kotlin.coroutines.CoroutineContext
 
 @SuppressLint("Registered")
 open class BaseMainActivity : AppCompatActivity() {
@@ -412,11 +416,14 @@ open class BaseMainActivity : AppCompatActivity() {
             urlRadioService = getString(R.string.veda_radio_stream_link_high)
             playAudio(urlRadioService)
         } else if (item.itemId == android.R.id.home) {
-            if (myDrawerLayout.isDrawerOpen(GravityCompat.START)) myDrawerLayout.closeDrawer(
-                GravityCompat.START
-            )
-            else myDrawerLayout.openDrawer(GravityCompat.START)
+            CoroutineScope(Dispatchers.Main).launch {
+                if (myDrawerLayout.isDrawerOpen(GravityCompat.START)) myDrawerLayout.closeDrawer(
+                    GravityCompat.START
+                )
+                else myDrawerLayout.openDrawer(GravityCompat.START)
+            }
         }
+
         return super.onOptionsItemSelected(item)
     }
 
