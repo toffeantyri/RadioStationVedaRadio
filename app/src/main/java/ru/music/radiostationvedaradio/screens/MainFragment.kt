@@ -35,11 +35,12 @@ class MainFragment : Fragment() {
         mViewModel.nounText.observe(this) {
             tv_tcitata_dnya.text = it
         }
-        loadNoun()
+        if(mViewModel.nounText.value.isNullOrEmpty()) loadNoun()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        
     }
 
     override fun onDestroy() {
