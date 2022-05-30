@@ -28,7 +28,7 @@
 
     <item
         android:id="@+id/action_web_openbrow"
-        android:icon="@drawable/ic_open_in_browser_black_24dp"
+        android:icon="@drawable/ic_open_in_browser"
         android:orderInCategory="3"
         android:title="Refresh"
         app:showAsAction="always" />

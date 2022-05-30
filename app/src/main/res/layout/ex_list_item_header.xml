@@ -44,7 +44,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/ic_baseline_radio_24" />
+            tools:src="@drawable/ic_radio" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

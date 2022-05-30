@@ -27,8 +27,6 @@ class ApiProvider {
         .baseUrl("http://hare108.ru")
         .build()
 
-    fun provideVedaRadioMetaData() : VedaradioRetrofitApiRx = openVedaradio.create(VedaradioRetrofitApiRx::class.java)
-
     fun provideNounOfToday() : HareKrishnaServiceCoro = openhtmlRawBody.create(HareKrishnaServiceCoro::class.java)
 
 

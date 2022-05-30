@@ -293,7 +293,7 @@ open class BaseMainActivity : AppCompatActivity() {
         //header point
         val headerItem0 = ExpandedMenuModel().apply {
             setIconName(getString(R.string.link_header_name))
-            setIconImage(R.drawable.ic_collections_bookmark_black_24dp)
+            setIconImage(R.drawable.ic_bookmark)
         }
         listDataHeader.add(headerItem0)
 
@@ -330,7 +330,7 @@ open class BaseMainActivity : AppCompatActivity() {
         listViewData = arrayListOf<ListViewItemModel>()
         val rate = ListViewItemModel().apply {
             setTitle(getString(R.string.item_about_app))
-            setIconId(R.drawable.ic_baseline_star_rate_24)
+            setIconId(R.drawable.ic_star_rate)
         }
         val exit = ListViewItemModel().apply {
             setTitle(getString(R.string.item_exit))
@@ -375,7 +375,7 @@ open class BaseMainActivity : AppCompatActivity() {
 
 
         dataModel.statusMediaPlayer.observe(this) {
-            if (it == InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_baseline_pause_circle_filled_24)
+            if (it == InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_pause)
             else if (it != InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
         }
         dataModel.statusMediaPlayer.observe(this) {
