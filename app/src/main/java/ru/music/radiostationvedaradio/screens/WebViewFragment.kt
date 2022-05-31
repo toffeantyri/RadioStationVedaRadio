@@ -2,23 +2,19 @@ package ru.music.radiostationvedaradio.screens
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.webkit.WebSettings
-import android.webkit.WebView
+import android.webkit.*
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.navigation.findNavController
 import kotlinx.android.synthetic.main.fragment_web_view.view.*
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity
-import ru.music.radiostationvedaradio.busines.WebChromeClientForFragment
-import ru.music.radiostationvedaradio.busines.WebClientForFragment
-import ru.music.radiostationvedaradio.utils.APP_CONTEXT
-import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
+
 
 const val TAG_WEB_URL = "web_url"
 
@@ -48,13 +44,28 @@ class WebViewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        onBackPressed(view.web_view1)
+        overrideOnBackPressedWithCallback(view.web_view1)
+
+        val myWebClient = object : WebViewClient(){
+            override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
+                super.onReceivedError(view, request, error)
+                Log.d("MyLog", "error loading webPage ${error?.description}")
+                if(error?.description == "net::ERR_INTERNET_DISCONNECTED"){
+                    Toast.makeText(view?.context, "Internet Disconnected", Toast.LENGTH_SHORT ).show()
+                }
+            }
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                super.onPageStarted(view, url, favicon)
+                view?.visibility = View.VISIBLE
+                getView()?.progress_cicle_webpage?.visibility = View.GONE
+            }
+        }
 
         view.apply {
             progress_cicle_webpage.visibility = View.VISIBLE
             web_view1.apply {
-                webViewClient = WebClientForFragment(view)
-                webChromeClient = WebChromeClientForFragment(view)
+                webViewClient = myWebClient
+                webChromeClient = WebChromeClient()
                 settings.apply {
                     setSupportZoom(true)
 
@@ -77,7 +88,7 @@ class WebViewFragment : Fragment() {
     }
 
 
-    private fun onBackPressed(webView: WebView) {
+    private fun overrideOnBackPressedWithCallback(webView: WebView) {
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 Log.d("MyLog", "handleOnBackpressed")
