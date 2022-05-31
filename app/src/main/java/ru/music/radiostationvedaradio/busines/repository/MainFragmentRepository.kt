@@ -1,18 +1,25 @@
 package ru.music.radiostationvedaradio.busines.repository
 
+import android.app.Application
+import android.content.SharedPreferences
 import android.util.Log
 import kotlinx.coroutines.*
 import ru.music.radiostationvedaradio.busines.ApiProvider
+import ru.music.radiostationvedaradio.busines.SharedPreferenceProvider
 import ru.music.radiostationvedaradio.utils.parceNounHareKrishnaFromHtml
 
 class MainFragmentRepository(api: ApiProvider) : BaseRepository<String>(api) {
+
+    private val prefs by lazy { SharedPreferenceProvider }
 
     fun reloadNoun(onSuccess: () -> Unit) {
         val randomIntString = "${(1..657).random()}"//на сайте 657 стихов
         val exceptionHandler = CoroutineExceptionHandler { _, exception ->
             Log.d("MyLogRx", "exceptionHandler coro: " + exception.message.toString())
-            /*todo грузим из БД*/
-            CoroutineScope(Dispatchers.Main).launch { onSuccess() }
+            CoroutineScope(Dispatchers.Main).launch {
+                dataEmitter.onNext(prefs.loadNoun())
+                onSuccess()
+            }
         }
         CoroutineScope(context = Dispatchers.IO).launch(exceptionHandler) {
             val response =
@@ -21,9 +28,7 @@ class MainFragmentRepository(api: ApiProvider) : BaseRepository<String>(api) {
                 }.await()
             if (response.isSuccessful) {
                 val noun = response.body()?.parceNounHareKrishnaFromHtml() ?: ""
-
-                /*todo сохраняем в БД*/
-
+                prefs.saveNoun(noun)
                 withContext(Dispatchers.Main) {
                     dataEmitter.onNext(noun)
                     onSuccess()
@@ -31,7 +36,7 @@ class MainFragmentRepository(api: ApiProvider) : BaseRepository<String>(api) {
             } else {
                 withContext(Dispatchers.Main) {
                     Log.d("MyLogRx", "error noun body" + response.errorBody().toString())
-                    /*todo грузим из БД*/
+                    dataEmitter.onNext(prefs.loadNoun())
                     onSuccess()
                 }
             }

@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.music.radiostationvedaradio.R
+import ru.music.radiostationvedaradio.busines.SharedPreferenceProvider
 import ru.music.radiostationvedaradio.utils.APP_CONTEXT
 
 
@@ -22,6 +23,7 @@ class MainActivity : BaseMainActivity() {
         setContentView(R.layout.activity_main)
         urlRadioService = getString(R.string.veda_radio_stream_link_low) // TODO Качество по умолчанию на релиз - MEDIUM
         APP_CONTEXT = this
+        SharedPreferenceProvider.getSharedPreferences(this)
 
         job = CoroutineScope(Dispatchers.Main).launch {
             Log.d("MyLog", "Coroutine job : $job")
