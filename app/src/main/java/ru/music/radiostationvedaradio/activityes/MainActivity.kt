@@ -34,9 +34,7 @@ class MainActivity : BaseMainActivity() {
             registerBroadcastStateService()
             loadAndShowBanner()
         }
-        job?.invokeOnCompletion {
-            Log.d("MyLog", "invokeOnComplition Job")
-        }
+
 
 
         playAudio(urlRadioService)

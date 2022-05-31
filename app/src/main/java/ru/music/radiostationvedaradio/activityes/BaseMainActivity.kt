@@ -42,7 +42,7 @@ import kotlin.coroutines.CoroutineContext
 @SuppressLint("Registered")
 open class BaseMainActivity : AppCompatActivity() {
 
-    private val dataModel: ViewModelMainActivity by viewModels()
+    protected val dataModel: ViewModelMainActivity by viewModels()
 
     lateinit var navController: NavController
     var webFragmentConnected: Boolean = false // флаг, активен ли WebFragment
