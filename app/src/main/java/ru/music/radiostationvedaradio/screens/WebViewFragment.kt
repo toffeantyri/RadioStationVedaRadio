@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_web_view.view.*
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity
+import ru.music.radiostationvedaradio.utils.navigateChangeTitleToolbar
 
 
 const val TAG_WEB_URL = "web_url"
@@ -21,7 +22,7 @@ const val TAG_WEB_URL = "web_url"
 class WebViewFragment : Fragment() {
 
     private lateinit var webUrl: String
-
+    private lateinit var parentActivity: MainActivity
 
     companion object {
         @JvmStatic
@@ -35,7 +36,8 @@ class WebViewFragment : Fragment() {
     ): View? {
         val view0 = inflater.inflate(R.layout.fragment_web_view, container, false)
         webUrl = arguments?.getString(TAG_WEB_URL) ?: ""
-        (activity as MainActivity).webFragmentConnected = true
+        parentActivity = (activity as MainActivity)
+        parentActivity.navFragmentConnected = true
         setHasOptionsMenu(true)
         return view0
     }
@@ -46,14 +48,15 @@ class WebViewFragment : Fragment() {
 
         overrideOnBackPressedWithCallback(view.web_view1)
 
-        val myWebClient = object : WebViewClient(){
+        val myWebClient = object : WebViewClient() {
             override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
                 super.onReceivedError(view, request, error)
                 Log.d("MyLog", "error loading webPage ${error?.description}")
-                if(error?.description == "net::ERR_INTERNET_DISCONNECTED"){
-                    Toast.makeText(view?.context, "Internet Disconnected", Toast.LENGTH_SHORT ).show()
+                if (error?.description == "net::ERR_INTERNET_DISCONNECTED") {
+                    Toast.makeText(view?.context, "Internet Disconnected", Toast.LENGTH_SHORT).show()
                 }
             }
+
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
                 view?.visibility = View.VISIBLE
@@ -95,9 +98,12 @@ class WebViewFragment : Fragment() {
                 if (webView.canGoBack()) {
                     webView.goBack()
                 } else {
-                    (activity as MainActivity).apply {
-                        webFragmentConnected = false
-                        navController.navigate(R.id.action_webViewFragment_to_mainFragment)
+                    parentActivity.apply {
+                        navFragmentConnected = false
+                        navController.navigateChangeTitleToolbar(
+                            parentActivity,
+                            R.id.action_webViewFragment_to_mainFragment
+                        )
                     }
                 }
             }
@@ -113,7 +119,7 @@ class WebViewFragment : Fragment() {
         menu.findItem(R.id.action_low_quality).isVisible = false
         menu.findItem(R.id.action_medium_quality).isVisible = false
         menu.findItem(R.id.action_high_quality).isVisible = false
-
+        (parentActivity).mToolbar.title = "Browser"
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -125,9 +131,12 @@ class WebViewFragment : Fragment() {
                 if (view?.web_view1?.canGoForward() == true) view?.web_view1?.goForward()
             }
             R.id.action_web_cancel -> {
-                (activity as MainActivity).apply {
-                    webFragmentConnected = false
-                    navController.navigate(R.id.action_webViewFragment_to_mainFragment)
+                (parentActivity).apply {
+                    navFragmentConnected = false
+                    navController.navigateChangeTitleToolbar(
+                        parentActivity,
+                        R.id.action_webViewFragment_to_mainFragment
+                    )
                 }
             }
             R.id.action_web_openbrow -> {
@@ -137,4 +146,6 @@ class WebViewFragment : Fragment() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+
 }

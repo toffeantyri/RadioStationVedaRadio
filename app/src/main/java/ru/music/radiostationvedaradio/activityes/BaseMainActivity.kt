@@ -37,7 +37,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.music.radiostationvedaradio.screens.TAG_WEB_URL
 import ru.music.radiostationvedaradio.utils.TAG
-import kotlin.coroutines.CoroutineContext
 
 @SuppressLint("Registered")
 open class BaseMainActivity : AppCompatActivity() {
@@ -45,11 +44,11 @@ open class BaseMainActivity : AppCompatActivity() {
     protected val dataModel: ViewModelMainActivity by viewModels()
 
     lateinit var navController: NavController
-    var webFragmentConnected: Boolean = false // флаг, активен ли WebFragment
+    var navFragmentConnected: Boolean = false // флаг, активен ли WebFragment
     private var webUrl = "" // url для WebFragment
 
     //-----------------s toolbar menu-------------------
-    private lateinit var mToolbar: Toolbar
+    lateinit var mToolbar: Toolbar
     private var myMenu: Menu? = null
     private lateinit var btnPlay: MenuItem
     private lateinit var btnRefresh: MenuItem
@@ -189,8 +188,8 @@ open class BaseMainActivity : AppCompatActivity() {
 
     private var doubleBackPress = false
     override fun onBackPressed() {
-        if (webFragmentConnected) {
-            Log.d(TAG, "$webFragmentConnected")
+        if (navFragmentConnected) {
+            Log.d(TAG, "$navFragmentConnected")
             super.onBackPressed()
             return
         }
@@ -245,7 +244,7 @@ open class BaseMainActivity : AppCompatActivity() {
                     0 -> {
                         //Log.d("MyLog", "nav click: $childPosition")
                         val newWebUrl = getString(R.string.veda_radio_site)
-                        if (webUrl != newWebUrl || !webFragmentConnected) {
+                        if (webUrl != newWebUrl || !navFragmentConnected) {
                             webUrl = newWebUrl
                             replaceWebFragmentWithUrl(webUrl)
                         }
@@ -254,7 +253,7 @@ open class BaseMainActivity : AppCompatActivity() {
                     1 -> {
                         //Log.d("MyLog", "nav click: $childPosition")
                         val newWebUrl = getString(R.string.torsunov_site)
-                        if (webUrl != newWebUrl || !webFragmentConnected) {
+                        if (webUrl != newWebUrl || !navFragmentConnected) {
                             webUrl = newWebUrl
                             replaceWebFragmentWithUrl(webUrl)
                         }
@@ -264,7 +263,7 @@ open class BaseMainActivity : AppCompatActivity() {
                     2 -> {
                         //Log.d("MyLog", "nav click: $childPosition")
                         val newWebUrl = getString(R.string.provedy_site)
-                        if (webUrl != newWebUrl || !webFragmentConnected) {
+                        if (webUrl != newWebUrl || !navFragmentConnected) {
                             webUrl = newWebUrl
                             replaceWebFragmentWithUrl(webUrl)
                         }
@@ -279,15 +278,15 @@ open class BaseMainActivity : AppCompatActivity() {
     private fun replaceWebFragmentWithUrl(webUrl: String) {
         val bundle = Bundle()
         bundle.putString(TAG_WEB_URL, webUrl)
-        if (webFragmentConnected) {
+        if (navFragmentConnected) {
             //Log.d(TAG, "replaseWeb  " + webFragmentConnected.toString())
             navController.navigate(R.id.action_webViewFragment_to_mainFragment)
             navController.navigate(R.id.action_mainFragment_to_webViewFragment, bundle)
-            webFragmentConnected = true
+            navFragmentConnected = true
         } else {
             //Log.d(TAG, "replaseWeb  " + webFragmentConnected.toString())
             navController.navigate(R.id.action_mainFragment_to_webViewFragment, bundle)
-            webFragmentConnected = true
+            navFragmentConnected = true
         }
     }
 
@@ -356,7 +355,7 @@ open class BaseMainActivity : AppCompatActivity() {
     //---------------------initNavigationView end--------------------------------
 
 
-    //---------------------initActionBar--------------------------------
+    //---------------------initToolbar--------------------------------
     protected fun setUpToolBar() {
         mToolbar = main_toolbar
         setSupportActionBar(mToolbar)
