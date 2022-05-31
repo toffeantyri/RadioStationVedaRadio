@@ -36,6 +36,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.music.radiostationvedaradio.screens.TAG_WEB_URL
+import ru.music.radiostationvedaradio.utils.MyLog
 import ru.music.radiostationvedaradio.utils.TAG
 
 @SuppressLint("Registered")
@@ -227,6 +228,38 @@ open class BaseMainActivity : AppCompatActivity() {
 
 
     //---------------------initNavigationView start--------------------------------
+
+    private fun navigateWebFragmentWithUrl(webUrl: String) {
+        val bundle = Bundle()
+        bundle.putString(TAG_WEB_URL, webUrl)
+        if (navFragmentConnected) {
+            navController.popBackStack()
+            navController.navigate(R.id.action_mainFragment_to_webViewFragment, bundle)
+            navFragmentConnected = true
+        } else {
+            navController.navigate(R.id.action_mainFragment_to_webViewFragment, bundle)
+            navFragmentConnected = true
+        }
+    }
+
+    private fun navigateMainFragmentToBadAdvancedFrag() {
+    MyLog("id current frag: " + navController.currentDestination?.id)
+    MyLog("id previous frag: " + navController.previousBackStackEntry?.destination?.id)
+    MyLog("id start frag: " + navController.graph.startDestination)
+
+
+//        navController.popBackStack(R.id.mainFragment, true)
+//        navController.navigate(R.id.action_mainFragment_to_badAdviceFragment)
+//        if (navFragmentConnected) {
+//            navController.popBackStack()
+//            navController.navigate(R.id.action_mainFragment_to_badAdviceFragment)
+//            navFragmentConnected = true
+//        } else {
+//            navController.navigate(R.id.action_mainFragment_to_badAdviceFragment)
+//            navFragmentConnected = true
+//        }
+    }
+
     protected fun initExpandableListInNavView() {
         myDrawerLayout = drawer_menu
         expandableList = exp_list_nav_menu
@@ -246,7 +279,7 @@ open class BaseMainActivity : AppCompatActivity() {
                         val newWebUrl = getString(R.string.veda_radio_site)
                         if (webUrl != newWebUrl || !navFragmentConnected) {
                             webUrl = newWebUrl
-                            replaceWebFragmentWithUrl(webUrl)
+                            navigateWebFragmentWithUrl(webUrl)
                         }
                         drawer_menu.closeDrawer(GravityCompat.START)
                     }
@@ -255,7 +288,7 @@ open class BaseMainActivity : AppCompatActivity() {
                         val newWebUrl = getString(R.string.torsunov_site)
                         if (webUrl != newWebUrl || !navFragmentConnected) {
                             webUrl = newWebUrl
-                            replaceWebFragmentWithUrl(webUrl)
+                            navigateWebFragmentWithUrl(webUrl)
                         }
                         drawer_menu.closeDrawer(GravityCompat.START)
                     }
@@ -265,7 +298,7 @@ open class BaseMainActivity : AppCompatActivity() {
                         val newWebUrl = getString(R.string.provedy_site)
                         if (webUrl != newWebUrl || !navFragmentConnected) {
                             webUrl = newWebUrl
-                            replaceWebFragmentWithUrl(webUrl)
+                            navigateWebFragmentWithUrl(webUrl)
                         }
                         drawer_menu.closeDrawer(GravityCompat.START)
                     }
@@ -275,44 +308,29 @@ open class BaseMainActivity : AppCompatActivity() {
         }
     }
 
-    private fun replaceWebFragmentWithUrl(webUrl: String) {
-        val bundle = Bundle()
-        bundle.putString(TAG_WEB_URL, webUrl)
-        if (navFragmentConnected) {
-            //Log.d(TAG, "replaseWeb  " + webFragmentConnected.toString())
-            navController.navigate(R.id.action_webViewFragment_to_mainFragment)
-            navController.navigate(R.id.action_mainFragment_to_webViewFragment, bundle)
-            navFragmentConnected = true
-        } else {
-            //Log.d(TAG, "replaseWeb  " + webFragmentConnected.toString())
-            navController.navigate(R.id.action_mainFragment_to_webViewFragment, bundle)
-            navFragmentConnected = true
-        }
-    }
-
     private fun prepareExpListData() {
         listDataHeader = arrayListOf()
         listDataChild = HashMap<ExpandedMenuModel, List<String>>()
 
-        //header point
+        //headers
         val headerItem0 = ExpandedMenuModel().apply {
             setIconName(getString(R.string.link_header_name))
             setIconImage(R.drawable.ic_bookmark)
         }
         listDataHeader.add(headerItem0)
 
-        //subitem point
-        val subItem = arrayListOf<String>()
-        subItem.apply {
+        //subitems
+        val subItem0 = arrayListOf<String>()
+        subItem0.apply {
             add(getString(R.string.veda_radio_site))
             add(getString(R.string.torsunov_site))
             add(getString(R.string.provedy_site))
         }
 
-        listDataChild.put(listDataHeader[0], subItem)
+        listDataChild.put(listDataHeader[0], subItem0)
     }
 
-    protected fun initListViewInNavView() {
+    protected fun initListViewOfNavMenuListener() {
         prepareListViewData()
         adapterListView = ListViewAdapter(listViewData)
         listView = listview_nav_menu
@@ -320,11 +338,15 @@ open class BaseMainActivity : AppCompatActivity() {
         listView.setOnItemClickListener { _, _, position, _ ->
             when (position) {
                 0 -> {
+                    navigateMainFragmentToBadAdvancedFrag()
+                    drawer_menu.closeDrawer(GravityCompat.START)
+                }
+                1 -> {
                     val intent =
                         Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.link_on_this_app)))
                     startActivity(intent)
                 }
-                1 -> alertDialogExit()
+                2 -> alertDialogExit()
             }
         }
 
@@ -332,6 +354,12 @@ open class BaseMainActivity : AppCompatActivity() {
 
     private fun prepareListViewData() {
         listViewData = arrayListOf<ListViewItemModel>()
+
+        val badAdvice = ListViewItemModel().apply {
+            setTitle(getString(R.string.bad_advice_header_name))
+            setIconId(R.drawable.ic_note)
+        }
+
         val rate = ListViewItemModel().apply {
             setTitle(getString(R.string.item_about_app))
             setIconId(R.drawable.ic_star_rate)
@@ -340,6 +368,7 @@ open class BaseMainActivity : AppCompatActivity() {
             setTitle(getString(R.string.item_exit))
             setIconId(R.drawable.ic_exit)
         }
+        listViewData.add(badAdvice)
         listViewData.add(rate)
         listViewData.add(exit)
     }

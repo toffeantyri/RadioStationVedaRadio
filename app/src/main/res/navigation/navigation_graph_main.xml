@@ -15,6 +15,11 @@
             app:destination="@+id/webViewFragment"
             app:enterAnim="@anim/nav_default_pop_enter_anim"
             app:exitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_mainFragment_to_badAdviceFragment"
+            app:destination="@id/badAdviceFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
     </fragment>
     <fragment
         android:id="@+id/webViewFragment"
@@ -25,6 +30,18 @@
             android:id="@+id/action_webViewFragment_to_mainFragment"
             app:destination="@+id/mainFragment"
             app:enterAnim="@anim/nav_default_pop_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/navigation_graph_main" />
+    </fragment>
+    <fragment
+        android:id="@+id/badAdviceFragment"
+        android:name="ru.music.radiostationvedaradio.screens.BadAdviceFragment"
+        android:label="BadAdviceFragment" >
+        <action
+            android:id="@+id/action_badAdviceFragment_to_mainFragment"
+            app:destination="@id/mainFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
             app:launchSingleTop="true"
             app:popUpTo="@+id/navigation_graph_main" />

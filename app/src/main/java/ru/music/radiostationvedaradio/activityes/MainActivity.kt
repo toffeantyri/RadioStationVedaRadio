@@ -29,7 +29,7 @@ class MainActivity : BaseMainActivity() {
             Log.d("MyLog", "Coroutine job : $job")
             navController = Navigation.findNavController(this@MainActivity, R.id.main_nav_host_fragment)
             initExpandableListInNavView()
-            initListViewInNavView()
+            initListViewOfNavMenuListener()
             setUpToolBar()
             registerBroadcastStateService()
             loadAndShowBanner()
