@@ -69,19 +69,7 @@
     </ScrollView>
 
 
-    <androidx.slidingpanelayout.widget.SlidingPaneLayout
-        android:id="@+id/sliding_panel_player"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom">
 
-        <include
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            layout="@layout/bottom_player_panel"
-            />
-
-    </androidx.slidingpanelayout.widget.SlidingPaneLayout>
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

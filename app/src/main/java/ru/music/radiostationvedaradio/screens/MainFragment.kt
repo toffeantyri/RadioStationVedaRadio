@@ -58,15 +58,6 @@ class MainFragment : Fragment() {
 
     override fun onResume() {
         MyLog("MainFragment onResume")
-        mViewModel.statusMediaPlayer.observe(this) {
-            if (it == InitStatusMediaPlayer.PLAYING) {
-                main_equalizer?.animateBars()
-                btn_panel_play.setImageResource(android.R.drawable.ic_media_pause)
-            } else {
-                main_equalizer?.stopBars()
-                btn_panel_play.setImageResource(android.R.drawable.ic_media_play)
-            }
-        }
         super.onResume()
     }
 

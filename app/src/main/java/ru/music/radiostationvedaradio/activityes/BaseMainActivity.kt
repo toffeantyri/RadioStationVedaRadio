@@ -33,6 +33,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
 import com.google.android.material.appbar.MaterialToolbar
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.bottom_player_panel.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -389,8 +390,15 @@ open class BaseMainActivity : AppCompatActivity() {
 
 
         dataModel.statusMediaPlayer.observe(this) {
-            if (it == InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_pause)
-            else if (it != InitStatusMediaPlayer.PLAYING) btnPlay.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
+            if (it == InitStatusMediaPlayer.PLAYING) {
+                main_equalizer?.animateBars()
+                btnPlay.setIcon(R.drawable.ic_pause)
+                btn_panel_play.setImageResource(android.R.drawable.ic_media_pause)
+            } else if (it != InitStatusMediaPlayer.PLAYING) {
+                btnPlay.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
+                btn_panel_play.setImageResource(android.R.drawable.ic_media_play)
+                main_equalizer?.stopBars()
+            }
         }
         dataModel.statusMediaPlayer.observe(this) {
             if (it == InitStatusMediaPlayer.INITIALISATION) {
