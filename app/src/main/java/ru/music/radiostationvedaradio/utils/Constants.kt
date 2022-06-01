@@ -10,3 +10,6 @@ const val TAG_NET = "MyLogNet"
 
 @SuppressLint("StaticFieldLeak")
 internal var APP_CONTEXT : MainActivity? = null
+
+const val AUTHOR = "author_song"
+const val SONG_NAME = "song_name"

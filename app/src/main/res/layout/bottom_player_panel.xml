@@ -31,7 +31,7 @@
             style="@style/text_style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/test_text"
+            android:text="@string/app_name"
             android:textSize="18sp"/>
 
         <com.google.android.material.textview.MaterialTextView
@@ -40,7 +40,7 @@
             style="@style/text_style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/test_text" />
+            android:text="@string/app_name" />
     </LinearLayout>
 
 

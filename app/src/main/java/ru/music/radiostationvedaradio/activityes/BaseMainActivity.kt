@@ -38,6 +38,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.music.radiostationvedaradio.screens.TAG_WEB_URL
+import ru.music.radiostationvedaradio.utils.AUTHOR
+import ru.music.radiostationvedaradio.utils.MyLog
+import ru.music.radiostationvedaradio.utils.SONG_NAME
 
 @SuppressLint("Registered")
 open class BaseMainActivity : AppCompatActivity() {
@@ -156,10 +159,23 @@ open class BaseMainActivity : AppCompatActivity() {
         }
     }
 
+    private val broadcastServiceSongReceiver = object : BroadcastReceiverForPlayerService() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val author = intent?.getStringExtra(AUTHOR) ?: getString(R.string.app_name)
+            val song = intent?.getStringExtra(SONG_NAME) ?: getString(R.string.app_name)
+            MyLog("METADATA : $author and $song")
+            tv_song_autor?.text = author
+            tv_song_track?.text = song
+        }
+    }
+
     protected fun registerBroadcastStateService() {
         registerReceiver(broadcastStateServiceListener, IntentFilter(Broadcast_STATE_SERVICE))
     }
 
+    protected fun registerBroadcastNewSongService() {
+        registerReceiver(broadcastServiceSongReceiver, IntentFilter(Broadcast_METADATA_SERVICE))
+    }
     protected fun loadAndShowBanner() {
         main_banner.apply {
             setAdUnitId(getString(R.string.yandex_banner_desc_id_test))
@@ -193,7 +209,6 @@ open class BaseMainActivity : AppCompatActivity() {
             return
         }
         if (doubleBackPress) super.onBackPressed()
-
         doubleBackPress = true
         val handler = Handler()
         handler.postDelayed({ doubleBackPress = false }, 2000)
@@ -224,7 +239,6 @@ open class BaseMainActivity : AppCompatActivity() {
 
     }
 
-
     //---------------------initNavigationView start--------------------------------
 
     private fun navigateWebFragmentWithUrl(webUrl: String) {
@@ -234,12 +248,7 @@ open class BaseMainActivity : AppCompatActivity() {
     }
 
     private fun navigateMainFragmentToBadAdvancedFrag() {
-//    MyLog("id current frag: " + navController.currentDestination?.id)
-//    MyLog("id previous frag: " + navController.previousBackStackEntry?.destination?.id)
-//    MyLog("id start frag: " + navController.graph.startDestination)
-
         navController.navigate(R.id.badAdviceFragment)
-
     }
 
     protected fun initExpandableListInNavView() {
@@ -251,13 +260,10 @@ open class BaseMainActivity : AppCompatActivity() {
         mMenuAdapter =
             ExpandableListAdapterForNavView(this, listDataHeader, listDataChild, expandableList)
         expandableList.setAdapter(mMenuAdapter)
-
         expandableList.setOnChildClickListener { _, _, groupPosition, childPosition, _ ->
-            //Log.d("MyLog", "$childPosition child in $groupPosition parent ")
             if (groupPosition == 0) {
                 when (childPosition) {
                     0 -> {
-                        //Log.d("MyLog", "nav click: $childPosition")
                         val newWebUrl = getString(R.string.veda_radio_site)
                         if (webUrl != newWebUrl) {
                             webUrl = newWebUrl
@@ -266,7 +272,6 @@ open class BaseMainActivity : AppCompatActivity() {
                         drawer_menu.closeDrawer(GravityCompat.START)
                     }
                     1 -> {
-                        //Log.d("MyLog", "nav click: $childPosition")
                         val newWebUrl = getString(R.string.torsunov_site)
                         if (webUrl != newWebUrl) {
                             webUrl = newWebUrl
@@ -276,7 +281,6 @@ open class BaseMainActivity : AppCompatActivity() {
                     }
 
                     2 -> {
-                        //Log.d("MyLog", "nav click: $childPosition")
                         val newWebUrl = getString(R.string.provedy_site)
                         if (webUrl != newWebUrl) {
                             webUrl = newWebUrl
@@ -365,7 +369,6 @@ open class BaseMainActivity : AppCompatActivity() {
 
     //---------------------initNavigationView end--------------------------------
 
-
     //---------------------initToolbar--------------------------------
     protected fun setUpToolBar() {
         mToolbar = main_toolbar
@@ -375,7 +378,6 @@ open class BaseMainActivity : AppCompatActivity() {
             setDisplayHomeAsUpEnabled(true)
             setHomeAsUpIndicator(R.drawable.ic_menu)
         }
-        //title = getString(R.string.app_name)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

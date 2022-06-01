@@ -32,6 +32,7 @@ class MainActivity : BaseMainActivity() {
             initExpandableListInNavView()
             initListViewOfNavMenuListener()
             registerBroadcastStateService()
+            registerBroadcastNewSongService()
             loadAndShowBanner()
         }
 

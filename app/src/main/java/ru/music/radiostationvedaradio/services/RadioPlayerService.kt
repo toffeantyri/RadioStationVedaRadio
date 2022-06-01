@@ -34,6 +34,8 @@ import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.busines.model.metadatavedaradio.StreamVedaradioJSONClass
 import ru.music.radiostationvedaradio.busines.VedaradioRetrofitApi
 import ru.music.radiostationvedaradio.activityes.MainActivity
+import ru.music.radiostationvedaradio.utils.AUTHOR
+import ru.music.radiostationvedaradio.utils.SONG_NAME
 
 
 const val ACTION_PLAY = "ru.music.vedaradio.ACTION_PLAY"
@@ -236,6 +238,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                             }
                         }
                     }
+                    broadcastTellNewSong()
                     when (STATE_OF_SERVICE) {
                         InitStatusMediaPlayer.PLAYING -> {
                             buildNotification(Playbackstatus.PLAYING)
@@ -471,6 +474,13 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     private fun broadcastTellNewStatus() {
         sendBroadcast(Intent(Broadcast_STATE_SERVICE).putExtra(TAG_STATE_SERVICE, STATE_OF_SERVICE))
+    }
+
+    private fun broadcastTellNewSong() {
+        val intent = Intent(Broadcast_METADATA_SERVICE)
+        intent.putExtra(AUTHOR, artist)
+        intent.putExtra(SONG_NAME, song)
+        sendBroadcast(intent)
     }
 
     private fun registerPlayNewAudio() {
