@@ -14,13 +14,16 @@ import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.fragment_main.view.*
 import ru.music.radiostationvedaradio.R
+import ru.music.radiostationvedaradio.activityes.MainActivity
+import ru.music.radiostationvedaradio.services.InitStatusMediaPlayer
 import ru.music.radiostationvedaradio.utils.MyLog
 import ru.music.radiostationvedaradio.utils.TAG
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 class MainFragment : Fragment() {
 
-    private val mViewModel : ViewModelMainActivity by activityViewModels()
+    private val mViewModel: ViewModelMainActivity by activityViewModels()
+    lateinit var parentActivity: MainActivity
 
     override fun onAttach(context: Context) {
         MyLog("MainFragment onAttach")
@@ -32,6 +35,7 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view0 = inflater.inflate(R.layout.fragment_main, container, false)
+        parentActivity = activity as MainActivity
         view0.apply {
             setUpOnClickStaticButton()
         }
@@ -45,17 +49,20 @@ class MainFragment : Fragment() {
         mViewModel.nounText.observe(this) {
             tv_tcitata_dnya.text = it
         }
-        if(mViewModel.nounText.value.isNullOrEmpty()) loadNoun()
+        if (mViewModel.nounText.value.isNullOrEmpty()) loadNoun()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         MyLog("MainFragment onViewCreated")
         super.onViewCreated(view, savedInstanceState)
-        
     }
 
     override fun onResume() {
         MyLog("MainFragment onResume")
+        mViewModel.statusMediaPlayer.observe(this) {
+            if (it == InitStatusMediaPlayer.PLAYING) view?.main_equalizer?.animateBars()
+            else view?.main_equalizer?.stopBars()
+        }
         super.onResume()
     }
 
@@ -63,7 +70,7 @@ class MainFragment : Fragment() {
         MyLog("MainFragment onDestroy")
         try {
             mViewModel.nounText.removeObservers(this)
-        } catch (e: UninitializedPropertyAccessException ){
+        } catch (e: UninitializedPropertyAccessException) {
             Log.d(TAG, "${e.message}")
         }
 

@@ -110,4 +110,7 @@ dependencies {
     testImplementation "androidx.room:room-testing:$room_version"
     // optional - Paging 3 Integration
     //implementation "androidx.room:room-paging:$room_version"
+
+    // Mini equalizer
+    implementation "com.github.claucookie.miniequalizer:library:1.0.0"
 }
