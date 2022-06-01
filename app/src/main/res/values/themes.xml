@@ -13,8 +13,17 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="windowNoTitle">true</item>
+    </style>
+
+
+    <style name="text_style" parent="Widget.MaterialComponents.TextView">
+       <item name="android:paddingTop">10dp</item>
+       <item name="android:paddingEnd">10dp</item>
+       <item name="android:paddingBottom">10dp</item>
+       <item name="android:fontFamily">@font/romic</item>
 
     </style>
+
 
     <style name="MainToolbarStyle" parent="Widget.MaterialComponents.Toolbar.Primary">
         <item name="android:gravity">center_vertical</item>

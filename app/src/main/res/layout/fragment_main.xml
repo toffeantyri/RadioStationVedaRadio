@@ -61,17 +61,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <es.claucookie.miniequalizerlibrary.EqualizerView
-                    android:id="@+id/main_equalizer"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    app:foregroundColor="@color/green_500"
-                    app:animDuration="3500"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_margin="10dp"
-                    android:fadingEdgeLength="10dp"
-                    android:elevation="10dp" />
-
             </com.google.android.material.card.MaterialCardView>
 
 
@@ -79,22 +68,20 @@
 
     </ScrollView>
 
-    <com.google.android.material.bottomappbar.BottomAppBar
-        android:id="@+id/bottomAppBar"
-        style="@style/myAppBottomBar"
+
+    <androidx.slidingpanelayout.widget.SlidingPaneLayout
+        android:id="@+id/sliding_panel_player"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        app:fabAlignmentMode="center"
-        app:navigationIcon="@drawable/ic_menu"
-        />
+        android:layout_gravity="bottom">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_bottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_anchor="@id/bottomAppBar"
-        />
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/bottom_player_panel"
+            />
+
+    </androidx.slidingpanelayout.widget.SlidingPaneLayout>
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebView
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.ViewModelProvider
 import ru.music.radiostationvedaradio.viewmodel.BadAdviceViewModel

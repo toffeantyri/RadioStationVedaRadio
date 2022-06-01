@@ -11,7 +11,6 @@ import android.webkit.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import kotlinx.android.synthetic.main.fragment_web_view.*
 import kotlinx.android.synthetic.main.fragment_web_view.view.*
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity

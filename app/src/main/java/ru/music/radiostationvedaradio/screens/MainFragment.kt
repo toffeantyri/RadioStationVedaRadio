@@ -9,8 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModelProvider
+import kotlinx.android.synthetic.main.bottom_player_panel.*
 import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.fragment_main.view.*
 import ru.music.radiostationvedaradio.R
@@ -60,8 +59,13 @@ class MainFragment : Fragment() {
     override fun onResume() {
         MyLog("MainFragment onResume")
         mViewModel.statusMediaPlayer.observe(this) {
-            if (it == InitStatusMediaPlayer.PLAYING) view?.main_equalizer?.animateBars()
-            else view?.main_equalizer?.stopBars()
+            if (it == InitStatusMediaPlayer.PLAYING) {
+                main_equalizer?.animateBars()
+                btn_panel_play.setImageResource(android.R.drawable.ic_media_pause)
+            } else {
+                main_equalizer?.stopBars()
+                btn_panel_play.setImageResource(android.R.drawable.ic_media_play)
+            }
         }
         super.onResume()
     }
