@@ -31,14 +31,12 @@ import ru.music.radiostationvedaradio.view.adapters.listview.ListViewItemModel
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
+import com.google.android.material.appbar.MaterialToolbar
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_web_view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.music.radiostationvedaradio.screens.TAG_WEB_URL
-import ru.music.radiostationvedaradio.utils.MyLog
-import ru.music.radiostationvedaradio.utils.TAG
 
 @SuppressLint("Registered")
 open class BaseMainActivity : AppCompatActivity() {
@@ -49,7 +47,7 @@ open class BaseMainActivity : AppCompatActivity() {
     var webUrl: String? = "" // url для WebFragment public для webFragment
 
     //-----------------s toolbar menu-------------------
-    lateinit var mToolbar: Toolbar
+    lateinit var mToolbar: MaterialToolbar
     private var myMenu: Menu? = null
     private lateinit var btnPlay: MenuItem
     private lateinit var btnRefresh: MenuItem
@@ -374,9 +372,9 @@ open class BaseMainActivity : AppCompatActivity() {
         supportActionBar?.apply {
             setHomeButtonEnabled(true)
             setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp)
+            setHomeAsUpIndicator(R.drawable.ic_menu)
         }
-        title = getString(R.string.app_name)
+        //title = getString(R.string.app_name)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

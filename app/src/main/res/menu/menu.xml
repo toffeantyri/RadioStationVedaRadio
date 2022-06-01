@@ -12,14 +12,12 @@
         android:icon="@drawable/ic_baseline_play_circle_filled_24"
         android:orderInCategory="2"
         app:showAsAction="ifRoom"
-        android:iconTint="@color/black"
         android:title="@string/toolbar_play_pause" />
 
     <item
         android:orderInCategory="1"
         android:id="@+id/action_refresh"
         app:showAsAction="ifRoom"
-        android:iconTint="@color/black"
         android:title="@string/toolbar_refresh_radio"
         android:icon="@drawable/ic_autorenew_black_24dp"
 
