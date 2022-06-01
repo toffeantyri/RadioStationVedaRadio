@@ -11,6 +11,7 @@ import android.webkit.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import kotlinx.android.synthetic.main.fragment_web_view.*
 import kotlinx.android.synthetic.main.fragment_web_view.view.*
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity
@@ -37,7 +38,6 @@ class WebViewFragment : Fragment() {
         val view0 = inflater.inflate(R.layout.fragment_web_view, container, false)
         webUrl = arguments?.getString(TAG_WEB_URL) ?: ""
         parentActivity = (activity as MainActivity)
-        parentActivity.navFragmentConnected = true
         setHasOptionsMenu(true)
         return view0
     }
@@ -60,8 +60,11 @@ class WebViewFragment : Fragment() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
                 view?.visibility = View.VISIBLE
+                parentActivity.webUrl = url
                 getView()?.progress_cicle_webpage?.visibility = View.GONE
             }
+
+
         }
 
         view.apply {
@@ -99,7 +102,6 @@ class WebViewFragment : Fragment() {
                     webView.goBack()
                 } else {
                     parentActivity.apply {
-                        navFragmentConnected = false
                         navController.navigateChangeTitleToolbar(
                             parentActivity,
                             R.id.action_webViewFragment_to_mainFragment
@@ -131,8 +133,8 @@ class WebViewFragment : Fragment() {
                 if (view?.web_view1?.canGoForward() == true) view?.web_view1?.goForward()
             }
             R.id.action_web_cancel -> {
+
                 (parentActivity).apply {
-                    navFragmentConnected = false
                     navController.navigateChangeTitleToolbar(
                         parentActivity,
                         R.id.action_webViewFragment_to_mainFragment

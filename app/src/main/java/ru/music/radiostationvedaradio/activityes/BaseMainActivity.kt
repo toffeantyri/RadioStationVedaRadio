@@ -32,6 +32,7 @@ import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_web_view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -42,11 +43,10 @@ import ru.music.radiostationvedaradio.utils.TAG
 @SuppressLint("Registered")
 open class BaseMainActivity : AppCompatActivity() {
 
-    protected val dataModel: ViewModelMainActivity by viewModels()
+    private val dataModel: ViewModelMainActivity by viewModels()
 
     lateinit var navController: NavController
-    var navFragmentConnected: Boolean = false // флаг, активен ли WebFragment
-    private var webUrl = "" // url для WebFragment
+    var webUrl: String? = "" // url для WebFragment public для webFragment
 
     //-----------------s toolbar menu-------------------
     lateinit var mToolbar: Toolbar
@@ -77,14 +77,14 @@ open class BaseMainActivity : AppCompatActivity() {
     protected var serviceBound = false
         set(value) {
             field = value
-            Log.d("MyLog", "serviceBound -> $value")
+            //Log.d("MyLog", "serviceBound -> $value")
         }
     protected var mediaService: RadioPlayerService? = null
     protected var urlRadioService: String = ""
         set(value) {
             field = value
             updateCheckGroupQuality(value)
-            Log.d("MyLog", "Activity : url -> $value")
+            //Log.d("MyLog", "Activity : url -> $value")
         }
     //----------------------------e service----------------------
 
@@ -189,8 +189,7 @@ open class BaseMainActivity : AppCompatActivity() {
 
     private var doubleBackPress = false
     override fun onBackPressed() {
-        if (navFragmentConnected) {
-            Log.d(TAG, "$navFragmentConnected")
+        if (navController.currentDestination?.id != navController.graph.startDestination) {
             super.onBackPressed()
             return
         }
@@ -232,32 +231,16 @@ open class BaseMainActivity : AppCompatActivity() {
     private fun navigateWebFragmentWithUrl(webUrl: String) {
         val bundle = Bundle()
         bundle.putString(TAG_WEB_URL, webUrl)
-        if (navFragmentConnected) {
-            navController.popBackStack()
-            navController.navigate(R.id.action_mainFragment_to_webViewFragment, bundle)
-            navFragmentConnected = true
-        } else {
-            navController.navigate(R.id.action_mainFragment_to_webViewFragment, bundle)
-            navFragmentConnected = true
-        }
+        navController.navigate(R.id.webViewFragment, bundle)
     }
 
     private fun navigateMainFragmentToBadAdvancedFrag() {
-    MyLog("id current frag: " + navController.currentDestination?.id)
-    MyLog("id previous frag: " + navController.previousBackStackEntry?.destination?.id)
-    MyLog("id start frag: " + navController.graph.startDestination)
+//    MyLog("id current frag: " + navController.currentDestination?.id)
+//    MyLog("id previous frag: " + navController.previousBackStackEntry?.destination?.id)
+//    MyLog("id start frag: " + navController.graph.startDestination)
 
+        navController.navigate(R.id.badAdviceFragment)
 
-//        navController.popBackStack(R.id.mainFragment, true)
-//        navController.navigate(R.id.action_mainFragment_to_badAdviceFragment)
-//        if (navFragmentConnected) {
-//            navController.popBackStack()
-//            navController.navigate(R.id.action_mainFragment_to_badAdviceFragment)
-//            navFragmentConnected = true
-//        } else {
-//            navController.navigate(R.id.action_mainFragment_to_badAdviceFragment)
-//            navFragmentConnected = true
-//        }
     }
 
     protected fun initExpandableListInNavView() {
@@ -277,18 +260,18 @@ open class BaseMainActivity : AppCompatActivity() {
                     0 -> {
                         //Log.d("MyLog", "nav click: $childPosition")
                         val newWebUrl = getString(R.string.veda_radio_site)
-                        if (webUrl != newWebUrl || !navFragmentConnected) {
+                        if (webUrl != newWebUrl) {
                             webUrl = newWebUrl
-                            navigateWebFragmentWithUrl(webUrl)
+                            navigateWebFragmentWithUrl(webUrl!!)
                         }
                         drawer_menu.closeDrawer(GravityCompat.START)
                     }
                     1 -> {
                         //Log.d("MyLog", "nav click: $childPosition")
                         val newWebUrl = getString(R.string.torsunov_site)
-                        if (webUrl != newWebUrl || !navFragmentConnected) {
+                        if (webUrl != newWebUrl) {
                             webUrl = newWebUrl
-                            navigateWebFragmentWithUrl(webUrl)
+                            navigateWebFragmentWithUrl(webUrl!!)
                         }
                         drawer_menu.closeDrawer(GravityCompat.START)
                     }
@@ -296,9 +279,9 @@ open class BaseMainActivity : AppCompatActivity() {
                     2 -> {
                         //Log.d("MyLog", "nav click: $childPosition")
                         val newWebUrl = getString(R.string.provedy_site)
-                        if (webUrl != newWebUrl || !navFragmentConnected) {
+                        if (webUrl != newWebUrl) {
                             webUrl = newWebUrl
-                            navigateWebFragmentWithUrl(webUrl)
+                            navigateWebFragmentWithUrl(webUrl!!)
                         }
                         drawer_menu.closeDrawer(GravityCompat.START)
                     }
