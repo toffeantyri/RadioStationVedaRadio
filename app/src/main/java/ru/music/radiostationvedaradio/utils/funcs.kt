@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity
+import ru.music.radiostationvedaradio.busines.model.antihoro.HoroscopeModelClasses
 
 //Функция достаёт нашу цитату из этого html
 fun String.parceNounHareKrishnaFromHtml(): String {
@@ -20,7 +21,7 @@ fun String.parceNounHareKrishnaFromHtml(): String {
     return formattedText2 ?: ""
 }
 
-fun MyLog(message : String){
+fun MyLog(message: String) {
     Log.d(TAG, message)
 }
 
@@ -38,3 +39,20 @@ private fun <T> Context.isServiceRunning(service: Class<T>) =
     (getSystemService(AppCompatActivity.ACTIVITY_SERVICE) as ActivityManager)
         .getRunningServices(Integer.MAX_VALUE)
         .any { it.service.className == service.name }
+
+fun HoroscopeModelClasses.getTodayHoroList(): List<String> {
+    val list = arrayListOf<String>()
+    list.add(0, this.aries?.get(2) ?: "")
+    list.add(1, this.taurus?.get(2) ?: "")
+    list.add(2, this.gemini?.get(2) ?: "")
+    list.add(3, this.cancer?.get(2) ?: "")
+    list.add(4, this.leo?.get(2) ?: "")
+    list.add(5, this.virgo?.get(2) ?: "")
+    list.add(6, this.libra?.get(2) ?: "")
+    list.add(7, this.scorpio?.get(2) ?: "")
+    list.add(8, this.sagittarius?.get(2) ?: "")
+    list.add(9, this.capricorn?.get(2) ?: "")
+    list.add(10, this.aquarius?.get(2) ?: "")
+    list.add(11, this.pisces?.get(2) ?: "")
+    return list
+}
