@@ -25,9 +25,10 @@ class MainActivity : BaseMainActivity() {
         urlRadioService = getString(R.string.veda_radio_stream_link_low) // TODO Качество по умолчанию на релиз - MEDIUM
         APP_CONTEXT = this
 
+
         job = CoroutineScope(Dispatchers.Main).launch {
             Log.d("MyLog", "Coroutine job : $job")
-            SharedPreferenceProvider.getSharedPreferences(this@MainActivity)
+            //SharedPreferenceProvider.getSharedPreferences(this@MainActivity)
             setUpToolBar()
             initPlayerPanel()
             navController = Navigation.findNavController(this@MainActivity, R.id.main_nav_host_fragment)
