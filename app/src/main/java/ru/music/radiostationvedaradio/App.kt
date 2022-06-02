@@ -5,6 +5,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import ru.music.radiostationvedaradio.busines.SharedPreferenceProvider
 import ru.music.radiostationvedaradio.busines.database.room.AntiHoroDatabase
+import ru.music.radiostationvedaradio.utils.MyLog
 
 class App : Application() {
 
@@ -14,6 +15,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        MyLog("App onCreate")
 
         SharedPreferenceProvider.getSharedPreferences(this)
 

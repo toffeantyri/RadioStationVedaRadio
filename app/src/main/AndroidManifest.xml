@@ -13,6 +13,7 @@
     <permission android:name="android.permission.POST_NOTIFICATION" />
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"

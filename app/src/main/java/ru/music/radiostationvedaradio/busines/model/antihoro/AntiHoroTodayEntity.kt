@@ -1,7 +1,7 @@
 package ru.music.radiostationvedaradio.busines.model.antihoro
 
-import androidx.annotation.ArrayRes
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -9,9 +9,9 @@ import androidx.room.PrimaryKey
 data class AntiHoroTodayEntity (
 
     @PrimaryKey val date : String = "",
-    @ColumnInfo val list : List<String>
+    //@ColumnInfo val list : List<String>
 
-    //todo list не хранить надо примитив либо Embded вроде
+
 
 )
 

@@ -1,6 +1,7 @@
 package ru.music.radiostationvedaradio.busines.database.room
 
 import androidx.room.*
+import ru.music.radiostationvedaradio.busines.model.antihoro.AntiHoroTodayEntity
 
 @Dao
 interface AntiHoroscopeDao {
@@ -8,12 +9,12 @@ interface AntiHoroscopeDao {
    //todo Запрос date(id) add later
 
    @Query("SELECT * FROM anti_goro_id_date")
-   fun getHoroList() : List<String>
+   fun getHoroList() : AntiHoroTodayEntity
 
    @Insert(onConflict = OnConflictStrategy.REPLACE)
-   suspend fun insert(list : List<String>)
+   suspend fun insert(horoEntity : AntiHoroTodayEntity)
 
    @Delete
-   suspend fun delete(list : List<String>)
+   suspend fun delete(horoEntity : AntiHoroTodayEntity)
 
 }

@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.busines.SharedPreferenceProvider
 import ru.music.radiostationvedaradio.utils.APP_CONTEXT
+import ru.music.radiostationvedaradio.utils.MyLog
 
 
 class MainActivity : BaseMainActivity() {
@@ -21,6 +22,7 @@ class MainActivity : BaseMainActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        MyLog("MainActivity onCreate")
         setContentView(R.layout.activity_main)
         urlRadioService = getString(R.string.veda_radio_stream_link_low) // TODO Качество по умолчанию на релиз - MEDIUM
         APP_CONTEXT = this
