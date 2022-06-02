@@ -69,13 +69,13 @@ open class BaseMainActivity : AppCompatActivity() {
     private lateinit var listViewData: ArrayList<ListViewItemModel>
     //----------------------e drawer menu---------------------
 
-    //----------------------------s service----------------------
+    //----------------------------s service----------------------------------------------------------------------
     protected var statusMediaPlayer = InitStatusMediaPlayer.IDLE
         set(value) {
             field = value
             dataModel.statusMediaPlayer.value = value
         }
-  protected var metadataRadioService: MetadataRadioService? = null
+    protected var metadataRadioService: MetadataRadioService? = null
         set(value) {
             field = value
             dataModel.metadataOfPlayer.value = value
@@ -88,8 +88,6 @@ open class BaseMainActivity : AppCompatActivity() {
             field = value
             updateCheckGroupQuality(value)
         }
-    //----------------------------e service----------------------
-
 
     private fun updateCheckGroupQuality(url: String) {
         if (myMenu == null) return
@@ -177,6 +175,9 @@ open class BaseMainActivity : AppCompatActivity() {
         registerReceiver(broadcastServiceSongReceiver, IntentFilter(Broadcast_METADATA_SERVICE))
     }
 
+    //----------------------------e service-------------------------------------------------------------------
+
+    // -----------------------------------------other init ------------------------------------------
     protected fun loadAndShowBanner() {
         main_banner.apply {
             setAdUnitId(getString(R.string.yandex_banner_desc_id_test))
@@ -239,6 +240,7 @@ open class BaseMainActivity : AppCompatActivity() {
         alert.show()
 
     }
+    // ----------------------------------------- other init ------------------------------------------
 
     //---------------------initNavigationView start--------------------------------
 
@@ -261,34 +263,17 @@ open class BaseMainActivity : AppCompatActivity() {
         mMenuAdapter =
             ExpandableListAdapterForNavView(this, listDataHeader, listDataChild, expandableList)
         expandableList.setAdapter(mMenuAdapter)
+        fun navigateWebFragWithUrlCloseDraver(url: String) {
+            webUrl = url
+            navigateWebFragmentWithUrl(url)
+            drawer_menu.closeDrawer(GravityCompat.START)
+        }
         expandableList.setOnChildClickListener { _, _, groupPosition, childPosition, _ ->
             if (groupPosition == 0) {
                 when (childPosition) {
-                    0 -> {
-                        val newWebUrl = getString(R.string.veda_radio_site)
-                        if (webUrl != newWebUrl) {
-                            webUrl = newWebUrl
-                            navigateWebFragmentWithUrl(webUrl!!)
-                        }
-                        drawer_menu.closeDrawer(GravityCompat.START)
-                    }
-                    1 -> {
-                        val newWebUrl = getString(R.string.torsunov_site)
-                        if (webUrl != newWebUrl) {
-                            webUrl = newWebUrl
-                            navigateWebFragmentWithUrl(webUrl!!)
-                        }
-                        drawer_menu.closeDrawer(GravityCompat.START)
-                    }
-
-                    2 -> {
-                        val newWebUrl = getString(R.string.provedy_site)
-                        if (webUrl != newWebUrl) {
-                            webUrl = newWebUrl
-                            navigateWebFragmentWithUrl(webUrl!!)
-                        }
-                        drawer_menu.closeDrawer(GravityCompat.START)
-                    }
+                    0 -> navigateWebFragWithUrlCloseDraver(getString(R.string.veda_radio_site))
+                    1 -> navigateWebFragWithUrlCloseDraver(getString(R.string.torsunov_site))
+                    2 -> navigateWebFragWithUrlCloseDraver(getString(R.string.provedy_site))
                 }
             }
             true
@@ -370,16 +355,6 @@ open class BaseMainActivity : AppCompatActivity() {
 
     //---------------------initNavigationView end--------------------------------
 
-    private fun buttonPlayAction(statusService: InitStatusMediaPlayer) {
-        when (statusService) {
-            InitStatusMediaPlayer.INIT_COMPLETE -> mediaService?.playMedia()
-            InitStatusMediaPlayer.PLAYING -> mediaService?.pauseMedia()
-            InitStatusMediaPlayer.IDLE -> playAudio(urlRadioService)
-            InitStatusMediaPlayer.INITIALISATION -> {
-                Toast.makeText(this, "Loading", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
 
     //---------------------initToolbar--------------------------------
     protected fun setUpToolBar() {
@@ -448,11 +423,20 @@ open class BaseMainActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
-
     //---------------------initActionBar--------------------------------
 
-    //-------------------init Bottom App Bar (PlayerPanel)------------------
+    private fun buttonPlayAction(statusService: InitStatusMediaPlayer) {
+        when (statusService) {
+            InitStatusMediaPlayer.INIT_COMPLETE -> mediaService?.playMedia()
+            InitStatusMediaPlayer.PLAYING -> mediaService?.pauseMedia()
+            InitStatusMediaPlayer.IDLE -> playAudio(urlRadioService)
+            InitStatusMediaPlayer.INITIALISATION -> {
+                Toast.makeText(this, "Loading", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
+    //-------------------init Bottom App Bar (PlayerPanel)------------------
     protected fun initPlayerPanel() {
         btn_panel_play.setOnClickListener {
             dataModel.statusMediaPlayer.value?.let { buttonPlayAction(it) }
