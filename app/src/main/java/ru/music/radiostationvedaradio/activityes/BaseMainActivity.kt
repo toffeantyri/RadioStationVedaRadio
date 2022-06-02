@@ -1,7 +1,6 @@
 package ru.music.radiostationvedaradio.activityes
 
 import android.annotation.SuppressLint
-import android.app.ActivityManager
 import android.content.*
 import android.net.Uri
 import android.os.Bundle
@@ -63,7 +62,7 @@ open class BaseMainActivity : AppCompatActivity() {
     private lateinit var expandableList: ExpandableListView
     private lateinit var listDataHeader: ArrayList<ExpandedMenuModel>
     private lateinit var listDataChild: HashMap<ExpandedMenuModel, List<String>>
-    private lateinit var navigationView: NavigationView
+    private lateinit var parentNavView: NavigationView
     private lateinit var listView: ListView
     private lateinit var adapterListView: BaseAdapter
     private lateinit var listViewData: ArrayList<ListViewItemModel>
@@ -247,8 +246,8 @@ open class BaseMainActivity : AppCompatActivity() {
     protected fun initExpandableListInNavView() {
         myDrawerLayout = drawer_menu
         expandableList = exp_list_nav_menu
-        navigationView = draw_navView
-        setupDrawerContent(navigationView)
+        parentNavView = draw_navView
+        setupDrawerContent(parentNavView)
         prepareExpListData()
         mMenuAdapter =
             ExpandableListAdapterForNavView(this, listDataHeader, listDataChild, expandableList)
