@@ -1,9 +1,11 @@
 package ru.music.radiostationvedaradio.utils
 
 import android.app.Activity
+import android.app.ActivityManager
 import android.content.Context
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity
@@ -30,3 +32,9 @@ fun NavController.navigateChangeTitleToolbar(
     this.navigate(idAction)
     parentAcivity.mToolbar.title = newTitle
 }
+
+//функция проверки запущен ли сервис Класса T
+private fun <T> Context.isServiceRunning(service: Class<T>) =
+    (getSystemService(AppCompatActivity.ACTIVITY_SERVICE) as ActivityManager)
+        .getRunningServices(Integer.MAX_VALUE)
+        .any { it.service.className == service.name }

@@ -109,21 +109,11 @@ open class BaseMainActivity : AppCompatActivity() {
         }
     }
 
-    private fun <T> Context.isServiceRunning(service: Class<T>) =
-        (getSystemService(ACTIVITY_SERVICE) as ActivityManager)
-            .getRunningServices(Integer.MAX_VALUE)
-            .any { it.service.className == service.name }
-
     protected fun playAudio(urlStream: String) {
         if (!serviceBound) {
-            Log.d("MyLog", "StartService")
+            Log.d("MyLog", "StartService $urlStream")
             val playerIntent = Intent(applicationContext, RadioPlayerService::class.java)
             playerIntent.putExtra(TAG_NEW_AUDIO_URL, urlStream)
-            if (this.isServiceRunning(RadioPlayerService::class.java)) {
-                playerIntent.putExtra(TAG_FIRST_RUN, false)
-            } else {
-                playerIntent.putExtra(TAG_FIRST_RUN, true)
-            }
             applicationContext.startForegroundService(playerIntent)
             bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE)
         } else {

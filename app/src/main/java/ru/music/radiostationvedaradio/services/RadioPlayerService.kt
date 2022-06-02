@@ -221,7 +221,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                     response: Response<String>
                 ) {
                     val gson = Gson()
-                    val streamVedaradioJSONClass : StreamVedaradioJSONClass = gson.fromJson(response.body(), StreamVedaradioJSONClass::class.java)
+                    val streamVedaradioJSONClass: StreamVedaradioJSONClass =
+                        gson.fromJson(response.body(), StreamVedaradioJSONClass::class.java)
                     streamVedaradioJSONClass.icestats.source[0].title.let {
                         val list = it.split("-")
                         when (list.size) {
@@ -398,9 +399,20 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     private fun removeAudioFocus() = AudioManager.AUDIOFOCUS_REQUEST_GRANTED == audioManager?.abandonAudioFocus(this)
 
+    override fun onCreate() {
+        super.onCreate()
+        callStateListener()
+        registerPlayNewAudio()
+        startUpdateAlbumData(60000)
+        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+        val wakeLock: WakeLock = powerManager.newWakeLock(
+            PowerManager.PARTIAL_WAKE_LOCK,
+            "RadioVEDA::MyWakelockTag"
+        )
+        wakeLock.acquire(30 * 60 * 1000L /*30 minutes*/)
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val firstRun = intent?.extras?.getBoolean(TAG_FIRST_RUN) ?: false
-        Log.d("MyLogS", "onStartCommand: intent firstRun: $firstRun")
         intent?.extras?.getString(TAG_NEW_AUDIO_URL).let {
             if (it != null && it != "") urlString = it
             Log.d("MyLogS", "onStartCommand: intent URL: $it")
@@ -412,10 +424,9 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
             try {
                 initMediaSession()
                 initMediaPlayer()
-                if (firstRun) {
-                    startForeground(NOTIFICATION_ID, buildNotification(Playbackstatus.PAUSED).build())
-                    startUpdateAlbumData(60000)
-                }
+                val playStatus =
+                    if (STATE_OF_SERVICE == InitStatusMediaPlayer.PLAYING) Playbackstatus.PLAYING else Playbackstatus.PAUSED
+                startForeground(NOTIFICATION_ID, buildNotification(playStatus).build())
             } catch (e: RemoteException) {
                 e.printStackTrace()
                 stopSelf()
@@ -460,7 +471,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     fun getStatusMediaMplayer(): InitStatusMediaPlayer = STATE_OF_SERVICE
 
-    fun getMetadata()  = MetadataRadioService(artist, song)
+    fun getMetadata() = MetadataRadioService(artist, song)
 
     fun getPlayingURL(): String? = urlString
 
@@ -522,20 +533,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         super.onTaskRemoved(rootIntent)
     }
 
-    override fun onCreate() {
-        super.onCreate()
-        callStateListener()
-        registerPlayNewAudio()
-        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
-        val wakeLock: WakeLock = powerManager.newWakeLock(
-            PowerManager.PARTIAL_WAKE_LOCK,
-            "RadioVEDA::MyWakelockTag"
-        )
-        wakeLock.acquire(30*60*1000L /*30 minutes*/)
-    }
-
     override fun onDestroy() {
-        Log.d("MyLogS","onDestroyService")
+        Log.d("MyLogS", "onDestroyService")
         removeNotification()
         STATE_OF_SERVICE = InitStatusMediaPlayer.IDLE
         handler = null
