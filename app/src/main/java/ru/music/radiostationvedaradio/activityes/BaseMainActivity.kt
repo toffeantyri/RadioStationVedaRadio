@@ -171,6 +171,7 @@ open class BaseMainActivity : AppCompatActivity() {
     protected fun registerBroadcastNewSongService() {
         registerReceiver(broadcastServiceSongReceiver, IntentFilter(Broadcast_METADATA_SERVICE))
     }
+
     protected fun loadAndShowBanner() {
         main_banner.apply {
             setAdUnitId(getString(R.string.yandex_banner_desc_id_test))
@@ -364,6 +365,17 @@ open class BaseMainActivity : AppCompatActivity() {
 
     //---------------------initNavigationView end--------------------------------
 
+
+    private fun buttonPlayAction(statusService : InitStatusMediaPlayer) {
+        when (statusService) {
+            InitStatusMediaPlayer.INIT_COMPLETE -> mediaService?.playMedia()
+            InitStatusMediaPlayer.PLAYING -> mediaService?.pauseMedia()
+            InitStatusMediaPlayer.IDLE -> playAudio(urlRadioService)
+            InitStatusMediaPlayer.INITIALISATION -> {
+                Toast.makeText(this, "Loading", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
     //---------------------initToolbar--------------------------------
     protected fun setUpToolBar() {
         mToolbar = main_toolbar
@@ -384,7 +396,6 @@ open class BaseMainActivity : AppCompatActivity() {
         updateCheckGroupQuality(urlRadioService)
         btnPlay = menu.findItem(R.id.action_play)
         btnRefresh = menu.findItem(R.id.action_refresh)
-
 
         dataModel.statusMediaPlayer.observe(this) {
             if (it == InitStatusMediaPlayer.PLAYING) {
@@ -410,14 +421,7 @@ open class BaseMainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_play) {
             Log.d("MyLog", "action_play click. isPlaying: ${dataModel.statusMediaPlayer.value}")
-            when (dataModel.statusMediaPlayer.value) {
-                InitStatusMediaPlayer.INIT_COMPLETE -> mediaService?.playMedia()
-                InitStatusMediaPlayer.PLAYING -> mediaService?.pauseMedia()
-                InitStatusMediaPlayer.IDLE -> playAudio(urlRadioService)
-                InitStatusMediaPlayer.INITIALISATION -> {
-                    Toast.makeText(this, "Loading", Toast.LENGTH_SHORT).show()
-                }
-            }
+            dataModel.statusMediaPlayer.value?.let { buttonPlayAction(it) }
         } else if (item.itemId == R.id.action_refresh) {
             playAudio(urlRadioService)
         } else if (item.itemId == R.id.action_low_quality) {
@@ -442,6 +446,29 @@ open class BaseMainActivity : AppCompatActivity() {
     }
 
     //---------------------initActionBar--------------------------------
+
+    //-------------------init Bottom App Bar (PlayerPanel)------------------
+
+    protected fun initPlayerPanel() {
+        btn_panel_play.setOnClickListener {
+            dataModel.statusMediaPlayer.value?.let { buttonPlayAction(it) }
+        }
+        dataModel.statusMediaPlayer.observe(this) {
+            if (it == InitStatusMediaPlayer.PLAYING) {
+                main_equalizer?.animateBars()
+                btn_panel_play.setImageResource(android.R.drawable.ic_media_pause)
+            } else if (it != InitStatusMediaPlayer.PLAYING) {
+                btn_panel_play.setImageResource(android.R.drawable.ic_media_play)
+                main_equalizer?.stopBars()
+            }
+        }
+        dataModel.metadataOfPlayer.observe(this) {
+            tv_song_autor.text = it.artist
+            tv_song_track.text = it.song
+        }
+    }
+
+    //-------------------init Bottom App Bar (PlayerPanel)------------------
 
 
 }
