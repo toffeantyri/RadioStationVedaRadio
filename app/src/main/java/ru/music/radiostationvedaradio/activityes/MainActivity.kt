@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.navigation.Navigation
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.bottom_player_panel.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -23,10 +24,16 @@ class MainActivity : BaseMainActivity() {
         setContentView(R.layout.activity_main)
         urlRadioService = getString(R.string.veda_radio_stream_link_low) // TODO Качество по умолчанию на релиз - MEDIUM
         APP_CONTEXT = this
-        SharedPreferenceProvider.getSharedPreferences(this)
+
+        dataModel.metadataOfPlayer.observe(this) {
+            tv_song_autor.text = it.artist
+            tv_song_track.text = it.song
+        }
+
 
         job = CoroutineScope(Dispatchers.Main).launch {
             Log.d("MyLog", "Coroutine job : $job")
+            SharedPreferenceProvider.getSharedPreferences(this@MainActivity)
             setUpToolBar()
             navController = Navigation.findNavController(this@MainActivity, R.id.main_nav_host_fragment)
             initExpandableListInNavView()

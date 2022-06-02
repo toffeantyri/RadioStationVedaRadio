@@ -29,7 +29,6 @@ import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandedMenuM
 import ru.music.radiostationvedaradio.view.adapters.listview.ListViewAdapter
 import ru.music.radiostationvedaradio.view.adapters.listview.ListViewItemModel
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
 import com.google.android.material.appbar.MaterialToolbar
 import kotlinx.android.synthetic.main.activity_main.*
@@ -37,6 +36,7 @@ import kotlinx.android.synthetic.main.bottom_player_panel.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import ru.music.radiostationvedaradio.busines.model.MetadataRadioService
 import ru.music.radiostationvedaradio.screens.TAG_WEB_URL
 import ru.music.radiostationvedaradio.utils.AUTHOR
 import ru.music.radiostationvedaradio.utils.MyLog
@@ -45,7 +45,7 @@ import ru.music.radiostationvedaradio.utils.SONG_NAME
 @SuppressLint("Registered")
 open class BaseMainActivity : AppCompatActivity() {
 
-    private val dataModel: ViewModelMainActivity by viewModels()
+    protected val dataModel: ViewModelMainActivity by viewModels()
 
     lateinit var navController: NavController
     var webUrl: String? = "" // url для WebFragment public для webFragment
@@ -77,16 +77,11 @@ open class BaseMainActivity : AppCompatActivity() {
         }
 
     protected var serviceBound = false
-        set(value) {
-            field = value
-            //Log.d("MyLog", "serviceBound -> $value")
-        }
     protected var mediaService: RadioPlayerService? = null
     protected var urlRadioService: String = ""
         set(value) {
             field = value
             updateCheckGroupQuality(value)
-            //Log.d("MyLog", "Activity : url -> $value")
         }
     //----------------------------e service----------------------
 
@@ -164,8 +159,8 @@ open class BaseMainActivity : AppCompatActivity() {
             val author = intent?.getStringExtra(AUTHOR) ?: getString(R.string.app_name)
             val song = intent?.getStringExtra(SONG_NAME) ?: getString(R.string.app_name)
             MyLog("METADATA : $author and $song")
-            tv_song_autor?.text = author
-            tv_song_track?.text = song
+            dataModel.metadataOfPlayer.value = MetadataRadioService(author, song)
+
         }
     }
 
