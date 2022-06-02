@@ -34,6 +34,7 @@ import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.busines.model.metadatavedaradio.StreamVedaradioJSONClass
 import ru.music.radiostationvedaradio.busines.VedaradioRetrofitApi
 import ru.music.radiostationvedaradio.activityes.MainActivity
+import ru.music.radiostationvedaradio.busines.model.MetadataRadioService
 import ru.music.radiostationvedaradio.utils.AUTHOR
 import ru.music.radiostationvedaradio.utils.SONG_NAME
 
@@ -458,6 +459,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     }
 
     fun getStatusMediaMplayer(): InitStatusMediaPlayer = STATE_OF_SERVICE
+
+    fun getMetadata()  = MetadataRadioService(artist, song)
 
     fun getPlayingURL(): String? = urlString
 

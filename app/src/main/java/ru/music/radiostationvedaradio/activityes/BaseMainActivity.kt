@@ -75,6 +75,11 @@ open class BaseMainActivity : AppCompatActivity() {
             field = value
             dataModel.statusMediaPlayer.value = value
         }
+  protected var metadataRadioService: MetadataRadioService? = null
+        set(value) {
+            field = value
+            dataModel.metadataOfPlayer.value = value
+        }
 
     protected var serviceBound = false
     protected var mediaService: RadioPlayerService? = null
@@ -106,7 +111,7 @@ open class BaseMainActivity : AppCompatActivity() {
         }
     }
 
-    fun <T> Context.isServiceRunning(service: Class<T>) =
+    private fun <T> Context.isServiceRunning(service: Class<T>) =
         (getSystemService(ACTIVITY_SERVICE) as ActivityManager)
             .getRunningServices(Integer.MAX_VALUE)
             .any { it.service.className == service.name }
@@ -138,6 +143,7 @@ open class BaseMainActivity : AppCompatActivity() {
             mediaService = binder.getService()
             serviceBound = true
             statusMediaPlayer = mediaService?.getStatusMediaMplayer() ?: InitStatusMediaPlayer.IDLE
+            metadataRadioService = mediaService?.getMetadata()
             urlRadioService = mediaService?.getPlayingURL() ?: ""
         }
 
@@ -160,7 +166,6 @@ open class BaseMainActivity : AppCompatActivity() {
             val song = intent?.getStringExtra(SONG_NAME) ?: getString(R.string.app_name)
             MyLog("METADATA : $author and $song")
             dataModel.metadataOfPlayer.value = MetadataRadioService(author, song)
-
         }
     }
 
@@ -365,8 +370,7 @@ open class BaseMainActivity : AppCompatActivity() {
 
     //---------------------initNavigationView end--------------------------------
 
-
-    private fun buttonPlayAction(statusService : InitStatusMediaPlayer) {
+    private fun buttonPlayAction(statusService: InitStatusMediaPlayer) {
         when (statusService) {
             InitStatusMediaPlayer.INIT_COMPLETE -> mediaService?.playMedia()
             InitStatusMediaPlayer.PLAYING -> mediaService?.pauseMedia()
@@ -376,6 +380,7 @@ open class BaseMainActivity : AppCompatActivity() {
             }
         }
     }
+
     //---------------------initToolbar--------------------------------
     protected fun setUpToolBar() {
         mToolbar = main_toolbar
@@ -441,7 +446,6 @@ open class BaseMainActivity : AppCompatActivity() {
                 else myDrawerLayout.openDrawer(GravityCompat.START)
             }
         }
-
         return super.onOptionsItemSelected(item)
     }
 
@@ -467,7 +471,6 @@ open class BaseMainActivity : AppCompatActivity() {
             tv_song_track.text = it.song
         }
     }
-
     //-------------------init Bottom App Bar (PlayerPanel)------------------
 
 
