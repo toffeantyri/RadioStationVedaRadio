@@ -9,13 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import kotlinx.android.synthetic.main.bottom_player_panel.*
 import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.fragment_main.view.*
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity
-import ru.music.radiostationvedaradio.services.InitStatusMediaPlayer
-import ru.music.radiostationvedaradio.utils.MyLog
+import ru.music.radiostationvedaradio.utils.myLog
 import ru.music.radiostationvedaradio.utils.TAG
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
@@ -25,7 +23,7 @@ class MainFragment : Fragment() {
     lateinit var parentActivity: MainActivity
 
     override fun onAttach(context: Context) {
-        MyLog("MainFragment onAttach")
+        myLog("MainFragment onAttach")
         super.onAttach(context)
     }
 
@@ -38,12 +36,12 @@ class MainFragment : Fragment() {
         view0.apply {
             setUpOnClickStaticButton()
         }
-        MyLog("MainFragment onCreateView")
+        myLog("MainFragment onCreateView")
         return view0
     }
 
     override fun onStart() {
-        MyLog("MainFragment onStart")
+        myLog("MainFragment onStart")
         super.onStart()
         mViewModel.nounText.observe(this) {
             tv_tcitata_dnya.text = it
@@ -52,17 +50,17 @@ class MainFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        MyLog("MainFragment onViewCreated")
+        myLog("MainFragment onViewCreated")
         super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onResume() {
-        MyLog("MainFragment onResume")
+        myLog("MainFragment onResume")
         super.onResume()
     }
 
     override fun onDestroy() {
-        MyLog("MainFragment onDestroy")
+        myLog("MainFragment onDestroy")
         try {
             mViewModel.nounText.removeObservers(this)
         } catch (e: UninitializedPropertyAccessException) {
@@ -73,7 +71,7 @@ class MainFragment : Fragment() {
     }
 
     override fun onDetach() {
-        MyLog("MainFragment onDetach")
+        myLog("MainFragment onDetach")
         super.onDetach()
     }
 

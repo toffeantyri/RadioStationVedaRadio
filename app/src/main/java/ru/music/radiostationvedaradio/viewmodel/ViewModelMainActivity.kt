@@ -10,7 +10,7 @@ import ru.music.radiostationvedaradio.busines.api.ApiProvider
 import ru.music.radiostationvedaradio.busines.model.MetadataRadioService
 import ru.music.radiostationvedaradio.busines.repository.MainRepository
 import ru.music.radiostationvedaradio.services.InitStatusMediaPlayer
-import ru.music.radiostationvedaradio.utils.MyLog
+import ru.music.radiostationvedaradio.utils.myLog
 
 class ViewModelMainActivity(application: Application) : AndroidViewModel(application) {
 
@@ -29,7 +29,7 @@ class ViewModelMainActivity(application: Application) : AndroidViewModel(applica
     }
 
     init {
-        MyLog("init block VM")
+        myLog("init block VM")
         metadataOfPlayer.value = MetadataRadioService("Veda Radio", "Veda Radio")
     }
 

@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 import ru.music.radiostationvedaradio.busines.model.MetadataRadioService
 import ru.music.radiostationvedaradio.screens.TAG_WEB_URL
 import ru.music.radiostationvedaradio.utils.AUTHOR
-import ru.music.radiostationvedaradio.utils.MyLog
+import ru.music.radiostationvedaradio.utils.myLog
 import ru.music.radiostationvedaradio.utils.SONG_NAME
 
 @SuppressLint("Registered")
@@ -151,7 +151,7 @@ open class BaseMainActivity : AppCompatActivity() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val author = intent?.getStringExtra(AUTHOR) ?: getString(R.string.app_name)
             val song = intent?.getStringExtra(SONG_NAME) ?: getString(R.string.app_name)
-            MyLog("METADATA : $author and $song")
+            myLog("METADATA : $author and $song")
             dataModel.metadataOfPlayer.value = MetadataRadioService(author, song)
         }
     }

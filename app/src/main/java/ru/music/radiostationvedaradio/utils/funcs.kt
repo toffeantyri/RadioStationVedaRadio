@@ -21,8 +21,12 @@ fun String.parceNounHareKrishnaFromHtml(): String {
     return formattedText2 ?: ""
 }
 
-fun MyLog(message: String) {
+fun myLog(message: String) {
     Log.d(TAG, message)
+}
+
+fun myLogNet(message: String) {
+    Log.d(TAG_NET, message)
 }
 
 fun NavController.navigateChangeTitleToolbar(
