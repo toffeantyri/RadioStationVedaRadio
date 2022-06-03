@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.busines
+package ru.music.radiostationvedaradio.busines.api
 
 import retrofit2.Call
 import retrofit2.http.GET

@@ -3,7 +3,7 @@ package ru.music.radiostationvedaradio
 import android.app.Application
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import ru.music.radiostationvedaradio.busines.SharedPreferenceProvider
+import ru.music.radiostationvedaradio.busines.database.SharedPreferenceProvider
 import ru.music.radiostationvedaradio.busines.database.room.AntiHoroDatabase
 import ru.music.radiostationvedaradio.utils.MyLog
 

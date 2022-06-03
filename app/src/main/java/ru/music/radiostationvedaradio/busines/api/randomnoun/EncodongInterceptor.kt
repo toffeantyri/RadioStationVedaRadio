@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.busines.randomnoun
+package ru.music.radiostationvedaradio.busines.api.randomnoun
 
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaTypeOrNull

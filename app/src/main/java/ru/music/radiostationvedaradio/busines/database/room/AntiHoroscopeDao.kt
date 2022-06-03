@@ -1,7 +1,6 @@
 package ru.music.radiostationvedaradio.busines.database.room
 
 import androidx.room.*
-import ru.music.radiostationvedaradio.busines.model.antihoro.AntiHoroTodayEntity
 
 @Dao
 interface AntiHoroscopeDao {

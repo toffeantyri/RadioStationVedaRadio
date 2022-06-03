@@ -1,7 +1,5 @@
-package ru.music.radiostationvedaradio.busines.model.antihoro
+package ru.music.radiostationvedaradio.busines.database.room
 
-import androidx.room.ColumnInfo
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 

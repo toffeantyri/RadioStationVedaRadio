@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.busines
+package ru.music.radiostationvedaradio.busines.database
 
 import android.content.Context
 import android.content.SharedPreferences

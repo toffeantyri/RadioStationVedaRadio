@@ -5,13 +5,11 @@ import android.os.Bundle
 import android.util.Log
 import androidx.navigation.Navigation
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.bottom_player_panel.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.busines.SharedPreferenceProvider
 import ru.music.radiostationvedaradio.utils.APP_CONTEXT
 import ru.music.radiostationvedaradio.utils.MyLog
 

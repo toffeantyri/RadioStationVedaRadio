@@ -24,7 +24,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -32,7 +31,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.busines.model.metadatavedaradio.StreamVedaradioJSONClass
-import ru.music.radiostationvedaradio.busines.VedaradioRetrofitApi
+import ru.music.radiostationvedaradio.busines.api.VedaradioRetrofitApi
 import ru.music.radiostationvedaradio.activityes.MainActivity
 import ru.music.radiostationvedaradio.busines.model.MetadataRadioService
 import ru.music.radiostationvedaradio.utils.AUTHOR

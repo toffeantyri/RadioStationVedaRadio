@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.busines
+package ru.music.radiostationvedaradio.busines.api
 
 
 import retrofit2.Call
@@ -9,6 +9,6 @@ import ru.music.radiostationvedaradio.busines.model.antihoro.HoroscopeModelClass
 interface AntiHoroscopeService {
 
     @GET("/r/export/utf/xml/daily/anti.xml")
-    fun getHoroXML() : Response<HoroscopeModelClasses>
+    suspend fun getHoroXML() : Response<HoroscopeModelClasses>
 
 }

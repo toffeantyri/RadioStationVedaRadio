@@ -2,9 +2,8 @@ package ru.music.radiostationvedaradio.busines.repository
 
 import android.util.Log
 import kotlinx.coroutines.*
-import ru.music.radiostationvedaradio.busines.ApiProvider
+import ru.music.radiostationvedaradio.busines.api.ApiProvider
 import ru.music.radiostationvedaradio.utils.getTodayHoroList
-
 
 
 class BadAdviceReposotory(api: ApiProvider) : BaseRepository<List<String>>(api) {

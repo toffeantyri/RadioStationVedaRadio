@@ -1,12 +1,12 @@
-package ru.music.radiostationvedaradio.busines
+package ru.music.radiostationvedaradio.busines.api
 
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
-import ru.music.radiostationvedaradio.busines.randomnoun.EncodingInterceptor
-import ru.music.radiostationvedaradio.busines.randomnoun.HareKrishnaServiceCoro
+import ru.music.radiostationvedaradio.busines.api.randomnoun.EncodingInterceptor
+import ru.music.radiostationvedaradio.busines.api.randomnoun.HareKrishnaServiceCoro
 
 class ApiProvider {
 
@@ -15,7 +15,6 @@ class ApiProvider {
     private val openXmlBody by lazy { initXmlApi() }
 
     private fun initApi() = Retrofit.Builder()
-        //.addCallAdapterFactory(RxJava3CallAdapterFactory.create())
         .addConverterFactory(GsonConverterFactory.create())
         .baseUrl("https://stream.vedaradio.fm")
         .build()
