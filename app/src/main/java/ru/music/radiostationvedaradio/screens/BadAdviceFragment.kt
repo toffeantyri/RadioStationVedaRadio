@@ -47,6 +47,7 @@ class BadAdviceFragment : Fragment() {
 
         viewModel.listHoroOfToday.observe(this) {
             it.forEach { myLogNet("BAFRAG : observe: " + it) }
+            view.tv_date_list.text = it[0]
         }
 
         overrideOnBackPressedWithCallback()

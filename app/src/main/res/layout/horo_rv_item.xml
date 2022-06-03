@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/MyCardViewStyle">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:id="@+id/iv_logo_zodiac"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:src="@drawable/ic_bookmark"
+            android:padding="10dp"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_logo_zodiac"
+            android:padding="10dp"
+            android:layout_marginStart="20dp"
+            android:id="@+id/tv_name_zodiac"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Водолей"
+            style="@style/text_style"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/green_900"
+
+
+            />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</com.google.android.material.card.MaterialCardView>
