@@ -1,16 +1,16 @@
 package ru.music.radiostationvedaradio.utils
 
-import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
 import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity
 import ru.music.radiostationvedaradio.busines.database.room.AntiHoroTodayEntity
 import ru.music.radiostationvedaradio.busines.model.antihoro.HoroscopeModelClasses
+import java.text.SimpleDateFormat
+import java.util.*
 
 //Функция достаёт нашу цитату из этого html
 fun String.parceNounHareKrishnaFromHtml(): String {
@@ -65,5 +65,10 @@ fun HoroscopeModelClasses.getTodayHoroList(): List<String> {
 
 fun List<String>.listHoroToEntity(): AntiHoroTodayEntity = AntiHoroTodayEntity(date = this[0], list = this)
 
+fun getTodayDate(format: String): String {
+    val date = Calendar.getInstance().time
+    val formatter = SimpleDateFormat(format)
+    return formatter.format(date)
+}
 
 
