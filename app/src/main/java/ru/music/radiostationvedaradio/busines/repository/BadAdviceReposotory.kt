@@ -14,15 +14,43 @@ class BadAdviceReposotory(api: ApiProvider) : BaseRepository<List<String>>(api) 
 
     private val databaseDao: AntiHoroscopeDao = App.Companion.db.getRoomDao()
 
-    fun loadNewHoro(date: String, onSuccess: () -> Unit) {
+    //check: if database.entity.date == date -> onSuccess, else onFail
+    suspend fun loadFromDatabaseAndCheckDate(date: String, onSuccess: () -> Unit, onFail: () -> Unit) {
+        val queryToDb = CoroutineScope(Dispatchers.IO).async {
+            databaseDao.getHoroEntity()
+        }.await()
 
-        //todo if date == dateOfOldData(DB) dataEmitter on next oldData
-        //todo что бы не плодить запросы в сеть
+        if (queryToDb != null) {
+            myLogNet(
+                "send date: $date" +
+                        "db date: ${queryToDb.date}"
+            )
+            if (!queryToDb.date.isNullOrEmpty() && date == queryToDb.date) {
+                myLogNet("BAREPO loadAndCheckDate : date == date")
+                withContext(Dispatchers.Main) {
+                    dataEmitter.onNext(queryToDb.list)
+                    onSuccess()
+                }
+            } else {
+                myLogNet("BAREPO loadAndCheckDate : date != date")
+                onFail()
+            }
+        } else {
+            myLogNet("BAREPO loadAndCheckDate : query = $queryToDb")
+            onFail()
+        }
+    }
+
+    /**   Load horoscope:
+     *      if (no internet) -> handleException -> return list from database or empty list
+     *      if (any error) ->   return list from database or empty list
+     */
+    fun loadNewHoro(onSuccess: () -> Unit) {
 
         val exceptionHandler = CoroutineExceptionHandler { _, exception ->
             myLogNet("exceptionHandlerCoroutine BARepo : " + exception.message.toString())
             CoroutineScope(Dispatchers.Main).launch {
-                val list = databaseDao.getHoroEntity().list
+                val list: List<String> = databaseDao.getHoroEntity()?.list ?: emptyList()
                 dataEmitter.onNext(list)
                 onSuccess()
             }
@@ -35,24 +63,19 @@ class BadAdviceReposotory(api: ApiProvider) : BaseRepository<List<String>>(api) 
             if (response.isSuccessful) {
                 val list: List<String> = response.body()?.getTodayHoroList() ?: emptyList()
                 databaseDao.insert(list.listHoroToEntity())
-
-                myLogNet("list size: " + list.size.toString())
-                list.forEach { myLogNet(it) }
-
+                myLogNet("----------REPO : list size: " + list.size.toString())
                 withContext(Dispatchers.Main) {
                     dataEmitter.onNext(list)
                     onSuccess()
                 }
             } else {
                 withContext(Dispatchers.Main) {
-                    myLogNet("error noun body" + response.errorBody().toString())
-                    val list = databaseDao.getHoroEntity().list
+                    myLogNet("REPO : Error XML body" + response.errorBody().toString())
+                    val list: List<String> = databaseDao.getHoroEntity()?.list ?: emptyList()
                     dataEmitter.onNext(list)
                     onSuccess()
                 }
             }
         }
     }
-
-
 }

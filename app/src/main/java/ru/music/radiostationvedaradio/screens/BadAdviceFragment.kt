@@ -41,7 +41,7 @@ class BadAdviceFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         view.horo_progressbar.visibility = View.VISIBLE
-        viewModel.refreshTodayAntiHoroscope(""){
+        viewModel.refreshTodayAntiHoroscope("03.06.2022"){
             view.horo_progressbar.visibility = View.GONE
         }
 

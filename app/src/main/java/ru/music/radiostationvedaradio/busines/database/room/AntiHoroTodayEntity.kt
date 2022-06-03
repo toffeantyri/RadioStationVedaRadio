@@ -1,19 +1,18 @@
 package ru.music.radiostationvedaradio.busines.database.room
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
+import androidx.room.*
 
 @Entity(tableName = "anti_goro_id_date")
-data class AntiHoroTodayEntity (
+data class AntiHoroTodayEntity(
 
-    @PrimaryKey val date : String = "",
+    @PrimaryKey
+    val id: Int = 0,
 
     @ColumnInfo
-    val list : List<String>
+    val date: String = "",
 
-
+    @ColumnInfo
+    val list: List<String>
 
 )
 
