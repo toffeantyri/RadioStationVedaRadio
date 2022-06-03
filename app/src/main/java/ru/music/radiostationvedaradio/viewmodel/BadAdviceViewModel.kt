@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.music.radiostationvedaradio.busines.api.ApiProvider
 import ru.music.radiostationvedaradio.busines.repository.BadAdviceReposotory
+import ru.music.radiostationvedaradio.utils.myLogNet
 
 class BadAdviceViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -21,6 +22,7 @@ class BadAdviceViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun refreshTodayAntiHoroscope(date : String, onSuccess : () -> Unit){
         repo.dataEmitter.subscribe{
+           it.forEach { myLogNet("BadAdvice VM : emitter : ${it.toString()}")}
             listHoroOfToday.value = it
         }
         viewModelScope.launch(Dispatchers.IO) {

@@ -1,14 +1,18 @@
 package ru.music.radiostationvedaradio.busines.repository
 
-import android.util.Log
+
 import kotlinx.coroutines.*
+import ru.music.radiostationvedaradio.App
 import ru.music.radiostationvedaradio.busines.api.ApiProvider
+import ru.music.radiostationvedaradio.busines.database.room.AntiHoroscopeDao
 import ru.music.radiostationvedaradio.utils.getTodayHoroList
+import ru.music.radiostationvedaradio.utils.listHoroToEntity
 import ru.music.radiostationvedaradio.utils.myLogNet
 
 
 class BadAdviceReposotory(api: ApiProvider) : BaseRepository<List<String>>(api) {
 
+    private val databaseDao: AntiHoroscopeDao = App.Companion.db.getRoomDao()
 
     fun loadNewHoro(date: String, onSuccess: () -> Unit) {
 
@@ -18,7 +22,8 @@ class BadAdviceReposotory(api: ApiProvider) : BaseRepository<List<String>>(api) 
         val exceptionHandler = CoroutineExceptionHandler { _, exception ->
             myLogNet("exceptionHandlerCoroutine BARepo : " + exception.message.toString())
             CoroutineScope(Dispatchers.Main).launch {
-                //todo load from db
+                val list = databaseDao.getHoroEntity().list
+                dataEmitter.onNext(list)
                 onSuccess()
             }
         }
@@ -28,13 +33,12 @@ class BadAdviceReposotory(api: ApiProvider) : BaseRepository<List<String>>(api) 
                     api.provideAntiHoro().getHoroXML()
                 }.await()
             if (response.isSuccessful) {
+                val list: List<String> = response.body()?.getTodayHoroList() ?: emptyList()
+                databaseDao.insert(list.listHoroToEntity())
 
-                val list : List<String> = response.body()?.getTodayHoroList() ?: emptyList()
-
-                myLogNet("list size: "  + list.size.toString())
+                myLogNet("list size: " + list.size.toString())
                 list.forEach { myLogNet(it) }
 
-                //todo if list is not empty save in DB
                 withContext(Dispatchers.Main) {
                     dataEmitter.onNext(list)
                     onSuccess()
@@ -42,7 +46,8 @@ class BadAdviceReposotory(api: ApiProvider) : BaseRepository<List<String>>(api) 
             } else {
                 withContext(Dispatchers.Main) {
                     myLogNet("error noun body" + response.errorBody().toString())
-                    //todo load from d
+                    val list = databaseDao.getHoroEntity().list
+                    dataEmitter.onNext(list)
                     onSuccess()
                 }
             }

@@ -10,7 +10,7 @@ import ru.music.radiostationvedaradio.utils.myLog
 class App : Application() {
 
     companion object {
-        lateinit var db: RoomDatabase
+        lateinit var db: AntiHoroDatabase
     }
 
     override fun onCreate() {

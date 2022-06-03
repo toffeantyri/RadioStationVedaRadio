@@ -36,6 +36,7 @@ import ru.music.radiostationvedaradio.activityes.MainActivity
 import ru.music.radiostationvedaradio.busines.model.MetadataRadioService
 import ru.music.radiostationvedaradio.utils.AUTHOR
 import ru.music.radiostationvedaradio.utils.SONG_NAME
+import java.lang.IllegalStateException
 
 
 const val ACTION_PLAY = "ru.music.vedaradio.ACTION_PLAY"
@@ -428,6 +429,10 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 startForeground(NOTIFICATION_ID, buildNotification(playStatus).build())
             } catch (e: RemoteException) {
                 e.printStackTrace()
+                stopSelf()
+            } catch (e: IllegalStateException){
+                e.printStackTrace()
+                Toast.makeText(this, getString(R.string.error_load_service), Toast.LENGTH_SHORT).show()
                 stopSelf()
             }
         }

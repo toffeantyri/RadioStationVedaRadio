@@ -19,6 +19,7 @@
     <string name="error_loading">Переподключение…</string>
     <string name="error_loading_error">Переподключение…</string>
     <string name="error_no_internet">Нет подключения к интернету</string>
+    <string name="error_load_service">Ошибка фонового плейера</string>
 
     <string name="nav_option">Дополнительно</string>
     <string name="tcitata_dnya">Случайная цитата из "Бхагавад-Гиты"</string>

@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.bad_advice_fragment.view.*
 import ru.music.radiostationvedaradio.viewmodel.BadAdviceViewModel
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity
+import ru.music.radiostationvedaradio.utils.myLogNet
 import ru.music.radiostationvedaradio.utils.navigateChangeTitleToolbar
 
 
@@ -42,6 +43,10 @@ class BadAdviceFragment : Fragment() {
         view.horo_progressbar.visibility = View.VISIBLE
         viewModel.refreshTodayAntiHoroscope(""){
             view.horo_progressbar.visibility = View.GONE
+        }
+
+        viewModel.listHoroOfToday.observe(this){
+            it.forEach { myLogNet("BAFRAG : observe: "+it)}
         }
 
         overrideOnBackPressedWithCallback()
