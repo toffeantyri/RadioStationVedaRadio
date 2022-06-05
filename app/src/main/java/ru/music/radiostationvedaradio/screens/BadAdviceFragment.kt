@@ -8,16 +8,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.bad_advice_fragment.*
 import kotlinx.android.synthetic.main.bad_advice_fragment.view.*
 import kotlinx.android.synthetic.main.fragment_main.*
 import ru.music.radiostationvedaradio.viewmodel.BadAdviceViewModel
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity
+import ru.music.radiostationvedaradio.busines.model.antihoro.HoroItemHolder
 import ru.music.radiostationvedaradio.utils.getTodayDate
 import ru.music.radiostationvedaradio.utils.myLog
 import ru.music.radiostationvedaradio.utils.myLogNet
 import ru.music.radiostationvedaradio.utils.navigateChangeTitleToolbar
+import ru.music.radiostationvedaradio.view.adapters.badadvice.AntiHoroAdapter
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -30,6 +33,8 @@ class BadAdviceFragment : Fragment() {
 
     private lateinit var parentActivity: MainActivity
     private lateinit var viewModel: BadAdviceViewModel
+    private lateinit var myRecyclerView: RecyclerView
+    private lateinit var adapter: AntiHoroAdapter
 
 
     override fun onCreateView(
@@ -45,17 +50,21 @@ class BadAdviceFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.listHoroOfToday.observe(viewLifecycleOwner) {
-            it.forEach { myLogNet("BAFRAG : observe: " + it) }
-            if (it.isNotEmpty()) view.tv_date_list.text = it[0].date
-        }
-
         overrideOnBackPressedWithCallback()
     }
 
     override fun onStart() {
         super.onStart()
+        initAntiHoroRv()
         if (viewModel.listHoroOfToday.value.isNullOrEmpty()) loadHoroscope()
+
+        viewModel.listHoroOfToday.observe(viewLifecycleOwner) {
+            it.forEach { myLogNet("BAFRAG : observe: " + it) }
+            if (it.isNotEmpty()) {
+                view?.tv_date_list?.text = it[0].date
+                adapter.fillListAdapter(it)
+            }
+        }
     }
 
 
@@ -88,4 +97,11 @@ class BadAdviceFragment : Fragment() {
         false -> horo_progressbar.visibility = View.GONE
     }
 
+
+    fun initAntiHoroRv() {
+        adapter = AntiHoroAdapter()
+        myRecyclerView = horo_rv
+        myRecyclerView.adapter = adapter
+
+    }
 }

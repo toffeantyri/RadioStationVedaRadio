@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="@style/MyCardViewStyle">
+    style="@style/MyCardViewStyle"
+    tools:cardBackgroundColor="@color/black">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -13,32 +15,48 @@
         >
 
         <ImageView
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:id="@+id/iv_logo_zodiac"
             android:layout_width="70dp"
             android:layout_height="70dp"
+            android:padding="10dp"
             android:src="@drawable/ic_bookmark"
-            android:padding="10dp"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textview.MaterialTextView
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/iv_logo_zodiac"
-            android:padding="10dp"
-            android:layout_marginStart="20dp"
             android:id="@+id/tv_name_zodiac"
+            style="@style/text_style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:padding="10dp"
             android:text="Водолей"
-            style="@style/text_style"
+            android:textColor="@color/green_900"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="@color/green_900"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_logo_zodiac"
+            app:layout_constraintStart_toEndOf="@id/iv_logo_zodiac"
+            app:layout_constraintTop_toTopOf="@id/iv_logo_zodiac" />
 
-
-            />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_descr_zodiac"
+            style="@style/text_style"
+            android:textColor="@color/black"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/iv_logo_zodiac"
+            android:visibility="gone"
+            tools:text="харе кришна харе кришна
+            харе кришна харе кришна харе кришна
+            харе кришна харе кришна харе кришна
+            харе кришна харе кришна харе кришна
+            харе кришна харе кришна харе кришна
+            харе кришна харе кришна харе кришна
+            харе кришна харе кришна харе кришна " />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
