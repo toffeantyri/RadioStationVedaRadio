@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity
 import ru.music.radiostationvedaradio.busines.database.room.AntiHoroTodayEntity
@@ -64,6 +65,7 @@ fun HoroscopeModelClasses.getTodayHoroList(): List<String> {
     return list
 }
 
+//todo delete
 fun List<String>.listHoroToEntity(): AntiHoroTodayEntity =
     AntiHoroTodayEntity(date = this[0], list = this)
 
@@ -73,7 +75,7 @@ fun getTodayDate(format: String): String {
     return formatter.format(date)
 }
 
-fun HoroscopeModelClasses.toListHoroItemClass(): List<List<HoroItemHolder>> {
+fun HoroscopeModelClasses.toListHoroItemHolder(): List<List<HoroItemHolder>> {
     val allList = arrayListOf<List<HoroItemHolder>>()
     val listToday = arrayListOf<HoroItemHolder>()
     listToday.add(HoroItemHolder(this.date?.today ?: "", "Овен", this.aries?.get(1) ?: ""))
@@ -117,6 +119,29 @@ fun HoroscopeModelClasses.toListHoroItemClass(): List<List<HoroItemHolder>> {
     allList[0] = listToday
     allList[1] = tom
     allList[2] = tom2
+
+    //todo
+    allList.forEach { myLog("**************************"+it.toString()) }
+
     return allList
+}
+
+fun List<HoroItemHolder>.toListSerilizeJson(id: Int): AntiHoroTodayEntity {
+    val mapper = jacksonObjectMapper()
+    //todo
+   this.forEach { myLog("///////////////////////////"+ mapper.writeValueAsString(it)) }
+
+    return AntiHoroTodayEntity(
+        id = id,
+        date = this[0].date,
+        list = this.map { mapper.writeValueAsString(it) })
+}
+
+fun AntiHoroTodayEntity.toListHoroItemHolder(): List<HoroItemHolder> {
+    val mapper = jacksonObjectMapper()
+    //todo
+    this.list.forEach { mapper.readValue(it, HoroItemHolder::class.java).toString() }
+
+    return this.list.map { mapper.readValue(it, HoroItemHolder::class.java) }
 }
 

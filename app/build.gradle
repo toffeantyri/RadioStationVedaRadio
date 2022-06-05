@@ -114,4 +114,7 @@ dependencies {
 
     // Mini equalizer
     implementation "com.github.claucookie.miniequalizer:library:1.0.0"
+
+    //jackson
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.12.1'
 }
