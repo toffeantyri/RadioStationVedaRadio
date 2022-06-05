@@ -46,7 +46,6 @@ class MainFragment : Fragment() {
         mViewModel.nounText.observe(this) {
             tv_tcitata_dnya.text = it
         }
-        if (mViewModel.nounText.value.isNullOrEmpty()) loadNoun()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,6 +56,7 @@ class MainFragment : Fragment() {
     override fun onResume() {
         myLog("MainFragment onResume")
         super.onResume()
+        if (mViewModel.nounText.value.isNullOrEmpty()) loadNoun()
     }
 
     override fun onDestroy() {
@@ -89,8 +89,8 @@ class MainFragment : Fragment() {
     }
 
     private fun setNounLoading(visible: Boolean) = when (visible) {
-        true -> noun_loading.visibility = View.VISIBLE
-        false -> noun_loading.visibility = View.GONE
+        true -> noun_loading?.visibility = View.VISIBLE
+        false -> noun_loading?.visibility = View.GONE
     }
 
 

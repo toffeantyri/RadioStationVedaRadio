@@ -57,7 +57,8 @@
                     android:fontFamily="@font/romic"
                     android:textSize="17sp"
                     android:textColor="@color/green_900"
-                    android:textStyle="italic" />
+                    android:textStyle="italic"
+                    tools:text="Цитата из бхагавад гиты"/>
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView

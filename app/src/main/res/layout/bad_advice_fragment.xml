@@ -16,17 +16,21 @@
         style="@style/MyCardViewStyle">
 
         <TextView
-            android:layout_gravity="center"
+            android:gravity="center_horizontal"
             android:padding="5dp"
             android:id="@+id/tv_date_list"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             style="@style/text_style"
             android:elevation="10dp"
-            android:textStyle="bold"
+            android:textStyle="bold|italic"
+            tools:text="03.03.2020"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:textColor="@color/green_900"
             />
 
     </com.google.android.material.card.MaterialCardView>

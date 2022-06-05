@@ -28,7 +28,6 @@ class MainActivity : BaseMainActivity() {
 
         job = CoroutineScope(Dispatchers.Main).launch {
             Log.d("MyLog", "Coroutine job : $job")
-            //SharedPreferenceProvider.getSharedPreferences(this@MainActivity)
             setUpToolBar()
             initPlayerPanel()
             navController = Navigation.findNavController(this@MainActivity, R.id.main_nav_host_fragment)

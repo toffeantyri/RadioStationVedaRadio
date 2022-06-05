@@ -22,7 +22,6 @@ class App : Application() {
         db = Room.databaseBuilder(this, AntiHoroDatabase::class.java, "AntiHoroDataBase")
             .fallbackToDestructiveMigration()
             .build()
-
     }
 
 }
