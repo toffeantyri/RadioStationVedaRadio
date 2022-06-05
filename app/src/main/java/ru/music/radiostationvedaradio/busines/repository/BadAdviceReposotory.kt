@@ -5,38 +5,37 @@ import kotlinx.coroutines.*
 import ru.music.radiostationvedaradio.App
 import ru.music.radiostationvedaradio.busines.api.ApiProvider
 import ru.music.radiostationvedaradio.busines.database.room.AntiHoroscopeDao
-import ru.music.radiostationvedaradio.utils.getTodayHoroList
-import ru.music.radiostationvedaradio.utils.listHoroToEntity
+import ru.music.radiostationvedaradio.busines.model.antihoro.HoroItemHolder
+import ru.music.radiostationvedaradio.utils.myLog
 import ru.music.radiostationvedaradio.utils.myLogNet
+import ru.music.radiostationvedaradio.utils.toListHoroItemHolder
+import ru.music.radiostationvedaradio.utils.toListSerilizeJson
 
 
-class BadAdviceReposotory(api: ApiProvider) : BaseRepository<List<String>>(api) {
+class BadAdviceReposotory(api: ApiProvider) : BaseRepository<List<HoroItemHolder>>(api) {
 
     private val databaseDao: AntiHoroscopeDao = App.Companion.db.getRoomDao()
 
     //check: if database.entity.date == date -> onSuccess, else onFail
-    suspend fun loadFromDatabaseAndCheckDate(date: String, onSuccess: () -> Unit, onFail: () -> Unit) {
+    suspend fun loadFromDatabaseAndCheckDate(
+        date: String,
+        onSuccess: () -> Unit,
+        onFail: () -> Unit
+    ) {
         val queryToDb = CoroutineScope(Dispatchers.IO).async {
-            databaseDao.getHoroEntity()
+            databaseDao.getHoroEntityByDate(date)
         }.await()
 
         if (queryToDb != null) {
-            myLogNet(
-                "send date: $date" +
-                        "db date: ${queryToDb.date}"
-            )
             if (!queryToDb.date.isNullOrEmpty() && date == queryToDb.date) {
-                myLogNet("BAREPO loadAndCheckDate : date == date")
                 withContext(Dispatchers.Main) {
-                    dataEmitter.onNext(queryToDb.list)
+                    dataEmitter.onNext(queryToDb.toListHoroItemHolder())
                     onSuccess()
                 }
             } else {
-                myLogNet("BAREPO loadAndCheckDate : date != date")
                 onFail()
             }
         } else {
-            myLogNet("BAREPO loadAndCheckDate : query = $queryToDb")
             onFail()
         }
     }
@@ -50,7 +49,8 @@ class BadAdviceReposotory(api: ApiProvider) : BaseRepository<List<String>>(api) 
         val exceptionHandler = CoroutineExceptionHandler { _, exception ->
             myLogNet("exceptionHandlerCoroutine BARepo : " + exception.message.toString())
             CoroutineScope(Dispatchers.Main).launch {
-                val list: List<String> = databaseDao.getHoroEntity()?.list ?: emptyList()
+                val list: List<HoroItemHolder> =
+                    databaseDao.getHoroEntity()?.toListHoroItemHolder() ?: emptyList()
                 dataEmitter.onNext(list)
                 onSuccess()
             }
@@ -61,17 +61,18 @@ class BadAdviceReposotory(api: ApiProvider) : BaseRepository<List<String>>(api) 
                     api.provideAntiHoro().getHoroXML()
                 }.await()
             if (response.isSuccessful) {
-                val list: List<String> = response.body()?.getTodayHoroList() ?: emptyList()
-                databaseDao.insert(list.listHoroToEntity())
-                myLogNet("----------REPO : list size: " + list.size.toString())
+                val list: List<List<HoroItemHolder>> = response.body()!!.toListHoroItemHolder()
+                databaseDao.insert(list[0].toListSerilizeJson(0))
+                databaseDao.insert(list[1].toListSerilizeJson(1))
+                databaseDao.insert(list[2].toListSerilizeJson(2))
                 withContext(Dispatchers.Main) {
-                    dataEmitter.onNext(list)
+                    dataEmitter.onNext(list[0])
                     onSuccess()
                 }
             } else {
                 withContext(Dispatchers.Main) {
-                    myLogNet("REPO : Error XML body" + response.errorBody().toString())
-                    val list: List<String> = databaseDao.getHoroEntity()?.list ?: emptyList()
+                    val list: List<HoroItemHolder> =
+                        databaseDao.getHoroEntity()?.toListHoroItemHolder() ?: emptyList()
                     dataEmitter.onNext(list)
                     onSuccess()
                 }

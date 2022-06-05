@@ -47,27 +47,6 @@ private fun <T> Context.isServiceRunning(service: Class<T>) =
         .getRunningServices(Integer.MAX_VALUE)
         .any { it.service.className == service.name }
 
-fun HoroscopeModelClasses.getTodayHoroList(): List<String> {
-    val list = arrayListOf<String>()
-    list.add(0, this.date?.today ?: "")
-    list.add(1, this.aries?.get(2) ?: "")
-    list.add(2, this.taurus?.get(2) ?: "")
-    list.add(3, this.gemini?.get(2) ?: "")
-    list.add(4, this.cancer?.get(2) ?: "")
-    list.add(5, this.leo?.get(2) ?: "")
-    list.add(6, this.virgo?.get(2) ?: "")
-    list.add(7, this.libra?.get(2) ?: "")
-    list.add(8, this.scorpio?.get(2) ?: "")
-    list.add(9, this.sagittarius?.get(2) ?: "")
-    list.add(10, this.capricorn?.get(2) ?: "")
-    list.add(11, this.aquarius?.get(2) ?: "")
-    list.add(12, this.pisces?.get(2) ?: "")
-    return list
-}
-
-//todo delete
-fun List<String>.listHoroToEntity(): AntiHoroTodayEntity =
-    AntiHoroTodayEntity(date = this[0], list = this)
 
 fun getTodayDate(format: String): String {
     val date = Calendar.getInstance().time
@@ -116,21 +95,14 @@ fun HoroscopeModelClasses.toListHoroItemHolder(): List<List<HoroItemHolder>> {
     tom2.add(HoroItemHolder(this.date?.tomorrow02 ?: "", "Козерог", this.capricorn?.get(3) ?: ""))
     tom2.add(HoroItemHolder(this.date?.tomorrow02 ?: "", "Водолей", this.aquarius?.get(3) ?: ""))
     tom2.add(HoroItemHolder(this.date?.tomorrow02 ?: "", "Рыбы", this.pisces?.get(3) ?: ""))
-    allList[0] = listToday
-    allList[1] = tom
-    allList[2] = tom2
-
-    //todo
-    allList.forEach { myLog("**************************"+it.toString()) }
-
+    allList.add(listToday)
+    allList.add(tom)
+    allList.add(tom2)
     return allList
 }
 
 fun List<HoroItemHolder>.toListSerilizeJson(id: Int): AntiHoroTodayEntity {
     val mapper = jacksonObjectMapper()
-    //todo
-   this.forEach { myLog("///////////////////////////"+ mapper.writeValueAsString(it)) }
-
     return AntiHoroTodayEntity(
         id = id,
         date = this[0].date,
@@ -139,9 +111,6 @@ fun List<HoroItemHolder>.toListSerilizeJson(id: Int): AntiHoroTodayEntity {
 
 fun AntiHoroTodayEntity.toListHoroItemHolder(): List<HoroItemHolder> {
     val mapper = jacksonObjectMapper()
-    //todo
-    this.list.forEach { mapper.readValue(it, HoroItemHolder::class.java).toString() }
-
     return this.list.map { mapper.readValue(it, HoroItemHolder::class.java) }
 }
 

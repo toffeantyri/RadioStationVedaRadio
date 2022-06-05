@@ -45,9 +45,9 @@ class BadAdviceFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.listHoroOfToday.observe(this) {
+        viewModel.listHoroOfToday.observe(viewLifecycleOwner) {
             it.forEach { myLogNet("BAFRAG : observe: " + it) }
-            view.tv_date_list.text = it[0]
+            if (it.isNotEmpty()) view.tv_date_list.text = it[0].date
         }
 
         overrideOnBackPressedWithCallback()

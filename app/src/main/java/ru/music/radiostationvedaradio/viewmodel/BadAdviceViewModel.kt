@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.music.radiostationvedaradio.busines.api.ApiProvider
+import ru.music.radiostationvedaradio.busines.model.antihoro.HoroItemHolder
 import ru.music.radiostationvedaradio.busines.repository.BadAdviceReposotory
 import ru.music.radiostationvedaradio.utils.myLogNet
 
@@ -15,14 +16,13 @@ class BadAdviceViewModel(application: Application) : AndroidViewModel(applicatio
     private val repo by lazy { BadAdviceReposotory(ApiProvider()) }
 
 
-    val listHoroOfToday: MutableLiveData<List<String>> by lazy {
-        MutableLiveData<List<String>>()
+    val listHoroOfToday: MutableLiveData<List<HoroItemHolder>> by lazy {
+        MutableLiveData<List<HoroItemHolder>>()
     }
 
 
     fun refreshTodayAntiHoroscope(date: String, onSuccess: () -> Unit) {
         repo.dataEmitter.subscribe {
-            it.forEach { myLogNet("BadAdvice VM : emitter : ${it.toString()}") }
             listHoroOfToday.value = it
         }
 
