@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".screens.WebViewFragment"
-    android:background="@color/green_100_alp50">
+    android:background="@color/green_100_alp50"
+    android:paddingBottom="80dp">
     <ProgressBar
         android:visibility="visible"
         android:id="@+id/progress_cicle_webpage"
