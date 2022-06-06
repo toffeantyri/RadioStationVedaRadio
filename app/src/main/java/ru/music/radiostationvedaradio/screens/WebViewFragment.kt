@@ -120,7 +120,7 @@ class WebViewFragment : Fragment() {
         menu.findItem(R.id.action_low_quality).isVisible = false
         menu.findItem(R.id.action_medium_quality).isVisible = false
         menu.findItem(R.id.action_high_quality).isVisible = false
-        (parentActivity).mToolbar.title = "Browser"
+        (parentActivity).mToolbar.title = ""
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

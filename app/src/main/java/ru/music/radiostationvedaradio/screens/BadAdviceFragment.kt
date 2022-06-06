@@ -2,10 +2,8 @@ package ru.music.radiostationvedaradio.screens
 
 import android.os.Bundle
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
@@ -44,6 +42,7 @@ class BadAdviceFragment : Fragment() {
         val view0 = inflater.inflate(R.layout.bad_advice_fragment, container, false)
         parentActivity = activity as MainActivity
         viewModel = ViewModelProvider(this).get(BadAdviceViewModel::class.java)
+        setHasOptionsMenu(true)
         return view0
     }
 
@@ -83,6 +82,11 @@ class BadAdviceFragment : Fragment() {
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, onBackPressedCallback)
     }
 
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        (parentActivity).mToolbar.title = ""
+    }
 
     private fun loadHoroscope() {
         val date = getTodayDate("dd.MM.yyyy")
