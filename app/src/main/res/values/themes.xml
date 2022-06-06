@@ -32,6 +32,11 @@
         <item name="titleTextColor">@android:color/white</item>
     </style>
 
+    <style name="popUpToolbar" parent="MainToolbarStyle">
+        <item name="android:background">@drawable/shape_rectangle_r10</item>
+        <item name="popupMenuBackground">@android:color/transparent</item>
+            </style>
+
     <style name="myAppBottomBar" parent="Widget.MaterialComponents.BottomAppBar.Colored">
         <item name="android:gravity">center_vertical</item>
         <item name="android:colorControlNormal">@android:color/white</item>

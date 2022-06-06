@@ -23,7 +23,10 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:menu="@menu/menu"
-            app:theme="@style/MainToolbarStyle" />
+            app:theme="@style/MainToolbarStyle"
+            app:popupTheme="@style/popUpToolbar"
+
+            />
 
         <com.yandex.mobile.ads.banner.BannerAdView
             android:background="@color/black"
