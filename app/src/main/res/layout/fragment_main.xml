@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".screens.MainFragment"
-    android:background="@color/green_100_alp50">
+    tools:background="@color/green_100_alp50"
+    tools:context=".screens.MainFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -26,11 +26,10 @@
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:layout_gravity="center"
-                    android:visibility="gone"
-                    android:indeterminateTint="@color/green_700"
                     android:indeterminate="true"
                     android:indeterminateBehavior="cycle"
-                    />
+                    android:indeterminateTint="@color/green_700"
+                    android:visibility="gone" />
 
                 <ImageButton
                     android:id="@+id/btn_refresh_tcitata"
@@ -40,25 +39,25 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="5dp"
-                    android:padding="4dp"
                     android:background="@drawable/shape_rectangle_r10"
+                    android:padding="4dp"
                     android:src="@drawable/ic_refresh_black_24dp"
                     app:tint="@color/green_900"
                     tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
 
                 <TextView
-                    android:paddingTop="5dp"
-                    android:paddingEnd="5dp"
-                    android:paddingBottom="5dp"
-                    android:paddingStart="15dp"
                     android:id="@+id/tv_tcitata_dnya"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/romic"
-                    android:textSize="17sp"
+                    android:paddingStart="15dp"
+                    android:paddingTop="5dp"
+                    android:paddingEnd="5dp"
+                    android:paddingBottom="5dp"
                     android:textColor="@color/green_900"
+                    android:textSize="17sp"
                     android:textStyle="italic"
-                    tools:text="Цитата из бхагавад гиты"/>
+                    tools:text="Цитата из бхагавад гиты" />
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
@@ -72,9 +71,6 @@
         </LinearLayout>
 
     </ScrollView>
-
-
-
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

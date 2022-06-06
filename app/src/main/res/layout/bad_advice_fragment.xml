@@ -1,66 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".screens.BadAdviceFragment"
-    android:background="@color/green_100_alp50"
-    android:orientation="vertical"
     android:gravity="center_horizontal"
-    android:paddingBottom="80dp"
-    >
+    android:orientation="vertical"
+    tools:background="@color/green_100_alp50"
+    tools:context=".screens.BadAdviceFragment">
 
     <com.google.android.material.card.MaterialCardView
+        style="@style/MyCardViewStyle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/MyCardViewStyle">
+        android:layout_height="wrap_content">
 
         <TextView
-            android:gravity="center_horizontal"
-            android:padding="5dp"
             android:id="@+id/tv_date_list"
+            style="@style/text_style"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            style="@style/text_style"
             android:elevation="10dp"
-            android:textStyle="bold|italic"
-            tools:text="03.03.2020"
+            android:gravity="center_horizontal"
+            android:padding="5dp"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
             android:textColor="@color/green_900"
-            />
+            android:textStyle="bold|italic"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="03.03.2020" />
 
     </com.google.android.material.card.MaterialCardView>
 
     <ProgressBar
-        android:layout_marginTop="10dp"
         android:id="@+id/horo_progressbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:indeterminateTint="@color/green_500"
         android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:indeterminateTint="@color/green_500"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/horo_rv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:listitem="@layout/horo_rv_item"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@id/tv_date_list"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        />
+        app:layout_constraintTop_toBottomOf="@id/tv_date_list"
+        tools:listitem="@layout/horo_rv_item" />
 
 
 </LinearLayout>
