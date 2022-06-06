@@ -283,9 +283,9 @@ open class BaseMainActivity : AppCompatActivity() {
         //subitems
         val subItem0 = arrayListOf<String>()
         subItem0.apply {
-            add(getString(R.string.veda_radio_site))
-            add(getString(R.string.torsunov_site))
-            add(getString(R.string.provedy_site))
+            add(getString(R.string.name_veda_radio_site))
+            add(getString(R.string.name_torsunov_site))
+            add(getString(R.string.name_provedy_site))
         }
 
         listDataChild.put(listDataHeader[0], subItem0)

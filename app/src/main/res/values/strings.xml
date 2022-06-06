@@ -6,8 +6,11 @@
     <string name="veda_radio_stream_link_medium">https://stream.vedaradio.fm/medium?</string>
     <string name="veda_radio_stream_link_low">https://stream.vedaradio.fm/low?</string>
 
+    <string name="name_veda_radio_site">Сайт Веда Радио</string>
     <string name="veda_radio_site">https://vedaradio.fm/</string>
+    <string name="name_torsunov_site">Сайт Торсунова О.Г.</string>
     <string name="torsunov_site">https://torsunov.ru/</string>
+    <string name="name_provedy_site">Про веды. Информация</string>
     <string name="provedy_site">https://provedy.info/</string>
 
     <string name="ignio_site">https://ignio.com/</string>
