@@ -15,6 +15,8 @@
 
     <string name="ignio_site">https://ignio.com/</string>
 
+
+
     <string name="text_low_quality">Низкое качество(48kb/s)</string>
     <string name="text_medium_quality">Среднее качество(96/kb/s)</string>
     <string name="text_high_quality">Высокое качество(128ks/s)</string>

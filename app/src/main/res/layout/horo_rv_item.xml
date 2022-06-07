@@ -19,7 +19,7 @@
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:padding="10dp"
-            android:src="@drawable/ic_bookmark"
+            android:src="@drawable/aries70x70"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -46,6 +46,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:background="@color/green_200"
             android:gravity="end"
+            android:alpha="0.7"
             />
 
         <com.google.android.material.textview.MaterialTextView

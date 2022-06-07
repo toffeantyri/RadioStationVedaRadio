@@ -11,24 +11,39 @@ import ru.music.radiostationvedaradio.busines.model.antihoro.HoroItemHolder
 
 class AntiHoroAdapter : RecyclerView.Adapter<AntiHoroAdapter.HoroViewHolder>() {
 
-    private var itemList : List<HoroItemHolder> = listOf()
-    private val imageList : List<Int> = listOf() //todo добавить ссылка на картнки
+    private var itemList: List<HoroItemHolder> = listOf()
+    private val imageList: List<Int> =
+        listOf(
+            R.drawable.aries70x70,
+            R.drawable.taurus70x70,
+            R.drawable.gemini70x70,
+            R.drawable.cancer70x70,
+            R.drawable.leo70x70,
+            R.drawable.virgo70x70,
+            R.drawable.libra70x70,
+            R.drawable.scorpio70x70,
+            R.drawable.sagittarius70x70,
+            R.drawable.capricorn70x70,
+            R.drawable.aquarius70x70,
+            R.drawable.pisces70x70
+        )
 
-    inner class HoroViewHolder(view : View) : RecyclerView.ViewHolder(view) {
+    inner class HoroViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        val itemName : MaterialTextView = view.findViewById(R.id.tv_name_zodiac)
-        val itemImage : ImageView = view.findViewById(R.id.iv_logo_zodiac)
-        val itemDescr : MaterialTextView = view.findViewById(R.id.tv_descr_zodiac)
+        val itemName: MaterialTextView = view.findViewById(R.id.tv_name_zodiac)
+        val itemImage: ImageView = view.findViewById(R.id.iv_logo_zodiac)
+        val itemDescr: MaterialTextView = view.findViewById(R.id.tv_descr_zodiac)
 
-        fun bindView(pos : Int){
-            //itemImage.setImageResource(imageList[pos])
+        fun bindView(pos: Int) {
+            itemImage.setImageResource(imageList[pos])
             itemName.text = itemList[pos].name
             itemDescr.text = itemList[pos].description
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HoroViewHolder {
-        val inflater = LayoutInflater.from(parent.context).inflate(R.layout.horo_rv_item, parent, false)
+        val inflater =
+            LayoutInflater.from(parent.context).inflate(R.layout.horo_rv_item, parent, false)
         return HoroViewHolder(inflater)
     }
 
@@ -40,7 +55,7 @@ class AntiHoroAdapter : RecyclerView.Adapter<AntiHoroAdapter.HoroViewHolder>() {
         return itemList.size
     }
 
-    fun fillListAdapter(list : List<HoroItemHolder>){
+    fun fillListAdapter(list: List<HoroItemHolder>) {
         itemList = list
         notifyDataSetChanged()
     }
