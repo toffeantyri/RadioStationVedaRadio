@@ -24,6 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import okio.utf8Size
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -227,15 +228,15 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                         val list = it.split("-")
                         when (list.size) {
                             1 -> {
-                                artist = "Veda Radio"
+                                artist = getString(R.string.default_veda_artist)
                                 song = list[0]
                             }
                             2 -> {
-                                artist = list[0]
-                                song = list[1]
+                                artist = list[0].ifEmpty { getString(R.string.default_veda_artist) }
+                                song = list[1].ifEmpty { getString(R.string.default_veda_song) }
                             }
                             3 -> {
-                                artist = list[0]
+                                artist = list[0].ifEmpty { getString(R.string.default_veda_artist) }
                                 song = list[1] + list[2]
                             }
                         }
