@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     style="@style/MyCardViewStyle"
-    tools:cardBackgroundColor="@color/black">
+    tools:cardBackgroundColor="@color/green_100">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -33,10 +33,20 @@
             android:text="Водолей"
             android:textColor="@color/green_900"
             android:textSize="18sp"
-            android:textStyle="bold"
+            android:textStyle="normal"
             app:layout_constraintBottom_toBottomOf="@+id/iv_logo_zodiac"
             app:layout_constraintStart_toEndOf="@id/iv_logo_zodiac"
             app:layout_constraintTop_toTopOf="@id/iv_logo_zodiac" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/iv_logo_zodiac"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@color/green_200"
+            android:gravity="end"
+            />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tv_descr_zodiac"
@@ -50,6 +60,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/iv_logo_zodiac"
             android:visibility="gone"
+            tools:visibility="visible"
             tools:text="харе кришна харе кришна
             харе кришна харе кришна харе кришна
             харе кришна харе кришна харе кришна
