@@ -9,6 +9,7 @@ import com.google.android.material.textview.MaterialTextView
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.busines.model.antihoro.HoroItemHolder
 
+
 class AntiHoroAdapter : RecyclerView.Adapter<AntiHoroAdapter.HoroViewHolder>() {
 
     private var itemList: List<HoroItemHolder> = listOf()
@@ -27,6 +28,7 @@ class AntiHoroAdapter : RecyclerView.Adapter<AntiHoroAdapter.HoroViewHolder>() {
             R.drawable.aquarius70x70,
             R.drawable.pisces70x70
         )
+    private var expandedPosition = -1
 
     inner class HoroViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
@@ -38,8 +40,12 @@ class AntiHoroAdapter : RecyclerView.Adapter<AntiHoroAdapter.HoroViewHolder>() {
             itemImage.setImageResource(imageList[pos])
             itemName.text = itemList[pos].name
             itemDescr.text = itemList[pos].description
+
+            if (pos == expandedPosition) itemDescr.visibility = View.VISIBLE
+            else itemDescr.visibility = View.GONE
         }
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HoroViewHolder {
         val inflater =
@@ -60,5 +66,18 @@ class AntiHoroAdapter : RecyclerView.Adapter<AntiHoroAdapter.HoroViewHolder>() {
         notifyDataSetChanged()
     }
 
+
+    override fun onViewAttachedToWindow(holder: HoroViewHolder) {
+        holder.itemView.setOnClickListener {
+            if (expandedPosition >= 0) notifyItemChanged(expandedPosition)
+
+            expandedPosition = holder.adapterPosition
+            notifyItemChanged(expandedPosition)
+        }
+    }
+
+    override fun onViewDetachedFromWindow(holder: HoroViewHolder) {
+        holder.itemView.setOnClickListener(null)
+    }
 
 }

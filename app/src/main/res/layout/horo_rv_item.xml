@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     style="@style/MyCardViewStyle"
-    tools:cardBackgroundColor="@color/green_100">
+    tools:cardBackgroundColor="@color/green_100"
+    android:id="@+id/item_container">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
