@@ -6,8 +6,8 @@
         <item name="colorPrimaryVariant">@color/green_700</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorSecondary">@color/blue_200</item>
+        <item name="colorSecondaryVariant">@color/blue_700</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
@@ -17,11 +17,11 @@
 
 
     <style name="text_style" parent="Widget.MaterialComponents.TextView">
-       <item name="android:paddingTop">10dp</item>
-       <item name="android:paddingEnd">10dp</item>
-       <item name="android:paddingBottom">10dp</item>
-       <item name="android:fontFamily">@font/romic</item>
-
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:fontFamily">@font/romic</item>
+        <item name="android:textColor">@color/green_900</item>
     </style>
 
 
@@ -35,7 +35,7 @@
     <style name="popUpToolbar" parent="MainToolbarStyle">
         <item name="android:background">@drawable/shape_rectangle_r10</item>
         <item name="popupMenuBackground">@android:color/transparent</item>
-            </style>
+    </style>
 
     <style name="myAppBottomBar" parent="Widget.MaterialComponents.BottomAppBar.Colored">
         <item name="android:gravity">center_vertical</item>
@@ -47,6 +47,10 @@
         <item name="android:padding">5dp</item>
         <item name="cardElevation">10dp</item>
         <item name="android:layout_margin">10dp</item>
+    </style>
+
+    <style name="reverse_tint_text" parent="Theme.RadioStationVedaRadio">
+        <item name="android:textColor">@color/green_900</item>
     </style>
 
 </resources>

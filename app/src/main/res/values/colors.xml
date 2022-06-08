@@ -13,9 +13,10 @@
     <color name="green_700">#097A17</color>
     <color name="green_900">#04420D</color>
 
-    <color name="teal_900">#007080</color>
-    <color name="teal_700">#00E2FF</color>
-    <color name="teal_200">#91F3FF</color>
+    <color name="blue_900">#003E80</color>
+    <color name="blue_700">#007CFF</color>
+    <color name="blue_500">#3C9BFF</color>
+    <color name="blue_200">#7EBCFF</color>
 
     <color name="gold_500">#FFCC35</color>
 </resources>

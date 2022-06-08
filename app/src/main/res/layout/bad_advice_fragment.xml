@@ -24,7 +24,6 @@
             android:padding="5dp"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
-            android:textColor="@color/green_900"
             android:textStyle="bold|italic"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
