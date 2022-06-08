@@ -24,3 +24,5 @@
 -dontwarn org.xmlpull.v1.XmlPullParser
 -dontwarn org.xmlpull.v1.XmlSerializer
 -keep class org.xmlpull.v1.* {*;}
+-keep class ru.music.radiostationvedaradio.busines.model.** { *; }
+-keep class ru.music.radiostationvedaradio.busines.database.room.** { *; }

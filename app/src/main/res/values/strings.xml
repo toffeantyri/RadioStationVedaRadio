@@ -19,7 +19,6 @@
     <string name="ignio_site">https://ignio.com/</string>
 
 
-
     <string name="text_low_quality">Низкое качество(48kb/s)</string>
     <string name="text_medium_quality">Среднее качество(96/kb/s)</string>
     <string name="text_high_quality">Высокое качество(128ks/s)</string>
@@ -48,7 +47,10 @@
 
 
     <string name="yandex_banner_desc_id_test" translatable="false">R-M-DEMO-320x50</string>
-    <string name="yandex_banner_desc_id" translatable="false"></string>
+    <string name="yandex_banner_desc_id" translatable="false">R-M-1712319-1</string>
+
+    <string name="yandex_interstitial_id_test" translatable="false">R-M-DEMO-interstitial</string>
+    <string name="yandex_interstitial_id" translatable="false">R-M-1712319-2</string>
 
 
     <string name="bottom_text_splash">Благодарю вас за использование нашего приложения</string>

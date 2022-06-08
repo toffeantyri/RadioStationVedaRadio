@@ -67,20 +67,20 @@ class HoroscopeModelClasses {
 @Root(name = "date")
 class Date {
 
-    @get:Attribute(required = false)
-    @set:Attribute(required = false)
+    @get:Attribute(required = false, name = "yesterday")
+    @set:Attribute(required = false, name = "yesterday")
     var yesterday = ""
 
-    @get:Attribute(required = false)
-    @set:Attribute(required = false)
+    @get:Attribute(required = false, name = "today")
+    @set:Attribute(required = false, name = "today")
     var today = ""
 
-    @get:Attribute(required = false)
-    @set:Attribute(required = false)
+    @get:Attribute(required = false, name = "tomorrow")
+    @set:Attribute(required = false, name = "tomorrow")
     var tomorrow = ""
 
-    @get:Attribute(required = false)
-    @set:Attribute(required = false)
+    @get:Attribute(required = false, name = "tomorrow02")
+    @set:Attribute(required = false, name = "tomorrow02")
     var tomorrow02 = ""
 }
 

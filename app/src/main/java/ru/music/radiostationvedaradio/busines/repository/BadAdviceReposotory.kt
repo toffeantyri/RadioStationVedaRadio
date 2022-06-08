@@ -26,6 +26,9 @@ class BadAdviceReposotory(api: ApiProvider) : BaseRepository<List<HoroItemHolder
             databaseDao.getHoroEntityByDate(date)
         }.await()
 
+
+        myLogNet("date : $date == ${queryToDb?.date}")
+
         if (queryToDb != null) {
             if (!queryToDb.date.isNullOrEmpty() && date == queryToDb.date) {
                 withContext(Dispatchers.Main) {
@@ -56,16 +59,25 @@ class BadAdviceReposotory(api: ApiProvider) : BaseRepository<List<HoroItemHolder
             }
         }
         CoroutineScope(context = Dispatchers.IO).launch(exceptionHandler) {
+            myLogNet("pre response")
             val response =
                 async(context = Dispatchers.IO) {
                     api.provideAntiHoro().getHoroXML()
                 }.await()
+            myLogNet("post response")
+            myLogNet("post responce: ${response.isSuccessful}")
             if (response.isSuccessful) {
+                myLogNet("responce: ${response.isSuccessful}")
+
                 val list: List<List<HoroItemHolder>> = response.body()!!.toListHoroItemHolder()
+
+                list.forEach { myLogNet(" list toHoroItemHolder" + it[0].name) }
+
                 databaseDao.insert(list[0].toListSerilizeJson(0))
                 databaseDao.insert(list[1].toListSerilizeJson(1))
                 databaseDao.insert(list[2].toListSerilizeJson(2))
                 withContext(Dispatchers.Main) {
+                    list[0].forEach { "dataEmitter OnNext responce" + myLogNet(it.name) }
                     dataEmitter.onNext(list[0])
                     onSuccess()
                 }
