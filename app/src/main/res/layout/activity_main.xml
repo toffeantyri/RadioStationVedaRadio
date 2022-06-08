@@ -63,14 +63,18 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 app:contentInsetStart="0dp"
-                app:hideOnScroll="true">
+                app:hideOnScroll="true"
+                >
 
                 <include
                     layout="@layout/bottom_player_panel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
+
             </com.google.android.material.bottomappbar.BottomAppBar>
+
+
 
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -370,10 +370,8 @@ open class BaseMainActivity : AppCompatActivity() {
             if (it == InitStatusMediaPlayer.PLAYING) {
                 main_equalizer?.animateBars()
                 btnPlay.setIcon(R.drawable.ic_pause)
-                btn_panel_play.setImageResource(android.R.drawable.ic_media_pause)
             } else if (it != InitStatusMediaPlayer.PLAYING) {
                 btnPlay.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
-                btn_panel_play.setImageResource(android.R.drawable.ic_media_play)
                 main_equalizer?.stopBars()
             }
         }
@@ -427,15 +425,15 @@ open class BaseMainActivity : AppCompatActivity() {
 
     //-------------------init Bottom App Bar (PlayerPanel)------------------
     protected fun initPlayerPanel() {
-        btn_panel_play.setOnClickListener {
+        fab_play_pause.setOnClickListener {
             dataModel.statusMediaPlayer.value?.let { buttonPlayAction(it) }
         }
         dataModel.statusMediaPlayer.observe(this) {
             if (it == InitStatusMediaPlayer.PLAYING) {
                 main_equalizer?.animateBars()
-                btn_panel_play.setImageResource(android.R.drawable.ic_media_pause)
+                fab_play_pause.setImageResource(android.R.drawable.ic_media_pause)
             } else if (it != InitStatusMediaPlayer.PLAYING) {
-                btn_panel_play.setImageResource(android.R.drawable.ic_media_play)
+                fab_play_pause.setImageResource(android.R.drawable.ic_media_play)
                 main_equalizer?.stopBars()
             }
         }
