@@ -8,6 +8,7 @@
     tools:context=".screens.WebViewFragment">
 
     <ProgressBar
+        style="@style/progressBarBlue"
         android:id="@+id/progress_cicle_webpage"
         android:layout_width="100dp"
         android:layout_height="100dp"
@@ -15,7 +16,6 @@
         android:alpha="0.6"
         android:indeterminate="true"
         android:indeterminateBehavior="cycle"
-        android:indeterminateTint="@color/green_500"
         android:visibility="visible" />
 
     <WebView

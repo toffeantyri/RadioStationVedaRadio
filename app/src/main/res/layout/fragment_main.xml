@@ -22,14 +22,15 @@
                 android:layout_height="wrap_content">
 
                 <ProgressBar
+                    style="@style/progressBarBlue"
                     android:id="@+id/noun_loading"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:layout_gravity="center"
                     android:indeterminate="true"
                     android:indeterminateBehavior="cycle"
-                    android:indeterminateTint="@color/green_700"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    tools:visibility="visible" />
 
                 <ImageButton
                     style="@style/reverse_tint_text"

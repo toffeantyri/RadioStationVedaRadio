@@ -53,4 +53,9 @@
         <item name="android:textColor">@color/green_900</item>
     </style>
 
+    <style name="progressBarBlue" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminateTint">@color/blue_500</item>
+
+    </style>
+
 </resources>
