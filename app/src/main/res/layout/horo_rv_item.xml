@@ -45,7 +45,7 @@
             android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="@id/iv_logo_zodiac"
             app:layout_constraintEnd_toEndOf="parent"
-            android:background="@color/green_200"
+            android:background="@color/blue_500"
             android:gravity="end"
             android:alpha="0.7"
             />

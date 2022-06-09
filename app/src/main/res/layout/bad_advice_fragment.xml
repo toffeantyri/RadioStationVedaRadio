@@ -14,22 +14,50 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/tv_date_list"
-            style="@style/text_style"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:elevation="10dp"
-            android:gravity="center_horizontal"
-            android:padding="5dp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:textStyle="bold|italic"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="03.03.2020" />
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/text_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bad_advice_header_name"
+                android:layout_gravity="center_horizontal"
+                android:padding="10dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textSize="20sp"
+                android:textStyle="normal"
+                android:elevation="10dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="@color/blue_500"
+                />
+
+            <TextView
+                android:id="@+id/tv_date_list"
+                style="@style/text_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="10dp"
+                android:gravity="center_horizontal"
+                android:padding="10dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textSize="20sp"
+                android:textStyle="normal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="03.03.2020" />
+
+
+        </LinearLayout>
+
 
     </com.google.android.material.card.MaterialCardView>
 

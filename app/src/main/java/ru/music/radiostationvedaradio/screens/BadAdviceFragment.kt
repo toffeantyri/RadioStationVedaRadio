@@ -3,24 +3,19 @@ package ru.music.radiostationvedaradio.screens
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import androidx.fragment.app.Fragment
 import androidx.activity.OnBackPressedCallback
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.bad_advice_fragment.*
 import kotlinx.android.synthetic.main.bad_advice_fragment.view.*
-import kotlinx.android.synthetic.main.fragment_main.*
-import ru.music.radiostationvedaradio.viewmodel.BadAdviceViewModel
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity
-import ru.music.radiostationvedaradio.busines.model.antihoro.HoroItemHolder
 import ru.music.radiostationvedaradio.utils.getTodayDate
-import ru.music.radiostationvedaradio.utils.myLog
 import ru.music.radiostationvedaradio.utils.myLogNet
 import ru.music.radiostationvedaradio.utils.navigateChangeTitleToolbar
 import ru.music.radiostationvedaradio.view.adapters.badadvice.AntiHoroAdapter
-import java.text.SimpleDateFormat
-import java.util.*
+import ru.music.radiostationvedaradio.viewmodel.BadAdviceViewModel
 
 
 class BadAdviceFragment : Fragment() {
