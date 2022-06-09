@@ -43,7 +43,6 @@
                     android:background="@drawable/shape_oval_r10"
                     android:padding="4dp"
                     android:src="@drawable/ic_refresh_black_24dp"
-                    app:tint="@color/green_900"
                     tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
 
                 <TextView
