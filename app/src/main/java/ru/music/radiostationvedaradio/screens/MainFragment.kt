@@ -79,6 +79,9 @@ class MainFragment : Fragment() {
         btn_refresh_tcitata.setOnClickListener {
             loadNoun()
         }
+        btn_open_horo.setOnClickListener {
+            parentActivity.navController.navigate(R.id.badAdviceFragment)
+        }
     }
 
     private fun loadNoun() {

@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/button_play_icon.xml" value="0.245" />
+        <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/cardview_selector.xml" value="0.221" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/ic_autorenew_black_24dp.xml" value="0.213" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/ic_baseline_exit_to_app_24.xml" value="0.183" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/ic_baseline_pause_24.xml" value="0.143" />
@@ -15,8 +16,10 @@
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/ic_collections_bookmark_black_24dp.xml" value="0.183" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/ic_keyboard_arrow_left_black_24dp.xml" value="0.183" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/ic_refresh_black_24dp.xml" value="0.2085" />
+        <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/imagebtn_selector.xml" value="0.221" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/shape_oval_r10.xml" value="0.213" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/shape_rectangle_r10.xml" value="0.14" />
+        <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/toolbar_selector.xml" value="0.221" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/layout/action_progressbar.xml" value="0.2" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/layout/activity_main.xml" value="0.22" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/layout/activity_splash_screen.xml" value="0.22" />
