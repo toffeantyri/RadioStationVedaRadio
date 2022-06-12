@@ -62,6 +62,8 @@
     <string name="toolbar_play_pause">Play/Pause</string>
     <string name="toolbar_refresh_radio">Refresh Radio</string>
     <string name="test_text">Test text</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

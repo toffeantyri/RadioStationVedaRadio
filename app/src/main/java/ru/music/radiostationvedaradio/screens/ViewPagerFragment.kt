@@ -12,29 +12,28 @@ import ru.music.radiostationvedaradio.activityes.MainActivity
 import ru.music.radiostationvedaradio.utils.navigateChangeTitleToolbar
 
 
-class EpubReaderFragment : Fragment() {
+class ViewPagerFragment : Fragment() {
 
     companion object {
-        fun newInstance() = EpubReaderFragment()
+        @JvmStatic
+        fun newInstance() {
+        }
     }
 
-    private lateinit var parentActivity : MainActivity
+    lateinit var parentActivity: MainActivity
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view0 = inflater.inflate(R.layout.epub_reader_fragment, container, false)
+        val view0 = inflater.inflate(R.layout.fragment_view_pager, container, false)
         parentActivity = activity as MainActivity
-            overrideOnBackPressedWithCallback()
+        overrideOnBackPressedWithCallback()
+
         return view0
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-    }
 
     private fun overrideOnBackPressedWithCallback() {
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
@@ -43,12 +42,13 @@ class EpubReaderFragment : Fragment() {
                 parentActivity.apply {
                     navController.navigateChangeTitleToolbar(
                         parentActivity,
-                        R.id.action_epubReaderFragment_to_mainFragment
+                        R.id.action_viewPagerFragment_to_epubReaderFragment
                     )
                 }
             }
         }
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, onBackPressedCallback)
     }
+
 
 }
