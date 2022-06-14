@@ -169,7 +169,7 @@ open class BaseMainActivity : AppCompatActivity() {
     // -----------------------------------------other init ------------------------------------------
     protected fun loadAndShowBanner() {
         main_banner.apply {
-            setAdUnitId(getString(R.string.yandex_banner_desc_id_test))
+            setAdUnitId(getString(R.string.yandex_banner_desc_id))
             setAdSize(AdSize.BANNER_320x50)
         }
         val adRequest = AdRequest.Builder().build()
@@ -179,7 +179,7 @@ open class BaseMainActivity : AppCompatActivity() {
             }
 
             override fun onAdFailedToLoad(p0: AdRequestError) {
-                Log.d("MyLog", "Banner Load Fail")
+                Log.d("MyLog", "Banner Load Fail code : ${p0.code} description: ${p0.description}")
             }
 
             override fun onAdClicked() {}
