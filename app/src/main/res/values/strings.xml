@@ -43,7 +43,7 @@
     <string name="alert_mes_yes_all">Выйти и выключить радио</string>
     <string name="alert_mes_no">Остаться</string>
     <string name="alert_title_exit">Остаться</string>
-    <string name="link_on_this_app">https://play.google.com/</string>
+    <string name="link_on_this_app">https://play.google.com/store/apps/details?id=ru.music.radiostationvedaradio</string>
 
 
     <string name="yandex_banner_desc_id_test" translatable="false">R-M-DEMO-320x50</string>
