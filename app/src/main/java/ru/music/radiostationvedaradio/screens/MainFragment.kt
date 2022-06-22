@@ -82,6 +82,9 @@ class MainFragment : Fragment() {
         btn_open_horo.setOnClickListener {
             parentActivity.navController.navigate(R.id.badAdviceFragment)
         }
+        btn_test_epub.setOnClickListener {
+            parentActivity.navController.navigate(R.id.epubReaderFragment)
+        }
     }
 
     private fun loadNoun() {

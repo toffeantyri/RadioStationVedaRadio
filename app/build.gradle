@@ -117,4 +117,8 @@ dependencies {
 
     //jackson
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.12.1'
+
+    //parser Epub
+    implementation 'com.github.mertakdut:EpubParser:1.0.95'
+
 }

@@ -12,11 +12,9 @@
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/ic_baseline_pause_circle_outline_24.xml" value="0.143" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/ic_baseline_play_circle_filled_24.xml" value="0.143" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/ic_baseline_play_circle_outline_24.xml" value="0.143" />
-        <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/ic_bookmark.xml" value="0.221" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/ic_cancel_black_24dp.xml" value="0.183" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/ic_collections_bookmark_black_24dp.xml" value="0.183" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/ic_keyboard_arrow_left_black_24dp.xml" value="0.183" />
-        <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/ic_note.xml" value="0.221" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/ic_refresh_black_24dp.xml" value="0.2085" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/imagebtn_selector.xml" value="0.221" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/drawable/shape_oval_r10.xml" value="0.213" />
@@ -27,9 +25,13 @@
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/layout/activity_splash_screen.xml" value="0.22" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/layout/bad_advice_fragment.xml" value="0.25" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/layout/bottom_player_panel.xml" value="0.33" />
+        <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/layout/epub_reader_fragment.xml" value="0.2" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/layout/ex_list_item_header.xml" value="0.25" />
-        <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/layout/ex_list_item_submenu.xml" value="0.25" />
+        <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/layout/ex_list_item_submenu.xml" value="0.17291666666666666" />
+        <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/layout/fragment_display.xml" value="0.24895833333333334" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/layout/fragment_main.xml" value="0.33" />
+        <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/layout/fragment_page.xml" value="0.24895833333333334" />
+        <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/layout/fragment_view_pager.xml" value="0.24895833333333334" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/layout/fragment_web_view.xml" value="0.25104166666666666" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/layout/header_nav_menu.xml" value="0.22395833333333334" />
         <entry key="..\:/Users/Adm/AndroidStudioProjects/RadioStationVedaRadio/app/src/main/res/layout/horo_rv_item.xml" value="0.33" />

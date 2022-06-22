@@ -20,6 +20,9 @@
             app:destination="@id/badAdviceFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
+        <action
+            android:id="@+id/action_mainFragment_to_epubReaderFragment"
+            app:destination="@id/epubReaderFragment" />
     </fragment>
     <fragment
         android:id="@+id/webViewFragment"
@@ -45,5 +48,34 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:launchSingleTop="true"
             app:popUpTo="@+id/navigation_graph_main" />
+    </fragment>
+    <fragment
+        android:id="@+id/epubReaderFragment"
+        android:name="ru.music.radiostationvedaradio.screens.ReaderListFragment"
+        android:label="epub_reader_fragment"
+        tools:layout="@layout/reader_list_fragment" >
+        <action
+            android:id="@+id/action_epubReaderFragment_to_mainFragment"
+            app:destination="@id/mainFragment"
+            app:enterAnim="@anim/nav_default_pop_enter_anim"
+            app:exitAnim="@anim/nav_default_pop_exit_anim"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation_graph_main" />
+        <action
+            android:id="@+id/action_epubReaderFragment_to_viewPagerFragment"
+            app:destination="@id/viewPagerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/viewPagerFragment"
+        android:name="ru.music.radiostationvedaradio.screens.ViewPagerFragment"
+        android:label="fragment_view_pager"
+        tools:layout="@layout/fragment_view_pager" >
+        <action
+            android:id="@+id/action_viewPagerFragment_to_epubReaderFragment"
+            app:destination="@id/epubReaderFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/navigation_graph_main" />
     </fragment>
 </navigation>
