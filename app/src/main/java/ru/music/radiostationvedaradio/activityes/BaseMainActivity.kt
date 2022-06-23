@@ -9,12 +9,14 @@ import android.os.IBinder
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.navigation.NavigationView
 import com.yandex.mobile.ads.banner.AdSize
 import com.yandex.mobile.ads.banner.BannerAdEventListener
@@ -32,9 +34,7 @@ import androidx.navigation.NavController
 import com.google.android.material.appbar.MaterialToolbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.bottom_player_panel.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import ru.music.radiostationvedaradio.busines.model.MetadataRadioService
 import ru.music.radiostationvedaradio.screens.TAG_WEB_URL
 import ru.music.radiostationvedaradio.utils.AUTHOR
@@ -291,16 +291,23 @@ open class BaseMainActivity : AppCompatActivity() {
         listDataChild.put(listDataHeader[0], subItem0)
     }
 
+
     protected fun initListViewOfNavMenuListener() {
         prepareListViewData()
         adapterListView = ListViewAdapter(listViewData)
         listView = listview_nav_menu
         listView.adapter = adapterListView
+
+
         listView.setOnItemClickListener { _, _, position, _ ->
             when (position) {
                 0 -> {
-                    navigateMainFragmentToBadAdvancedFrag()
-                    drawer_menu.closeDrawer(GravityCompat.START)
+                    CoroutineScope(Dispatchers.Main).launch {
+                        drawer_menu.closeDrawer(GravityCompat.START)
+                        delay(300)
+                        navigateMainFragmentToBadAdvancedFrag()
+                    }
+
                 }
                 1 -> {
                     val intent =

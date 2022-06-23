@@ -52,6 +52,12 @@ class BadAdviceFragment : Fragment() {
         initAntiHoroRv()
         if (viewModel.listHoroOfToday.value.isNullOrEmpty()) loadHoroscope()
 
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+
         viewModel.listHoroOfToday.observe(viewLifecycleOwner) {
             it.forEach { myLogNet("BAFRAG : observe: " + it) }
             if (it.isNotEmpty()) {
@@ -60,6 +66,8 @@ class BadAdviceFragment : Fragment() {
             }
         }
     }
+
+
 
 
     private fun overrideOnBackPressedWithCallback() {
