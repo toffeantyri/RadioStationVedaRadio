@@ -30,7 +30,7 @@ class ReaderListFragment : Fragment() {
         val view0 = inflater.inflate(R.layout.reader_list_fragment, container, false)
         parentActivity = activity as MainActivity
         view0.btn_open_epub.setOnClickListener {
-            parentActivity.navController.navigate(R.id.viewPagerFragment)
+           // parentActivity.navController.navigate(R.id.viewPagerFragment)
         }
 
 

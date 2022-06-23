@@ -32,6 +32,7 @@
     <string name="tcitata_dnya">Случайная цитата из "Бхагавад-Гиты"</string>
 
     <string name="bad_advice_header_name">Гороскоп: Вредные советы</string>
+    <string name="bad_advice_header_descr">Юмор : вредные советы на каждый день. \n Конечно же делать так, я не советую. </string>
     <string name="item_exit">Выход</string>
     <string name="item_about_app">Оценить приложение</string>
 
