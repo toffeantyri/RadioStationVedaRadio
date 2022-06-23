@@ -10,9 +10,15 @@
     tools:context=".screens.BadAdviceFragment">
 
     <com.google.android.material.card.MaterialCardView
-        style="@style/MyCardViewStyle"
+        android:layout_marginTop="@dimen/card_margin"
+        android:layout_marginStart="@dimen/card_margin"
+        android:layout_marginEnd="@dimen/card_margin"
+        app:cardCornerRadius="10dp"
+        android:padding="5dp"
+        app:cardElevation="10dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
