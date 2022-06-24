@@ -216,12 +216,14 @@ open class BaseMainActivity : AppCompatActivity() {
                 ) { _, _ ->
                     mediaService?.stopForeground(true)
                     mediaService?.stopSelf()
-                    super.onBackPressed()
+                    finish()
                 }
         }
         aDialog.setNegativeButton(
             R.string.alert_mes_yes
-        ) { _, _ -> super.onBackPressed() }
+        ) { _, _ ->
+            finish()
+        }
         aDialog.setNeutralButton(
             R.string.alert_mes_no
         ) { dialog, _ -> dialog.cancel() }

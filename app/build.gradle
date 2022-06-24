@@ -14,8 +14,8 @@ android {
         applicationId "ru.music.radiostationvedaradio"
         minSdkVersion 26
         targetSdkVersion 31
-        versionCode 5 // fix link googlePlay
-        versionName "1.0"
+        versionCode 6 //6 - 24062022
+        versionName "1.001"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
