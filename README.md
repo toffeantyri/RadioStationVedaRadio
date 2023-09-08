@@ -1,9 +1,6 @@
 # RadioStationVedaRadio
 My pet Project. Veda Radio app
 
-Можно скачать по ссылке:
-https://play.google.com/store/apps/details?id=ru.music.radiostationvedaradio
-
 Приложение предназначено для онлайн прослушивания интернет трансляции Веда радио, просмотра сайтов соответсвующих тематике, просмотру гороскопа "Вредные советы" на каждый день, и просмотру случайной цитаты из Бхагавад-гиты.
 
 В приложении использовались:
@@ -15,5 +12,4 @@ https://play.google.com/store/apps/details?id=ru.music.radiostationvedaradio
 К проекту подключена Firebase Crachlitics для отслеживания крашей и просмотра логов.
 А так же в приложении добавлена реклама от Yandex РСЯ - баннер единый для всех экранов.
 
-В будущем планируются обновления. 
 
