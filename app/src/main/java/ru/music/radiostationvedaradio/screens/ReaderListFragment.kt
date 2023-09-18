@@ -6,9 +6,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import kotlinx.android.synthetic.main.reader_list_fragment.view.*
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity
 import ru.music.radiostationvedaradio.utils.navigateChangeTitleToolbar
@@ -29,8 +29,8 @@ class ReaderListFragment : Fragment() {
     ): View? {
         val view0 = inflater.inflate(R.layout.reader_list_fragment, container, false)
         parentActivity = activity as MainActivity
-        view0.btn_open_epub.setOnClickListener {
-           // parentActivity.navController.navigate(R.id.viewPagerFragment)
+        view0.findViewById<Button>(R.id.btn_open_epub).setOnClickListener {
+            // parentActivity.navController.navigate(R.id.viewPagerFragment)
         }
 
 

@@ -7,14 +7,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import kotlinx.android.synthetic.main.fragment_main.*
-import kotlinx.android.synthetic.main.fragment_main.view.*
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity
-import ru.music.radiostationvedaradio.utils.myLog
 import ru.music.radiostationvedaradio.utils.TAG
+import ru.music.radiostationvedaradio.utils.myLog
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 class MainFragment : Fragment() {
@@ -44,7 +45,7 @@ class MainFragment : Fragment() {
         myLog("MainFragment onStart")
         super.onStart()
         mViewModel.nounText.observe(this) {
-            tv_tcitata_dnya.text = it
+            view?.findViewById<TextView>(R.id.tv_tcitata_dnya)?.text = it
         }
     }
 
@@ -76,13 +77,13 @@ class MainFragment : Fragment() {
     }
 
     private fun View.setUpOnClickStaticButton() {
-        btn_refresh_tcitata.setOnClickListener {
+        view?.findViewById<ImageButton>(R.id.btn_refresh_tcitata)?.setOnClickListener {
             loadNoun()
         }
-        btn_open_horo.setOnClickListener {
+        view?.findViewById<AppCompatImageButton>(R.id.btn_open_horo)?.setOnClickListener {
             parentActivity.navController.navigate(R.id.badAdviceFragment)
         }
-        btn_test_epub.setOnClickListener {
+        view?.findViewById<AppCompatImageButton>(R.id.btn_test_epub)?.setOnClickListener {
             parentActivity.navController.navigate(R.id.epubReaderFragment)
         }
     }
@@ -94,9 +95,12 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun setNounLoading(visible: Boolean) = when (visible) {
-        true -> noun_loading?.visibility = View.VISIBLE
-        false -> noun_loading?.visibility = View.GONE
+    private fun setNounLoading(visible: Boolean) {
+        val viewLoading = view?.findViewById<View>(R.id.noun_loading)
+        when (visible) {
+            true -> viewLoading?.visibility = View.VISIBLE
+            false -> viewLoading?.visibility = View.GONE
+        }
     }
 
 

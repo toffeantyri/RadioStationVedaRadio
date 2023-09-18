@@ -1,19 +1,28 @@
 package ru.music.radiostationvedaradio.services
 
-import android.app.*
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.media.*
+import android.media.AudioAttributes
+import android.media.AudioManager
+import android.media.MediaMetadata
+import android.media.MediaPlayer
+import android.media.session.MediaController
+import android.media.session.MediaSession
 import android.media.session.MediaSessionManager
-import android.os.*
+import android.os.Binder
+import android.os.Handler
+import android.os.IBinder
+import android.os.PowerManager
 import android.os.PowerManager.WakeLock
-import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.session.MediaControllerCompat
-import android.support.v4.media.session.MediaSessionCompat
+import android.os.RemoteException
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -24,20 +33,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import okio.utf8Size
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.busines.model.metadatavedaradio.StreamVedaradioJSONClass
-import ru.music.radiostationvedaradio.busines.api.VedaradioRetrofitApi
 import ru.music.radiostationvedaradio.activityes.MainActivity
+import ru.music.radiostationvedaradio.busines.api.VedaradioRetrofitApi
 import ru.music.radiostationvedaradio.busines.model.MetadataRadioService
+import ru.music.radiostationvedaradio.busines.model.metadatavedaradio.StreamVedaradioJSONClass
 import ru.music.radiostationvedaradio.utils.AUTHOR
 import ru.music.radiostationvedaradio.utils.SONG_NAME
-import java.lang.IllegalStateException
 
 
 const val ACTION_PLAY = "ru.music.vedaradio.ACTION_PLAY"
@@ -85,8 +92,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     private var telephonyManager: TelephonyManager? = null
 
     private var mediaSessionManager: MediaSessionManager? = null
-    private var mediaSession: MediaSessionCompat? = null
-    private var transportControls: MediaControllerCompat.TransportControls? = null
+    private var mediaSession: MediaSession? = null
+    private var transportControls: MediaController.TransportControls? = null
 
     private fun initMediaPlayer() {
         STATE_OF_SERVICE = InitStatusMediaPlayer.INITIALISATION
@@ -112,12 +119,12 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     private fun initMediaSession() {
         if (mediaSessionManager != null) return
         mediaSessionManager = getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
-        mediaSession = MediaSessionCompat(applicationContext, "RadioPlayer")
+        mediaSession = MediaSession(applicationContext, "RadioPlayer")
         transportControls = mediaSession?.controller?.transportControls
-        mediaSession?.isActive = true
-        mediaSession?.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS)
+//        mediaSession?.isActive = true
+        mediaSession?.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS)
 
-        mediaSession?.setCallback(object : MediaSessionCompat.Callback() {
+        mediaSession?.setCallback(object : MediaSession.Callback() {
             override fun onPlay() {
                 super.onPlay()
                 playMedia()
@@ -143,10 +150,12 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     }
 
     private fun updateMetaData() {
-        mediaSession?.setMetadata(MediaMetadataCompat.Builder().apply {
-            putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
-            putString(MediaMetadataCompat.METADATA_KEY_TITLE, song)
-        }.build())
+        mediaSession?.setMetadata(
+            MediaMetadata.Builder().apply {
+                putString(MediaMetadata.METADATA_KEY_ARTIST, artist)
+                putString(MediaMetadata.METADATA_KEY_TITLE, song)
+            }.build()
+        )
     }
 
     private fun buildNotification(playbackstatus: Playbackstatus): NotificationCompat.Builder {
@@ -185,11 +194,13 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         val notificationBuilder: NotificationCompat.Builder =
             NotificationCompat.Builder(this, CHANNEL_ID)
                 .setShowWhen(false)
-                .setStyle(
-                    androidx.media.app.NotificationCompat.MediaStyle()
-                        .setMediaSession(mediaSession!!.sessionToken)
-                        .setShowActionsInCompactView(0, 1)
-                )
+//                .setStyle(
+//
+//                    android.media.app.NotificationCompat.MediaStyle()
+//                        .setMediaSession(mediaSession!!.sessionToken)
+//                        .setShowActionsInCompactView(0, 1)
+//                )
+                //todo
                 .setDefaults(0)
                 .setColor(Color.GREEN)
                 .setColorized(true)
@@ -202,7 +213,14 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 .addAction(notificationAction, titleButton, playpauseAction)
                 .addAction(cancelDrawable, "Cancel", playbackAction(10))
                 .setOngoing(notRemoveOnSwipe)
-                .setContentIntent(PendingIntent.getActivity(this, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                .setContentIntent(
+                    PendingIntent.getActivity(
+                        this,
+                        0,
+                        contentIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+                )
 
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
         return notificationBuilder
@@ -231,10 +249,12 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                                 artist = getString(R.string.default_veda_artist)
                                 song = list[0]
                             }
+
                             2 -> {
                                 artist = list[0].ifEmpty { getString(R.string.default_veda_artist) }
                                 song = list[1].ifEmpty { getString(R.string.default_veda_song) }
                             }
+
                             3 -> {
                                 artist = list[0].ifEmpty { getString(R.string.default_veda_artist) }
                                 song = list[1] + list[2]
@@ -246,9 +266,11 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                         InitStatusMediaPlayer.PLAYING -> {
                             buildNotification(Playbackstatus.PLAYING)
                         }
+
                         InitStatusMediaPlayer.INIT_COMPLETE -> {
                             buildNotification(Playbackstatus.PAUSED)
                         }
+
                         else -> {
                             removeNotification()
                         }
@@ -272,15 +294,30 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         when (actionNumber) {
             10 -> {
                 playbackAction.action = ACTION_CANCEL
-                return PendingIntent.getService(this, actionNumber, playbackAction, 0)
+                return PendingIntent.getService(
+                    this, actionNumber, playbackAction,
+                    PendingIntent.FLAG_IMMUTABLE
+                )
             }
+
             0 -> {
                 playbackAction.action = ACTION_PLAY
-                return PendingIntent.getService(this, actionNumber, playbackAction, 0)
+                return PendingIntent.getService(
+                    this,
+                    actionNumber,
+                    playbackAction,
+                    PendingIntent.FLAG_IMMUTABLE
+                )
             }
+
             1 -> {
                 playbackAction.action = ACTION_PAUSE
-                return PendingIntent.getService(this, actionNumber, playbackAction, 0)
+                return PendingIntent.getService(
+                    this,
+                    actionNumber,
+                    playbackAction,
+                    PendingIntent.FLAG_IMMUTABLE
+                )
             }
         }
         return null
@@ -322,12 +359,14 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 stopForeground(true)
                 stopSelf()
             }
+
             MediaPlayer.MEDIA_ERROR_SERVER_DIED -> {
                 Log.d("MyLogS", "error : server died $what  $extra")
                 Toast.makeText(this, "Сервер недоступен", Toast.LENGTH_SHORT).show()
                 stopForeground(true)
                 stopSelf()
             }
+
             MediaPlayer.MEDIA_ERROR_UNKNOWN -> {
                 Log.d("MyLogS", "error : unknow $what $extra")
                 mediaPlayer = null
@@ -335,13 +374,16 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 stopForeground(true)
                 stopSelf()
             }
+
             MediaPlayer.MEDIA_ERROR_TIMED_OUT -> {
                 Log.d("MyLogS", "error : time out $what  $extra")
                 mediaPlayer = null
-                Toast.makeText(this, "Превышено время ожидания ответа сервера", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Превышено время ожидания ответа сервера", Toast.LENGTH_SHORT)
+                    .show()
                 stopForeground(true)
                 stopSelf()
             }
+
             else -> {
                 Log.d("MyLogS", "error : $what  $extra")
                 mediaPlayer = null
@@ -373,14 +415,20 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                     mediaPlayer!!.setVolume(1.0f, 1.0f)
                 }
             }
+
             AudioManager.AUDIOFOCUS_LOSS -> {
                 if (STATE_OF_SERVICE == InitStatusMediaPlayer.PLAYING) pauseMedia()
             }
+
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
                 if (STATE_OF_SERVICE == InitStatusMediaPlayer.PLAYING) pauseMedia()
             }
+
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
-                if (STATE_OF_SERVICE == InitStatusMediaPlayer.PLAYING) mediaPlayer?.setVolume(0.1f, 0.1f)
+                if (STATE_OF_SERVICE == InitStatusMediaPlayer.PLAYING) mediaPlayer?.setVolume(
+                    0.1f,
+                    0.1f
+                )
             }
         }
     }
@@ -398,7 +446,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         return false
     }
 
-    private fun removeAudioFocus() = AudioManager.AUDIOFOCUS_REQUEST_GRANTED == audioManager?.abandonAudioFocus(this)
+    private fun removeAudioFocus() =
+        AudioManager.AUDIOFOCUS_REQUEST_GRANTED == audioManager?.abandonAudioFocus(this)
 
     override fun onCreate() {
         super.onCreate()
@@ -431,9 +480,10 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
             } catch (e: RemoteException) {
                 e.printStackTrace()
                 stopSelf()
-            } catch (e: IllegalStateException){
+            } catch (e: IllegalStateException) {
                 e.printStackTrace()
-                Toast.makeText(this, getString(R.string.error_load_service), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.error_load_service), Toast.LENGTH_SHORT)
+                    .show()
                 stopSelf()
             }
         }
@@ -513,12 +563,14 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                 when (state) {
                     TelephonyManager.CALL_STATE_OFFHOOK -> {
                     }
+
                     TelephonyManager.CALL_STATE_RINGING -> {
                         if (mediaPlayer != null) {
                             pauseMedia()
                             onIncomingCall = true
                         }
                     }
+
                     TelephonyManager.CALL_STATE_IDLE -> {
                         if (mediaPlayer != null) {
                             if (onIncomingCall) {

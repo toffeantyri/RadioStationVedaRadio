@@ -1,12 +1,16 @@
 package ru.music.radiostationvedaradio.busines.repository
 
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.music.radiostationvedaradio.App
 import ru.music.radiostationvedaradio.busines.api.ApiProvider
 import ru.music.radiostationvedaradio.busines.database.room.AntiHoroscopeDao
 import ru.music.radiostationvedaradio.busines.model.antihoro.HoroItemHolder
-import ru.music.radiostationvedaradio.utils.myLog
 import ru.music.radiostationvedaradio.utils.myLogNet
 import ru.music.radiostationvedaradio.utils.toListHoroItemHolder
 import ru.music.radiostationvedaradio.utils.toListSerilizeJson
@@ -14,7 +18,7 @@ import ru.music.radiostationvedaradio.utils.toListSerilizeJson
 
 class BadAdviceReposotory(api: ApiProvider) : BaseRepository<List<HoroItemHolder>>(api) {
 
-    private val databaseDao: AntiHoroscopeDao = App.Companion.db.getRoomDao()
+    private val databaseDao: AntiHoroscopeDao = App.db.getRoomDao()
 
     //check: if database.entity.date == date -> onSuccess, else onFail
     suspend fun loadFromDatabaseAndCheckDate(
@@ -30,9 +34,9 @@ class BadAdviceReposotory(api: ApiProvider) : BaseRepository<List<HoroItemHolder
         myLogNet("date : $date == ${queryToDb?.date}")
 
         if (queryToDb != null) {
-            if (!queryToDb.date.isNullOrEmpty() && date == queryToDb.date) {
+            if (queryToDb.date.isNotEmpty() && date == queryToDb.date) {
                 withContext(Dispatchers.Main) {
-                    dataEmitter.onNext(queryToDb.toListHoroItemHolder())
+                    dataEmitter.emit(queryToDb.toListHoroItemHolder())
                     onSuccess()
                 }
             } else {
@@ -54,7 +58,7 @@ class BadAdviceReposotory(api: ApiProvider) : BaseRepository<List<HoroItemHolder
             CoroutineScope(Dispatchers.Main).launch {
                 val list: List<HoroItemHolder> =
                     databaseDao.getHoroEntity()?.toListHoroItemHolder() ?: emptyList()
-                dataEmitter.onNext(list)
+                dataEmitter.emit(list)
                 onSuccess()
             }
         }
@@ -78,14 +82,14 @@ class BadAdviceReposotory(api: ApiProvider) : BaseRepository<List<HoroItemHolder
                 databaseDao.insert(list[2].toListSerilizeJson(2))
                 withContext(Dispatchers.Main) {
                     list[0].forEach { "dataEmitter OnNext responce" + myLogNet(it.name) }
-                    dataEmitter.onNext(list[0])
+                    dataEmitter.emit(list[0])
                     onSuccess()
                 }
             } else {
                 withContext(Dispatchers.Main) {
                     val list: List<HoroItemHolder> =
                         databaseDao.getHoroEntity()?.toListHoroItemHolder() ?: emptyList()
-                    dataEmitter.onNext(list)
+                    dataEmitter.emit(list)
                     onSuccess()
                 }
             }

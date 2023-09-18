@@ -11,7 +11,6 @@ import android.webkit.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import kotlinx.android.synthetic.main.fragment_web_view.view.*
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity
 import ru.music.radiostationvedaradio.utils.navigateChangeTitleToolbar
@@ -44,15 +43,20 @@ class WebViewFragment : Fragment() {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        overrideOnBackPressedWithCallback(view.web_view1)
+        val viewView = view.findViewById<WebView>(R.id.web_view1)
+        overrideOnBackPressedWithCallback(viewView)
 
         val myWebClient = object : WebViewClient() {
-            override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
+            override fun onReceivedError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                error: WebResourceError?
+            ) {
                 super.onReceivedError(view, request, error)
                 Log.d("MyLog", "error loading webPage ${error?.description}")
                 if (error?.description == "net::ERR_INTERNET_DISCONNECTED") {
-                    Toast.makeText(view?.context, "Internet Disconnected", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(view?.context, "Internet Disconnected", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
 
@@ -60,15 +64,15 @@ class WebViewFragment : Fragment() {
                 super.onPageStarted(view, url, favicon)
                 view?.visibility = View.VISIBLE
                 parentActivity.webUrl = url
-                getView()?.progress_cicle_webpage?.visibility = View.GONE
+                view?.findViewById<View>(R.id.progress_cicle_webpage)?.visibility = View.GONE
             }
 
 
         }
 
         view.apply {
-            progress_cicle_webpage.visibility = View.VISIBLE
-            web_view1.apply {
+            findViewById<View>(R.id.progress_cicle_webpage).visibility = View.VISIBLE
+            findViewById<WebView>(R.id.web_view1).apply {
                 webViewClient = myWebClient
                 webChromeClient = WebChromeClient()
                 settings.apply {
@@ -82,7 +86,7 @@ class WebViewFragment : Fragment() {
                     loadWithOverviewMode = true
                     useWideViewPort = true
                     defaultTextEncodingName = "utf-8"
-                    setAppCacheEnabled(true)
+
                     loadsImagesAutomatically = true
                     mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                 }
@@ -124,13 +128,16 @@ class WebViewFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val webView = view?.findViewById<WebView>(R.id.web_view1)
         when (item.itemId) {
             R.id.action_web_back -> {
-                if (view?.web_view1?.canGoBack() == true) view?.web_view1?.goBack()
+                if (webView?.canGoBack() == true) webView.goBack()
             }
+
             R.id.action_web_forward -> {
-                if (view?.web_view1?.canGoForward() == true) view?.web_view1?.goForward()
+                if (webView?.canGoForward() == true) webView.goForward()
             }
+
             R.id.action_web_cancel -> {
 
                 (parentActivity).apply {
@@ -140,8 +147,9 @@ class WebViewFragment : Fragment() {
                     )
                 }
             }
+
             R.id.action_web_openbrow -> {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(view?.web_view1?.url))
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(webView?.url))
                 startActivity(intent)
             }
         }

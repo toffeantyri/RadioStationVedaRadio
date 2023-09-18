@@ -2,13 +2,17 @@ package ru.music.radiostationvedaradio.screens
 
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.bad_advice_fragment.*
-import kotlinx.android.synthetic.main.bad_advice_fragment.view.*
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity
 import ru.music.radiostationvedaradio.utils.getTodayDate
@@ -61,13 +65,11 @@ class BadAdviceFragment : Fragment() {
         viewModel.listHoroOfToday.observe(viewLifecycleOwner) {
             it.forEach { myLogNet("BAFRAG : observe: " + it) }
             if (it.isNotEmpty()) {
-                view?.tv_date_list?.text = it[0].date
+                view?.findViewById<TextView>(R.id.tv_date_list)?.text = it[0].date
                 adapter.fillListAdapter(it)
             }
         }
     }
-
-
 
 
     private fun overrideOnBackPressedWithCallback() {
@@ -99,16 +101,22 @@ class BadAdviceFragment : Fragment() {
         }
     }
 
-    private fun setLoading(visible: Boolean) = when (visible) {
-        true -> horo_progressbar.visibility = View.VISIBLE
-        false -> horo_progressbar.visibility = View.GONE
+    private fun setLoading(visible: Boolean) {
+        val horoProgressBar = view?.findViewById<ProgressBar>(R.id.horo_progressbar)
+        when (visible) {
+            true -> horoProgressBar?.visibility = View.VISIBLE
+            false -> horoProgressBar?.visibility = View.GONE
+        }
     }
 
 
     fun initAntiHoroRv() {
-        adapter = AntiHoroAdapter()
-        myRecyclerView = horo_rv
-        myRecyclerView.adapter = adapter
+        view?.findViewById<RecyclerView>(R.id.horo_rv)?.let {
+            adapter = AntiHoroAdapter()
+            myRecyclerView = it
+            myRecyclerView.adapter = adapter
+        }
+
 
     }
 }
