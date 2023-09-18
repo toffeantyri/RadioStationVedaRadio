@@ -1,6 +1,3 @@
-import java.io.FileInputStream
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -63,12 +60,12 @@ android {
 dependencies {
 
     //yandex ads
-    implementation("com.yandex.android:mobileads:5.1.1")
-    implementation("com.yandex.android:mobmetricalib:4.1.1")
+    implementation(libs.yandex.ads)
+    implementation(libs.yandex.metr)
 
 
     // Mini equalizer
-    implementation("com.github.claucookie.miniequalizer:library:1.0.0")
+    implementation(libs.miniequalizer)
 
 //di
     implementation(libs.koin.core)
@@ -84,21 +81,19 @@ dependencies {
     implementation(libs.login.interceptor)
 
     //retrofit
-    implementation("org.simpleframework:simple-xml:2.7.1")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.retrofit2:converter-simplexml:2.9.0")
-    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+    implementation(libs.simple.xml)
+    implementation(libs.converter.gson)
+    implementation(libs.converter.simplexml)
+    implementation(libs.converter.scalars)
 
     //jackson
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.1")
+    implementation(libs.jackson.module.kotlin)
 
     //add dependency for new sdk new android version
-    implementation("com.google.code.gson:gson:2.8.6")
-    implementation("com.squareup.okhttp3:okhttp:4.9.2")
+    implementation(libs.gson)
 
 
     //base view
-    implementation(libs.ya.map)
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
     implementation(libs.material)
@@ -121,16 +116,10 @@ dependencies {
     //image
     implementation(libs.coil)
 
-    //skeletons and shimmering effects
-    implementation(libs.androidveil)
-
     implementation(platform(libs.firebase.bom))
     // Add the dependencies for the Crashlytics and Analytics libraries
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.messaging)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.ext.junit)
-    androidTestImplementation(libs.espresso.core)
 }
