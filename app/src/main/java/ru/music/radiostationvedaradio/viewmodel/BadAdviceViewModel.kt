@@ -9,7 +9,6 @@ import kotlinx.coroutines.launch
 import ru.music.radiostationvedaradio.busines.api.ApiProvider
 import ru.music.radiostationvedaradio.busines.model.antihoro.HoroItemHolder
 import ru.music.radiostationvedaradio.busines.repository.BadAdviceReposotory
-import ru.music.radiostationvedaradio.utils.myLogNet
 
 class BadAdviceViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -22,8 +21,10 @@ class BadAdviceViewModel(application: Application) : AndroidViewModel(applicatio
 
 
     fun refreshTodayAntiHoroscope(date: String, onSuccess: () -> Unit) {
-        repo.dataEmitter.subscribe {
-            listHoroOfToday.value = it
+        viewModelScope.launch {
+            repo.dataEmitter.collect {
+                listHoroOfToday.value = it
+            }
         }
 
         viewModelScope.launch(Dispatchers.IO) {

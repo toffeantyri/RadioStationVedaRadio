@@ -122,4 +122,7 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.messaging)
 
+    //splash screen
+    implementation(libs.core.splashscreen)
+
 }

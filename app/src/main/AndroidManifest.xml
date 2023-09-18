@@ -4,13 +4,6 @@
     package="ru.music.radiostationvedaradio">
 
 
-    <!--supports-screens
-        android:xlargeScreens="true"
-        android:largeScreens="true"
-        android:normalScreens="true"
-        android:smallScreens="true"
-        android:anyDensity="true"/-->
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
@@ -23,14 +16,13 @@
     <application
         android:name=".App"
         android:allowBackup="true"
-        android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.RadioStationVedaRadio"
-        android:usesCleartextTraffic="true"
+        android:networkSecurityConfig="@xml/network_security_config"
         tools:ignore="GoogleAppIndexingWarning"
+        android:theme="@style/Theme.App.Starting"
         >
 
         <receiver
@@ -47,28 +39,18 @@
             tools:ignore="ExportedService"
             />
 
-
-        <activity android:name=".activityes.SplashScreenActivity"
-            android:screenOrientation="portrait"
+        <activity
+            android:name=".activityes.MainActivity"
             android:exported="true"
-            >
+            android:theme="@style/Theme.App.Starting"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name=".activityes.MainActivity"
-            android:exported="true"
-            android:launchMode="singleTask">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
     </application>
+
 
 </manifest>

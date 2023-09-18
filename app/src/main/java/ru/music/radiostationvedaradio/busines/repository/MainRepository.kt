@@ -1,7 +1,12 @@
 package ru.music.radiostationvedaradio.busines.repository
 
 import android.util.Log
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.music.radiostationvedaradio.busines.api.ApiProvider
 import ru.music.radiostationvedaradio.busines.database.SharedPreferenceProvider
 import ru.music.radiostationvedaradio.utils.parceNounHareKrishnaFromHtml
@@ -15,7 +20,7 @@ class MainRepository(api: ApiProvider) : BaseRepository<String>(api) {
         val exceptionHandler = CoroutineExceptionHandler { _, exception ->
             Log.d("MyLogRx", "exceptionHandler coro: " + exception.message.toString())
             CoroutineScope(Dispatchers.Main).launch {
-                dataEmitter.onNext(prefs.loadNoun())
+                dataEmitter.emit(prefs.loadNoun())
                 onSuccess()
             }
         }
@@ -28,13 +33,13 @@ class MainRepository(api: ApiProvider) : BaseRepository<String>(api) {
                 val noun = response.body()?.parceNounHareKrishnaFromHtml() ?: ""
                 prefs.saveNoun(noun)
                 withContext(Dispatchers.Main) {
-                    dataEmitter.onNext(noun)
+                    dataEmitter.emit(noun)
                     onSuccess()
                 }
             } else {
                 withContext(Dispatchers.Main) {
                     Log.d("MyLogRx", "error noun body" + response.errorBody().toString())
-                    dataEmitter.onNext(prefs.loadNoun())
+                    dataEmitter.emit(prefs.loadNoun())
                     onSuccess()
                 }
             }

@@ -38,13 +38,13 @@ class ViewModelMainActivity(application: Application) : AndroidViewModel(applica
     }
 
     fun refreshTodayNoun(onSuccess: () -> Unit) {
-        repo.dataEmitter.subscribe {
-            nounText.value = it
-        }
         viewModelScope.launch(Dispatchers.Main) {
-            repo.reloadNoun() {
-                onSuccess()
+            repo.dataEmitter.collect {
+                nounText.value = it
             }
+        }
+        repo.reloadNoun() {
+            onSuccess()
         }
     }
 

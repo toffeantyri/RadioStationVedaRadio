@@ -4,7 +4,7 @@ import android.media.AudioManager
 import android.os.Bundle
 import android.util.Log
 import androidx.navigation.Navigation
-import kotlinx.android.synthetic.main.activity_main.*
+import com.yandex.mobile.ads.banner.BannerAdView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -64,7 +64,7 @@ class MainActivity : BaseMainActivity() {
     }
 
     override fun onDestroy() {
-        main_banner.destroy()
+        findViewById<BannerAdView>(R.id.main_banner).destroy()
         if (serviceBound) {
             unbindService(serviceConnection)
         }

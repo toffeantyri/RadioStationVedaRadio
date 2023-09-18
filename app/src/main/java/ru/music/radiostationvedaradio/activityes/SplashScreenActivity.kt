@@ -1,10 +1,12 @@
 package ru.music.radiostationvedaradio.activityes
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import kotlinx.android.synthetic.main.activity_splash_screen.*
+import android.view.View
 import ru.music.radiostationvedaradio.R
 
+@SuppressLint("CustomSplashScreen")
 class SplashScreenActivity : BaseMainActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -12,17 +14,16 @@ class SplashScreenActivity : BaseMainActivity() {
         setContentView(R.layout.activity_splash_screen)
         val ab = supportActionBar
         ab?.hide()
-        logo_splash.apply {
+        val logoSplash = findViewById<View>(R.id.logo_splash)
+        logoSplash.apply {
             scaleX = 0f
             scaleY = 0f
         }
-        logo_splash.animate().setDuration(1500).scaleX(1.3f).scaleY(1.3f).withEndAction {
+        logoSplash.animate().setDuration(1500).scaleX(1.3f).scaleY(1.3f).withEndAction {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
-            overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out)
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             finish()
-
-
         }
     }
 }

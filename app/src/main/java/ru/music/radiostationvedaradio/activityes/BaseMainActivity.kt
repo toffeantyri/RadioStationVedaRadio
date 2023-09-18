@@ -9,37 +9,38 @@ import android.os.IBinder
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
-import com.yandex.mobile.ads.banner.AdSize
+import com.google.android.material.textview.MaterialTextView
 import com.yandex.mobile.ads.banner.BannerAdEventListener
+import com.yandex.mobile.ads.banner.BannerAdSize
+import com.yandex.mobile.ads.banner.BannerAdView
 import com.yandex.mobile.ads.common.AdRequest
 import com.yandex.mobile.ads.common.AdRequestError
 import com.yandex.mobile.ads.common.ImpressionData
+import es.claucookie.miniequalizerlibrary.EqualizerView
+import kotlinx.coroutines.*
 import ru.music.radiostationvedaradio.R
+import ru.music.radiostationvedaradio.busines.model.MetadataRadioService
+import ru.music.radiostationvedaradio.screens.TAG_WEB_URL
 import ru.music.radiostationvedaradio.services.*
+import ru.music.radiostationvedaradio.utils.AUTHOR
+import ru.music.radiostationvedaradio.utils.SONG_NAME
+import ru.music.radiostationvedaradio.utils.myLog
 import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandableListAdapterForNavView
 import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandedMenuModel
 import ru.music.radiostationvedaradio.view.adapters.listview.ListViewAdapter
 import ru.music.radiostationvedaradio.view.adapters.listview.ListViewItemModel
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
-import androidx.navigation.NavController
-import com.google.android.material.appbar.MaterialToolbar
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.bottom_player_panel.*
-import kotlinx.coroutines.*
-import ru.music.radiostationvedaradio.busines.model.MetadataRadioService
-import ru.music.radiostationvedaradio.screens.TAG_WEB_URL
-import ru.music.radiostationvedaradio.utils.AUTHOR
-import ru.music.radiostationvedaradio.utils.myLog
-import ru.music.radiostationvedaradio.utils.SONG_NAME
+
 
 @SuppressLint("Registered")
 open class BaseMainActivity : AppCompatActivity() {
@@ -99,9 +100,11 @@ open class BaseMainActivity : AppCompatActivity() {
             getString(R.string.veda_radio_stream_link_low) -> {
                 myMenu?.findItem(R.id.action_low_quality)?.isChecked = true
             }
+
             getString(R.string.veda_radio_stream_link_medium) -> {
                 myMenu?.findItem(R.id.action_medium_quality)?.isChecked = true
             }
+
             getString(R.string.veda_radio_stream_link_high) -> {
                 myMenu?.findItem(R.id.action_high_quality)?.isChecked = true
             }
@@ -168,12 +171,12 @@ open class BaseMainActivity : AppCompatActivity() {
 
     // -----------------------------------------other init ------------------------------------------
     protected fun loadAndShowBanner() {
-        main_banner.apply {
+        val banner = findViewById<BannerAdView>(R.id.main_banner).apply {
             setAdUnitId(getString(R.string.yandex_banner_desc_id))
-            setAdSize(AdSize.BANNER_320x50)
+            setAdSize(BannerAdSize.inlineSize(context, 320, 50))
         }
         val adRequest = AdRequest.Builder().build()
-        main_banner.setBannerAdEventListener(object : BannerAdEventListener {
+        banner.setBannerAdEventListener(object : BannerAdEventListener {
             override fun onAdLoaded() {
                 Log.d("MyLog", "Banner Loaded Ok")
             }
@@ -190,12 +193,12 @@ open class BaseMainActivity : AppCompatActivity() {
 
             override fun onImpression(p0: ImpressionData?) {}
         })
-        main_banner.loadAd(adRequest)
+        banner.loadAd(adRequest)
     }
 
     private var doubleBackPress = false
     override fun onBackPressed() {
-        if (navController.currentDestination?.id != navController.graph.startDestination) {
+        if (navController.currentDestination?.id != navController.graph.startDestinationId) {
             super.onBackPressed()
             return
         }
@@ -246,9 +249,9 @@ open class BaseMainActivity : AppCompatActivity() {
     }
 
     protected fun initExpandableListInNavView() {
-        myDrawerLayout = drawer_menu
-        expandableList = exp_list_nav_menu
-        parentNavView = draw_navView
+        myDrawerLayout = findViewById(R.id.drawer_menu)
+        expandableList = findViewById(R.id.exp_list_nav_menu)
+        parentNavView = findViewById(R.id.draw_navView)
         setupDrawerContent(parentNavView)
         prepareExpListData()
         mMenuAdapter =
@@ -257,7 +260,7 @@ open class BaseMainActivity : AppCompatActivity() {
         fun navigateWebFragWithUrlCloseDraver(url: String) {
             webUrl = url
             navigateWebFragmentWithUrl(url)
-            drawer_menu.closeDrawer(GravityCompat.START)
+            myDrawerLayout.closeDrawer(GravityCompat.START)
         }
         expandableList.setOnChildClickListener { _, _, groupPosition, childPosition, _ ->
             if (groupPosition == 0) {
@@ -297,7 +300,7 @@ open class BaseMainActivity : AppCompatActivity() {
     protected fun initListViewOfNavMenuListener() {
         prepareListViewData()
         adapterListView = ListViewAdapter(listViewData)
-        listView = listview_nav_menu
+        listView = findViewById(R.id.listview_nav_menu)
         listView.adapter = adapterListView
 
 
@@ -305,17 +308,19 @@ open class BaseMainActivity : AppCompatActivity() {
             when (position) {
                 0 -> {
                     CoroutineScope(Dispatchers.Main).launch {
-                        drawer_menu.closeDrawer(GravityCompat.START)
+                        findViewById<DrawerLayout>(R.id.drawer_menu).closeDrawer(GravityCompat.START)
                         delay(300)
                         navigateMainFragmentToBadAdvancedFrag()
                     }
 
                 }
+
                 1 -> {
                     val intent =
                         Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.link_on_this_app)))
                     startActivity(intent)
                 }
+
                 2 -> alertDialogExit()
             }
         }
@@ -356,7 +361,7 @@ open class BaseMainActivity : AppCompatActivity() {
 
     //---------------------initToolbar--------------------------------
     protected fun setUpToolBar() {
-        mToolbar = main_toolbar
+        mToolbar = findViewById(R.id.main_toolbar)
         setSupportActionBar(mToolbar)
         supportActionBar?.apply {
             setHomeButtonEnabled(true)
@@ -376,12 +381,13 @@ open class BaseMainActivity : AppCompatActivity() {
         btnRefresh = menu.findItem(R.id.action_refresh)
 
         dataModel.statusMediaPlayer.observe(this) {
+            val mainEqualizer = findViewById<EqualizerView>(R.id.main_equalizer)
             if (it == InitStatusMediaPlayer.PLAYING) {
-                main_equalizer?.animateBars()
+                mainEqualizer?.animateBars()
                 btnPlay.setIcon(R.drawable.ic_pause)
             } else if (it != InitStatusMediaPlayer.PLAYING) {
                 btnPlay.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
-                main_equalizer?.stopBars()
+                mainEqualizer?.stopBars()
             }
         }
         dataModel.statusMediaPlayer.observe(this) {
@@ -434,21 +440,25 @@ open class BaseMainActivity : AppCompatActivity() {
 
     //-------------------init Bottom App Bar (PlayerPanel)------------------
     protected fun initPlayerPanel() {
-        fab_play_pause.setOnClickListener {
+        val fabPlayPause = findViewById<FloatingActionButton>(R.id.fab_play_pause)
+        val mainEqualizer = findViewById<EqualizerView>(R.id.main_equalizer)
+        val tvSongAuthor = findViewById<MaterialTextView>(R.id.tv_song_autor)
+        val tvSongTrack = findViewById<MaterialTextView>(R.id.tv_song_track)
+        fabPlayPause.setOnClickListener {
             dataModel.statusMediaPlayer.value?.let { buttonPlayAction(it) }
         }
         dataModel.statusMediaPlayer.observe(this) {
             if (it == InitStatusMediaPlayer.PLAYING) {
-                main_equalizer?.animateBars()
-                fab_play_pause.setImageResource(android.R.drawable.ic_media_pause)
+                mainEqualizer?.animateBars()
+                fabPlayPause.setImageResource(android.R.drawable.ic_media_pause)
             } else if (it != InitStatusMediaPlayer.PLAYING) {
-                fab_play_pause.setImageResource(android.R.drawable.ic_media_play)
-                main_equalizer?.stopBars()
+                fabPlayPause.setImageResource(android.R.drawable.ic_media_play)
+                mainEqualizer?.stopBars()
             }
         }
         dataModel.metadataOfPlayer.observe(this) {
-            tv_song_autor.text = it.artist
-            tv_song_track.text = it.song
+            tvSongAuthor.text = it.artist
+            tvSongTrack.text = it.song
         }
     }
     //-------------------init Bottom App Bar (PlayerPanel)------------------
