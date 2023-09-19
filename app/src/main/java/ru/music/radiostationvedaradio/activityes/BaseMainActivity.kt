@@ -1,11 +1,13 @@
 package ru.music.radiostationvedaradio.activityes
 
 import android.annotation.SuppressLint
+import android.app.Service
 import android.content.*
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -16,6 +18,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textview.MaterialTextView
@@ -91,6 +95,16 @@ open class BaseMainActivity : AppCompatActivity() {
             updateCheckGroupQuality(value)
         }
 
+    protected fun initNavController() {
+        val navView = binding.mainNavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.main_nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+
+        }
+    }
+
     private fun updateCheckGroupQuality(url: String) {
         if (myMenu == null) return
         myMenu?.apply {
@@ -161,10 +175,12 @@ open class BaseMainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     protected fun registerBroadcastStateService() {
         registerReceiver(broadcastStateServiceListener, IntentFilter(Broadcast_STATE_SERVICE))
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     protected fun registerBroadcastNewSongService() {
         registerReceiver(broadcastServiceSongReceiver, IntentFilter(Broadcast_METADATA_SERVICE))
     }
@@ -208,7 +224,7 @@ open class BaseMainActivity : AppCompatActivity() {
         }
         if (doubleBackPress) super.onBackPressed()
         doubleBackPress = true
-        val handler = Handler()
+        val handler = Handler(Looper.getMainLooper())
         handler.postDelayed({ doubleBackPress = false }, 2000)
         alertDialogExit()
     }
@@ -221,7 +237,7 @@ open class BaseMainActivity : AppCompatActivity() {
                 .setPositiveButton(
                     R.string.alert_mes_yes_all
                 ) { _, _ ->
-                    mediaService?.stopForeground(true)
+                    mediaService?.stopForeground(Service.STOP_FOREGROUND_DETACH)
                     mediaService?.stopSelf()
                     finish()
                 }
@@ -245,11 +261,13 @@ open class BaseMainActivity : AppCompatActivity() {
     private fun navigateWebFragmentWithUrl(webUrl: String) {
         val bundle = Bundle()
         bundle.putString(TAG_WEB_URL, webUrl)
-        navController.navigate(R.id.webViewFragment, bundle)
+        findNavController(R.id.main_nav_host_fragment).navigate(R.id.webViewFragment, bundle)
+        //navController.navigate(R.id.webViewFragment, bundle)
     }
 
     private fun navigateMainFragmentToBadAdvancedFrag() {
-        navController.navigate(R.id.badAdviceFragment)
+        findNavController(R.id.main_nav_host_fragment).navigate(R.id.badAdviceFragment)
+        //navController.navigate(R.id.badAdviceFragment)
     }
 
     protected fun initExpandableListInNavView() {
@@ -297,7 +315,7 @@ open class BaseMainActivity : AppCompatActivity() {
             add(getString(R.string.name_provedy_site))
         }
 
-        listDataChild.put(listDataHeader[0], subItem0)
+        listDataChild[listDataHeader[0]] = subItem0
     }
 
 
@@ -376,55 +394,66 @@ open class BaseMainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
-        if (menu == null) {
-            return super.onCreateOptionsMenu(menu)
-        }
-        myMenu = menu
-        updateCheckGroupQuality(urlRadioService)
-        btnPlay = menu.findItem(R.id.action_play)
-        btnRefresh = menu.findItem(R.id.action_refresh)
+        if (menu != null) {
+            myMenu = menu
+            updateCheckGroupQuality(urlRadioService)
+            btnPlay = menu.findItem(R.id.action_play)
+            btnRefresh = menu.findItem(R.id.action_refresh)
 
-        dataModel.statusMediaPlayer.observe(this) {
-            val mainEqualizer = findViewById<EqualizerView>(R.id.main_equalizer)
-            if (it == InitStatusMediaPlayer.PLAYING) {
-                mainEqualizer?.animateBars()
-                btnPlay.setIcon(R.drawable.ic_pause)
-            } else if (it != InitStatusMediaPlayer.PLAYING) {
-                btnPlay.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
-                mainEqualizer?.stopBars()
+            dataModel.statusMediaPlayer.observe(this) {
+                val mainEqualizer = findViewById<EqualizerView>(R.id.main_equalizer)
+                if (it == InitStatusMediaPlayer.PLAYING) {
+                    mainEqualizer?.animateBars()
+                    btnPlay.setIcon(R.drawable.ic_pause)
+                } else {
+                    btnPlay.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
+                    mainEqualizer?.stopBars()
+                }
             }
-        }
-        dataModel.statusMediaPlayer.observe(this) {
-            if (it == InitStatusMediaPlayer.INITIALISATION) {
-                btnRefresh.setActionView(R.layout.action_progressbar)
-                btnRefresh.expandActionView()
-            } else btnRefresh.actionView = null
+            dataModel.statusMediaPlayer.observe(this) {
+                if (it == InitStatusMediaPlayer.INITIALISATION) {
+                    btnRefresh.setActionView(R.layout.action_progressbar)
+                    btnRefresh.expandActionView()
+                } else btnRefresh.actionView = null
 
+            }
         }
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_play) {
-            Log.d("MyLog", "action_play click. isPlaying: ${dataModel.statusMediaPlayer.value}")
-            dataModel.statusMediaPlayer.value?.let { buttonPlayAction(it) }
-        } else if (item.itemId == R.id.action_refresh) {
-            playAudio(urlRadioService)
-        } else if (item.itemId == R.id.action_low_quality) {
-            urlRadioService = getString(R.string.veda_radio_stream_link_low)
-            playAudio(urlRadioService)
-        } else if (item.itemId == R.id.action_medium_quality) {
-            urlRadioService = getString(R.string.veda_radio_stream_link_medium)
-            playAudio(urlRadioService)
-        } else if (item.itemId == R.id.action_high_quality) {
-            urlRadioService = getString(R.string.veda_radio_stream_link_high)
-            playAudio(urlRadioService)
-        } else if (item.itemId == android.R.id.home) {
-            CoroutineScope(Dispatchers.Main).launch {
-                if (myDrawerLayout.isDrawerOpen(GravityCompat.START)) myDrawerLayout.closeDrawer(
-                    GravityCompat.START
-                )
-                else myDrawerLayout.openDrawer(GravityCompat.START)
+        when (item.itemId) {
+            R.id.action_play -> {
+                Log.d("MyLog", "action_play click. isPlaying: ${dataModel.statusMediaPlayer.value}")
+                dataModel.statusMediaPlayer.value?.let { buttonPlayAction(it) }
+            }
+
+            R.id.action_refresh -> {
+                playAudio(urlRadioService)
+            }
+
+            R.id.action_low_quality -> {
+                urlRadioService = getString(R.string.veda_radio_stream_link_low)
+                playAudio(urlRadioService)
+            }
+
+            R.id.action_medium_quality -> {
+                urlRadioService = getString(R.string.veda_radio_stream_link_medium)
+                playAudio(urlRadioService)
+            }
+
+            R.id.action_high_quality -> {
+                urlRadioService = getString(R.string.veda_radio_stream_link_high)
+                playAudio(urlRadioService)
+            }
+
+            android.R.id.home -> {
+                CoroutineScope(Dispatchers.Main).launch {
+                    if (myDrawerLayout.isDrawerOpen(GravityCompat.START)) myDrawerLayout.closeDrawer(
+                        GravityCompat.START
+                    )
+                    else myDrawerLayout.openDrawer(GravityCompat.START)
+                }
             }
         }
         return super.onOptionsItemSelected(item)
@@ -455,7 +484,7 @@ open class BaseMainActivity : AppCompatActivity() {
             if (it == InitStatusMediaPlayer.PLAYING) {
                 mainEqualizer?.animateBars()
                 fabPlayPause.setImageResource(android.R.drawable.ic_media_pause)
-            } else if (it != InitStatusMediaPlayer.PLAYING) {
+            } else {
                 fabPlayPause.setImageResource(android.R.drawable.ic_media_play)
                 mainEqualizer?.stopBars()
             }

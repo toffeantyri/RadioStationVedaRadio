@@ -114,3 +114,5 @@ fun AntiHoroTodayEntity.toListHoroItemHolder(): List<HoroItemHolder> {
     return this.list.map { mapper.readValue(it, HoroItemHolder::class.java) }
 }
 
+
+
