@@ -31,6 +31,8 @@ splash_screen_api = "1.0.1"
 ya-mobile-ads = "6.0.1"
 ya-mobile-metr = "5.0.0"
 
+andx-media = "1.6.0"
+
 
 
 
@@ -44,6 +46,9 @@ yandex-metr = { group = "com.yandex.android", name = "mobmetricalib", version.re
 
 #splash
 core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splash_screen_api" }
+
+#media
+androidx-media = { group = "androidx.media", name = "media", version.ref = "andx-media" }
 
 #навигация
 navigation-dynamic-features-fragment = { group = "androidx.navigation", name = "navigation-dynamic-features-fragment", version.ref = "android-navigation" }

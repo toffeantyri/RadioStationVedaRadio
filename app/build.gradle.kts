@@ -101,6 +101,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
 
+    //media
+    implementation(libs.androidx.media)
+
     //db
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)

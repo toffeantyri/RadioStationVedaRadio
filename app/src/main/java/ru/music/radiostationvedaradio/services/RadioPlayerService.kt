@@ -14,8 +14,6 @@ import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.MediaMetadata
 import android.media.MediaPlayer
-import android.media.session.MediaController
-import android.media.session.MediaSession
 import android.media.session.MediaSessionManager
 import android.os.Binder
 import android.os.Handler
@@ -23,6 +21,9 @@ import android.os.IBinder
 import android.os.PowerManager
 import android.os.PowerManager.WakeLock
 import android.os.RemoteException
+import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.session.MediaControllerCompat
+import android.support.v4.media.session.MediaSessionCompat
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -92,8 +93,8 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     private var telephonyManager: TelephonyManager? = null
 
     private var mediaSessionManager: MediaSessionManager? = null
-    private var mediaSession: MediaSession? = null
-    private var transportControls: MediaController.TransportControls? = null
+    private var mediaSession: MediaSessionCompat? = null
+    private var transportControls: MediaControllerCompat.TransportControls? = null
 
     private fun initMediaPlayer() {
         STATE_OF_SERVICE = InitStatusMediaPlayer.INITIALISATION
@@ -119,12 +120,12 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     private fun initMediaSession() {
         if (mediaSessionManager != null) return
         mediaSessionManager = getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
-        mediaSession = MediaSession(applicationContext, "RadioPlayer")
+        mediaSession = MediaSessionCompat(applicationContext, "RadioPlayer")
         transportControls = mediaSession?.controller?.transportControls
 //        mediaSession?.isActive = true
-        mediaSession?.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS)
+        mediaSession?.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS)
 
-        mediaSession?.setCallback(object : MediaSession.Callback() {
+        mediaSession?.setCallback(object : MediaSessionCompat.Callback() {
             override fun onPlay() {
                 super.onPlay()
                 playMedia()
@@ -151,7 +152,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
 
     private fun updateMetaData() {
         mediaSession?.setMetadata(
-            MediaMetadata.Builder().apply {
+            MediaMetadataCompat.Builder().apply {
                 putString(MediaMetadata.METADATA_KEY_ARTIST, artist)
                 putString(MediaMetadata.METADATA_KEY_TITLE, song)
             }.build()
@@ -194,13 +195,11 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
         val notificationBuilder: NotificationCompat.Builder =
             NotificationCompat.Builder(this, CHANNEL_ID)
                 .setShowWhen(false)
-//                .setStyle(
-//
-//                    android.media.app.NotificationCompat.MediaStyle()
-//                        .setMediaSession(mediaSession!!.sessionToken)
-//                        .setShowActionsInCompactView(0, 1)
-//                )
-                //todo
+                .setStyle(
+                    androidx.media.app.NotificationCompat.MediaStyle()
+                        .setMediaSession(mediaSession!!.sessionToken)
+                        .setShowActionsInCompactView(0, 1)
+                )
                 .setDefaults(0)
                 .setColor(Color.GREEN)
                 .setColorized(true)
