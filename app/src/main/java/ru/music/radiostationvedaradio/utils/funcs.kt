@@ -1,8 +1,10 @@
 package ru.music.radiostationvedaradio.utils
 
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.Context
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -24,6 +26,18 @@ fun String.parceNounHareKrishnaFromHtml(): String {
     return formattedText2 ?: ""
 }
 
+fun View.show() {
+    this.visibility = View.VISIBLE
+}
+
+fun View.hide() {
+    this.visibility = View.GONE
+}
+
+fun View.invisible() {
+    this.visibility = View.INVISIBLE
+}
+
 fun myLog(message: String) {
     Log.d(TAG, message)
 }
@@ -32,14 +46,6 @@ fun myLogNet(message: String) {
     Log.d(TAG_NET, message)
 }
 
-fun NavController.navigateChangeTitleToolbar(
-    parentAcivity: MainActivity,
-    idAction: Int,
-    newTitle: String = parentAcivity.getString(R.string.app_name)
-) {
-    this.navigate(idAction)
-    parentAcivity.mToolbar.title = newTitle
-}
 
 //функция проверки запущен ли сервис Класса T
 private fun <T> Context.isServiceRunning(service: Class<T>) =
@@ -48,6 +54,7 @@ private fun <T> Context.isServiceRunning(service: Class<T>) =
         .any { it.service.className == service.name }
 
 
+@SuppressLint("SimpleDateFormat")
 fun getTodayDate(format: String): String {
     val date = Calendar.getInstance().time
     val formatter = SimpleDateFormat(format)

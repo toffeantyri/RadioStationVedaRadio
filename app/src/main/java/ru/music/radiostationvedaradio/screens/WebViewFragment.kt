@@ -11,9 +11,9 @@ import android.webkit.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity
-import ru.music.radiostationvedaradio.utils.navigateChangeTitleToolbar
 
 
 const val TAG_WEB_URL = "web_url"
@@ -104,12 +104,8 @@ class WebViewFragment : Fragment() {
                 if (webView.canGoBack()) {
                     webView.goBack()
                 } else {
-                    parentActivity.apply {
-                        navController.navigateChangeTitleToolbar(
-                            parentActivity,
-                            R.id.action_webViewFragment_to_mainFragment
-                        )
-                    }
+                    val action = WebViewFragmentDirections.actionWebViewFragmentToMainFragment()
+                    findNavController().navigate(action)
                 }
             }
         }
@@ -124,7 +120,6 @@ class WebViewFragment : Fragment() {
         menu.findItem(R.id.action_low_quality).isVisible = false
         menu.findItem(R.id.action_medium_quality).isVisible = false
         menu.findItem(R.id.action_high_quality).isVisible = false
-        (parentActivity).mToolbar.title = ""
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -139,13 +134,8 @@ class WebViewFragment : Fragment() {
             }
 
             R.id.action_web_cancel -> {
-
-                (parentActivity).apply {
-                    navController.navigateChangeTitleToolbar(
-                        parentActivity,
-                        R.id.action_webViewFragment_to_mainFragment
-                    )
-                }
+                val action = WebViewFragmentDirections.actionWebViewFragmentToMainFragment()
+                findNavController().navigate(action)
             }
 
             R.id.action_web_openbrow -> {

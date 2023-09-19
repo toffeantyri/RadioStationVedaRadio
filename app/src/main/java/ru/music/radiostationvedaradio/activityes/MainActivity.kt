@@ -26,7 +26,7 @@ class MainActivity : BaseMainActivity() {
 
 
         initNavController()
-        setUpToolBar()
+        initToolbar()
         initPlayerPanel()
         initExpandableListInNavView()
         initListViewOfNavMenuListener()

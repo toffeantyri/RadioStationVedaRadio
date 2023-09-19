@@ -3,20 +3,18 @@ package ru.music.radiostationvedaradio.screens
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity
 import ru.music.radiostationvedaradio.databinding.BadAdviceFragmentBinding
 import ru.music.radiostationvedaradio.utils.getTodayDate
-import ru.music.radiostationvedaradio.utils.navigateChangeTitleToolbar
 import ru.music.radiostationvedaradio.view.adapters.badadvice.AntiHoroAdapter
 import ru.music.radiostationvedaradio.viewmodel.BadAdviceViewModel
 
@@ -75,23 +73,13 @@ class BadAdviceFragment : Fragment() {
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 Log.d("MyLog", "handleOnBackpressed")
-                parentActivity.apply {
-                    navController.navigateChangeTitleToolbar(
-                        parentActivity,
-                        R.id.action_badAdviceFragment_to_mainFragment
-                    )
-                }
+                val action = BadAdviceFragmentDirections.actionBadAdviceFragmentToMainFragment()
+                findNavController().navigate(action)
             }
         }
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, onBackPressedCallback)
     }
 
-
-    @Deprecated("Deprecated in Java")
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        (parentActivity).mToolbar.title = ""
-    }
 
     private fun loadHoroscope() {
         val date = getTodayDate("dd.MM.yyyy")

@@ -14,26 +14,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/main_toolbar"
-            style="@style/MainToolbarStyle"
-            android:layout_width="match_parent"
-            android:background="@color/green_200"
-            android:layout_height="?attr/actionBarSize"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:menu="@menu/menu"
-            app:theme="@style/MainToolbarStyle"
-            app:popupTheme="@style/popUpToolbar" />
-
-        <!--include
-            android:id="@+id/main_toolbar"
+        <include android:id="@+id/toolbar_container"
             layout="@layout/main_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" /-->
-
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <com.yandex.mobile.ads.banner.BannerAdView
             android:id="@+id/main_banner"
@@ -42,7 +27,8 @@
             android:background="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/main_toolbar" />
+            app:layout_constraintTop_toBottomOf="@id/toolbar_container" />
+
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/main_nav_host_fragment"
@@ -55,7 +41,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/main_banner"
             app:navGraph="@navigation/navigation_graph_main" />
-
 
         <include
             android:id="@+id/sliding_panel_player"

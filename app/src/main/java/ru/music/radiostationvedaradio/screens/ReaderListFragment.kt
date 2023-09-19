@@ -9,9 +9,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity
-import ru.music.radiostationvedaradio.utils.navigateChangeTitleToolbar
 
 
 class ReaderListFragment : Fragment() {
@@ -47,12 +47,8 @@ class ReaderListFragment : Fragment() {
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 Log.d("MyLog", "handleOnBackpressed")
-                parentActivity.apply {
-                    navController.navigateChangeTitleToolbar(
-                        parentActivity,
-                        R.id.action_epubReaderFragment_to_mainFragment
-                    )
-                }
+                val action = ReaderListFragmentDirections.actionEpubReaderFragmentToMainFragment()
+                findNavController().navigate(action)
             }
         }
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, onBackPressedCallback)

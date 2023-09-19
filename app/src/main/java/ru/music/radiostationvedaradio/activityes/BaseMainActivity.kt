@@ -19,7 +19,6 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textview.MaterialTextView
 import com.yandex.mobile.ads.banner.BannerAdEventListener
@@ -55,13 +54,6 @@ open class BaseMainActivity : AppCompatActivity() {
     lateinit var navController: NavController
     var webUrl: String? = "" // url для WebFragment public для webFragment
 
-    //-----------------s toolbar menu-------------------
-    lateinit var mToolbar: MaterialToolbar
-    private var myMenu: Menu? = null
-    private lateinit var btnPlay: MenuItem
-    private lateinit var btnRefresh: MenuItem
-    //-----------------e toolbar menu-------------------
-
     //---------------------- s drawer menu---------------------
     private lateinit var myDrawerLayout: DrawerLayout
     private lateinit var mMenuAdapter: ExpandableListAdapterForNavView
@@ -95,35 +87,32 @@ open class BaseMainActivity : AppCompatActivity() {
         }
 
     protected fun initNavController() {
-        val navView = binding.mainNavHostFragment
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.main_nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-
-        }
     }
 
     private fun updateCheckGroupQuality(url: String) {
-        if (myMenu == null) return
-        myMenu?.apply {
-            findItem(R.id.action_low_quality)?.isChecked = false
-            findItem(R.id.action_medium_quality)?.isChecked = false
-            findItem(R.id.action_high_quality)?.isChecked = false
-        }
-        when (url) {
-            getString(R.string.veda_radio_stream_link_low) -> {
-                myMenu?.findItem(R.id.action_low_quality)?.isChecked = true
-            }
-
-            getString(R.string.veda_radio_stream_link_medium) -> {
-                myMenu?.findItem(R.id.action_medium_quality)?.isChecked = true
-            }
-
-            getString(R.string.veda_radio_stream_link_high) -> {
-                myMenu?.findItem(R.id.action_high_quality)?.isChecked = true
-            }
-        }
+        //todo need add my adapter from sara
+//        myMenu?.apply {
+//            findItem(R.id.action_low_quality)?.isChecked = false
+//            findItem(R.id.action_medium_quality)?.isChecked = false
+//            findItem(R.id.action_high_quality)?.isChecked = false
+//        }
+//
+//        when (url) {
+//            getString(R.string.veda_radio_stream_link_low) -> {
+//                myMenu?.findItem(R.id.action_low_quality)?.isChecked = true
+//            }
+//
+//            getString(R.string.veda_radio_stream_link_medium) -> {
+//                myMenu?.findItem(R.id.action_medium_quality)?.isChecked = true
+//            }
+//
+//            getString(R.string.veda_radio_stream_link_high) -> {
+//                myMenu?.findItem(R.id.action_high_quality)?.isChecked = true
+//            }
+//        }
     }
 
     protected fun playAudio(urlStream: String) {
@@ -379,72 +368,37 @@ open class BaseMainActivity : AppCompatActivity() {
 
 
     //---------------------initToolbar--------------------------------
-    protected fun setUpToolBar() {
-        mToolbar = findViewById(R.id.main_toolbar)
-        setSupportActionBar(mToolbar)
-        supportActionBar?.apply {
-            setHomeButtonEnabled(true)
-            setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_menu)
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu, menu)
-        if (menu != null) {
-            myMenu = menu
-            updateCheckGroupQuality(urlRadioService)
-            btnPlay = menu.findItem(R.id.action_play)
-            btnRefresh = menu.findItem(R.id.action_refresh)
-
-            dataModel.statusMediaPlayer.observe(this) {
-                val mainEqualizer = findViewById<EqualizerView>(R.id.main_equalizer)
+    protected fun initToolbar() {
+        with(binding) {
+            dataModel.statusMediaPlayer.observe(this@BaseMainActivity) {
                 if (it == InitStatusMediaPlayer.PLAYING) {
-                    mainEqualizer?.animateBars()
-                    btnPlay.setIcon(R.drawable.ic_pause)
+                    slidingPanelPlayer.mainEqualizer.animateBars()
+                    toolbarContainer.actionPlay.setImageResource(R.drawable.ic_pause)
                 } else {
-                    btnPlay.setIcon(R.drawable.ic_baseline_play_circle_filled_24)
-                    mainEqualizer?.stopBars()
+                    toolbarContainer.actionPlay.setImageResource(R.drawable.ic_baseline_play_circle_filled_24)
+                    slidingPanelPlayer.mainEqualizer.stopBars()
                 }
             }
-            dataModel.statusMediaPlayer.observe(this) {
+
+            dataModel.statusMediaPlayer.observe(this@BaseMainActivity) {
                 if (it == InitStatusMediaPlayer.INITIALISATION) {
-                    btnRefresh.setActionView(R.layout.action_progressbar)
-                    btnRefresh.expandActionView()
-                } else btnRefresh.actionView = null
-
-            }
-        }
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.action_play -> {
-                Log.d("MyLog", "action_play click. isPlaying: ${dataModel.statusMediaPlayer.value}")
-                dataModel.statusMediaPlayer.value?.let { buttonPlayAction(it) }
+                    toolbarContainer.actionRefresh.setImageResource(R.drawable.baseline_signal)
+                    //todo animation start
+                } else toolbarContainer.actionRefresh.setImageResource(R.drawable.ic_refresh_black_24dp)
             }
 
-            R.id.action_refresh -> {
+            toolbarContainer.actionPlay.setOnClickListener {
+                //todo
+                dataModel.statusMediaPlayer.value?.let {
+                    buttonPlayAction(it)
+                }
+            }
+
+            toolbarContainer.actionRefresh.setOnClickListener {
                 playAudio(urlRadioService)
             }
 
-            R.id.action_low_quality -> {
-                urlRadioService = getString(R.string.veda_radio_stream_link_low)
-                playAudio(urlRadioService)
-            }
-
-            R.id.action_medium_quality -> {
-                urlRadioService = getString(R.string.veda_radio_stream_link_medium)
-                playAudio(urlRadioService)
-            }
-
-            R.id.action_high_quality -> {
-                urlRadioService = getString(R.string.veda_radio_stream_link_high)
-                playAudio(urlRadioService)
-            }
-
-            android.R.id.home -> {
+            toolbarContainer.actionHome.setOnClickListener {
                 CoroutineScope(Dispatchers.Main).launch {
                     if (myDrawerLayout.isDrawerOpen(GravityCompat.START)) myDrawerLayout.closeDrawer(
                         GravityCompat.START
@@ -452,10 +406,28 @@ open class BaseMainActivity : AppCompatActivity() {
                     else myDrawerLayout.openDrawer(GravityCompat.START)
                 }
             }
+
+            toolbarContainer.actionQualityContainer.setOnClickListener {
+                //todo open popup menu
+
+//                R.id.action_low_quality -> {
+//                urlRadioService = getString(R.string.veda_radio_stream_link_low)
+//                playAudio(urlRadioService)
+//            }
+//
+//                R.id.action_medium_quality -> {
+//                urlRadioService = getString(R.string.veda_radio_stream_link_medium)
+//                playAudio(urlRadioService)
+//            }
+//
+//                R.id.action_high_quality -> {
+//                urlRadioService = getString(R.string.veda_radio_stream_link_high)
+//                playAudio(urlRadioService)
+//            }
+
+            }
         }
-        return super.onOptionsItemSelected(item)
     }
-    //---------------------initActionBar--------------------------------
 
     private fun buttonPlayAction(statusService: InitStatusMediaPlayer) {
         when (statusService) {
