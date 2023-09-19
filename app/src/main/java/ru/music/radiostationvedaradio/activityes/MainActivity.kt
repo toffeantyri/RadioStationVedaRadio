@@ -3,6 +3,7 @@ package ru.music.radiostationvedaradio.activityes
 import android.media.AudioManager
 import android.os.Bundle
 import android.util.Log
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.Navigation
 import com.yandex.mobile.ads.banner.BannerAdView
 import kotlinx.coroutines.CoroutineScope
@@ -10,8 +11,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.music.radiostationvedaradio.R
+import ru.music.radiostationvedaradio.databinding.ActivityMainBinding
 import ru.music.radiostationvedaradio.utils.APP_CONTEXT
-import ru.music.radiostationvedaradio.utils.myLog
 
 
 class MainActivity : BaseMainActivity() {
@@ -20,9 +21,12 @@ class MainActivity : BaseMainActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        myLog("MainActivity onCreate")
-        setContentView(R.layout.activity_main)
-        urlRadioService = getString(R.string.veda_radio_stream_link_low) // TODO Качество по умолчанию на релиз - MEDIUM
+        installSplashScreen()
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        urlRadioService =
+            getString(R.string.veda_radio_stream_link_low) // TODO Качество по умолчанию на релиз - MEDIUM
         APP_CONTEXT = this
 
 
@@ -30,7 +34,8 @@ class MainActivity : BaseMainActivity() {
             Log.d("MyLog", "Coroutine job : $job")
             setUpToolBar()
             initPlayerPanel()
-            navController = Navigation.findNavController(this@MainActivity, R.id.main_nav_host_fragment)
+            navController =
+                Navigation.findNavController(this@MainActivity, R.id.main_nav_host_fragment)
             initExpandableListInNavView()
             initListViewOfNavMenuListener()
             registerBroadcastStateService()

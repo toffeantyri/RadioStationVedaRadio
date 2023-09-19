@@ -17,7 +17,6 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textview.MaterialTextView
 import com.yandex.mobile.ads.banner.BannerAdEventListener
@@ -30,6 +29,7 @@ import es.claucookie.miniequalizerlibrary.EqualizerView
 import kotlinx.coroutines.*
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.busines.model.MetadataRadioService
+import ru.music.radiostationvedaradio.databinding.ActivityMainBinding
 import ru.music.radiostationvedaradio.screens.TAG_WEB_URL
 import ru.music.radiostationvedaradio.services.*
 import ru.music.radiostationvedaradio.utils.AUTHOR
@@ -44,6 +44,8 @@ import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 @SuppressLint("Registered")
 open class BaseMainActivity : AppCompatActivity() {
+
+    internal lateinit var binding: ActivityMainBinding
 
     protected val dataModel: ViewModelMainActivity by viewModels()
 
@@ -172,7 +174,7 @@ open class BaseMainActivity : AppCompatActivity() {
     // -----------------------------------------other init ------------------------------------------
     protected fun loadAndShowBanner() {
         val banner = findViewById<BannerAdView>(R.id.main_banner).apply {
-            setAdUnitId(getString(R.string.yandex_banner_desc_id))
+            setAdUnitId(getString(R.string.yandex_banner_desc_id_test))
             setAdSize(BannerAdSize.inlineSize(context, 320, 50))
         }
         val adRequest = AdRequest.Builder().build()
@@ -197,6 +199,8 @@ open class BaseMainActivity : AppCompatActivity() {
     }
 
     private var doubleBackPress = false
+
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (navController.currentDestination?.id != navController.graph.startDestinationId) {
             super.onBackPressed()
@@ -440,7 +444,7 @@ open class BaseMainActivity : AppCompatActivity() {
 
     //-------------------init Bottom App Bar (PlayerPanel)------------------
     protected fun initPlayerPanel() {
-        val fabPlayPause = findViewById<FloatingActionButton>(R.id.fab_play_pause)
+        val fabPlayPause = findViewById<ImageButton>(R.id.fab_play_pause)
         val mainEqualizer = findViewById<EqualizerView>(R.id.main_equalizer)
         val tvSongAuthor = findViewById<MaterialTextView>(R.id.tv_song_autor)
         val tvSongTrack = findViewById<MaterialTextView>(R.id.tv_song_track)
