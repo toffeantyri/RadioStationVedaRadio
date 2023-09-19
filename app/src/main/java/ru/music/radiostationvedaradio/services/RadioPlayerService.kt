@@ -218,7 +218,7 @@ class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
                         this,
                         0,
                         contentIntent,
-                        PendingIntent.FLAG_IMMUTABLE
+                        PendingIntent.FLAG_MUTABLE
                     )
                 )
 

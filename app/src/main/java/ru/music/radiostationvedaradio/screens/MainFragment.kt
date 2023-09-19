@@ -7,13 +7,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.TextView
-import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity
+import ru.music.radiostationvedaradio.databinding.FragmentMainBinding
 import ru.music.radiostationvedaradio.utils.TAG
 import ru.music.radiostationvedaradio.utils.myLog
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
@@ -22,6 +21,7 @@ class MainFragment : Fragment() {
 
     private val mViewModel: ViewModelMainActivity by activityViewModels()
     lateinit var parentActivity: MainActivity
+    lateinit var binding: FragmentMainBinding
 
     override fun onAttach(context: Context) {
         myLog("MainFragment onAttach")
@@ -31,21 +31,17 @@ class MainFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view0 = inflater.inflate(R.layout.fragment_main, container, false)
+    ): View {
+        binding = FragmentMainBinding.inflate(inflater)
         parentActivity = activity as MainActivity
-        view0.apply {
-            setUpOnClickStaticButton()
-        }
-        myLog("MainFragment onCreateView")
-        return view0
+        setUpOnClickStaticButton()
+        return binding.root
     }
 
     override fun onStart() {
-        myLog("MainFragment onStart")
         super.onStart()
         mViewModel.nounText.observe(this) {
-            view?.findViewById<TextView>(R.id.tv_tcitata_dnya)?.text = it
+            binding.tvTcitataDnya.text = it
         }
     }
 
@@ -61,7 +57,6 @@ class MainFragment : Fragment() {
     }
 
     override fun onDestroy() {
-        myLog("MainFragment onDestroy")
         try {
             mViewModel.nounText.removeObservers(this)
         } catch (e: UninitializedPropertyAccessException) {
@@ -71,20 +66,13 @@ class MainFragment : Fragment() {
         super.onDestroy()
     }
 
-    override fun onDetach() {
-        myLog("MainFragment onDetach")
-        super.onDetach()
-    }
 
-    private fun View.setUpOnClickStaticButton() {
-        view?.findViewById<ImageButton>(R.id.btn_refresh_tcitata)?.setOnClickListener {
+    private fun setUpOnClickStaticButton() {
+        binding.btnRefreshTcitata.setOnClickListener {
             loadNoun()
         }
-        view?.findViewById<AppCompatImageButton>(R.id.btn_open_horo)?.setOnClickListener {
-            parentActivity.navController.navigate(R.id.badAdviceFragment)
-        }
-        view?.findViewById<AppCompatImageButton>(R.id.btn_test_epub)?.setOnClickListener {
-            parentActivity.navController.navigate(R.id.epubReaderFragment)
+        binding.btnOpenHoro.setOnClickListener {
+            findNavController().navigate(R.id.badAdviceFragment)
         }
     }
 

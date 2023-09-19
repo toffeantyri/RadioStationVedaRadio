@@ -18,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
@@ -261,13 +260,11 @@ open class BaseMainActivity : AppCompatActivity() {
     private fun navigateWebFragmentWithUrl(webUrl: String) {
         val bundle = Bundle()
         bundle.putString(TAG_WEB_URL, webUrl)
-        findNavController(R.id.main_nav_host_fragment).navigate(R.id.webViewFragment, bundle)
-        //navController.navigate(R.id.webViewFragment, bundle)
+        navController.navigate(R.id.webViewFragment, bundle)
     }
 
     private fun navigateMainFragmentToBadAdvancedFrag() {
-        findNavController(R.id.main_nav_host_fragment).navigate(R.id.badAdviceFragment)
-        //navController.navigate(R.id.badAdviceFragment)
+        navController.navigate(R.id.badAdviceFragment)
     }
 
     protected fun initExpandableListInNavView() {

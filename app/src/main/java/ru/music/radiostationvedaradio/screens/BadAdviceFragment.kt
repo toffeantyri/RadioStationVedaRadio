@@ -8,15 +8,14 @@ import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.activityes.MainActivity
+import ru.music.radiostationvedaradio.databinding.BadAdviceFragmentBinding
 import ru.music.radiostationvedaradio.utils.getTodayDate
-import ru.music.radiostationvedaradio.utils.myLogNet
 import ru.music.radiostationvedaradio.utils.navigateChangeTitleToolbar
 import ru.music.radiostationvedaradio.view.adapters.badadvice.AntiHoroAdapter
 import ru.music.radiostationvedaradio.viewmodel.BadAdviceViewModel
@@ -32,17 +31,18 @@ class BadAdviceFragment : Fragment() {
     private lateinit var viewModel: BadAdviceViewModel
     private lateinit var myRecyclerView: RecyclerView
     private lateinit var adapter: AntiHoroAdapter
+    private lateinit var binding: BadAdviceFragmentBinding
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view0 = inflater.inflate(R.layout.bad_advice_fragment, container, false)
+    ): View {
+        binding = BadAdviceFragmentBinding.inflate(inflater)
         parentActivity = activity as MainActivity
         viewModel = ViewModelProvider(this).get(BadAdviceViewModel::class.java)
         setHasOptionsMenu(true)
-        return view0
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -63,9 +63,8 @@ class BadAdviceFragment : Fragment() {
         super.onResume()
 
         viewModel.listHoroOfToday.observe(viewLifecycleOwner) {
-            it.forEach { myLogNet("BAFRAG : observe: " + it) }
-            if (it.isNotEmpty()) {
-                view?.findViewById<TextView>(R.id.tv_date_list)?.text = it[0].date
+            if (it?.isNotEmpty() == true) {
+                binding.tvDateList.text = it[0].date
                 adapter.fillListAdapter(it)
             }
         }
@@ -88,6 +87,7 @@ class BadAdviceFragment : Fragment() {
     }
 
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         (parentActivity).mToolbar.title = ""
@@ -110,8 +110,8 @@ class BadAdviceFragment : Fragment() {
     }
 
 
-    fun initAntiHoroRv() {
-        view?.findViewById<RecyclerView>(R.id.horo_rv)?.let {
+    private fun initAntiHoroRv() {
+        binding.horoRv.let {
             adapter = AntiHoroAdapter()
             myRecyclerView = it
             myRecyclerView.adapter = adapter
