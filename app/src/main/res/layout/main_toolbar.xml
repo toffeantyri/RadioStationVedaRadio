@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     style="@style/MainToolbarStyle"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
@@ -31,8 +32,8 @@
             android:id="@+id/refresh_progressbar"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:indeterminate="true"
             android:layout_marginVertical="@dimen/default_margin"
+            android:indeterminate="true"
             android:indeterminateTint="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/action_refresh"
@@ -63,17 +64,34 @@
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/white" />
 
+
         <ImageButton
             android:id="@+id/action_quality_container"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:background="@android:color/transparent"
             android:paddingHorizontal="@dimen/default_margin"
-            android:src="@drawable/ic_more_vert_white_24dp"
+            android:src="@drawable/ic_more_dots"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/white" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/qualitySpinner"
+            style="@style/favorite_filter_spinner"
+            android:layout_width="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_height="wrap_content"
+            android:dropDownWidth="200dp"
+            android:popupBackground="@drawable/rectangle_r10"
+            android:spinnerMode="dialog"
+            app:layout_constraintBottom_toBottomOf="@id/action_quality_container"
+            app:layout_constraintEnd_toEndOf="@id/action_quality_container"
+            app:layout_constraintStart_toStartOf="@id/action_quality_container"
+            app:layout_constraintTop_toTopOf="@id/action_quality_container"
+            tools:listitem="@layout/choose_quality_item" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

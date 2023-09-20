@@ -5,11 +5,9 @@ import android.app.ActivityManager
 import android.content.Context
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavController
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.activityes.MainActivity
 import ru.music.radiostationvedaradio.busines.database.room.AntiHoroTodayEntity
 import ru.music.radiostationvedaradio.busines.model.antihoro.HoroItemHolder
 import ru.music.radiostationvedaradio.busines.model.antihoro.HoroscopeModelClasses
@@ -44,6 +42,10 @@ fun myLog(message: String) {
 
 fun myLogNet(message: String) {
     Log.d(TAG_NET, message)
+}
+
+fun Context.showToast(message: String) {
+    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }
 
 

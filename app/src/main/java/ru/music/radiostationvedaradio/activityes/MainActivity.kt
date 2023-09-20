@@ -3,14 +3,28 @@ package ru.music.radiostationvedaradio.activityes
 import android.Manifest
 import android.media.AudioManager
 import android.os.Bundle
+import android.util.Log
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.databinding.ActivityMainBinding
+import ru.music.radiostationvedaradio.services.InitStatusMediaPlayer
 import ru.music.radiostationvedaradio.utils.APP_CONTEXT
+import ru.music.radiostationvedaradio.utils.TAG
 import ru.music.radiostationvedaradio.utils.checkPermissionSingle
+import ru.music.radiostationvedaradio.utils.showToast
+import ru.music.radiostationvedaradio.view.adapters.OnFilterClickListener
+import ru.music.radiostationvedaradio.view.adapters.filter_adapter.MenuArrayAdapter
 
 
-class MainActivity : BaseMainActivity() {
+class MainActivity : BaseMainActivity(), OnFilterClickListener {
+
+    private val qualityAdapter by lazy {
+        MenuArrayAdapter(
+            this,
+            this.resources.getStringArray(R.array.array_quality_list).toMutableList(),
+            this
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +38,7 @@ class MainActivity : BaseMainActivity() {
 
 
         initToolbar()
+        initQualityChooser()
         initPlayerPanel()
         initExpandableListInNavView()
         initListViewOfNavMenuListener()
@@ -49,6 +64,48 @@ class MainActivity : BaseMainActivity() {
         }
         APP_CONTEXT = null
         super.onDestroy()
+    }
+
+
+    private fun initQualityChooser() {
+        with(binding.toolbarContainer) {
+            qualityAdapter.setHeaderViewVisibility(false)
+            qualityAdapter.setArrowViewVisibility(false)
+            qualitySpinner.adapter = qualityAdapter
+            qualitySpinner.setOnTouchListener(qualityAdapter.getUserSelectionClickListener())
+            qualitySpinner.onItemSelectedListener = qualityAdapter.getUserSelectionClickListener()
+        }
+    }
+
+    override fun onItemFilterClick(position: Int) {
+        Log.d(TAG, "onItemFilterClick $position")
+        when (position) {
+            0 -> {
+                setQualityAndPlay(getString(R.string.veda_radio_stream_link_low), position)
+            }
+
+            1 -> {
+                setQualityAndPlay(getString(R.string.veda_radio_stream_link_medium), position)
+            }
+
+            2 -> {
+                setQualityAndPlay(getString(R.string.veda_radio_stream_link_high), position)
+            }
+        }
+    }
+
+    private fun setQualityAndPlay(streamLink: String, position: Int) {
+        Log.d(TAG, "setQualityAndPlay")
+        if (viewModel.statusMediaPlayer.value == InitStatusMediaPlayer.INITIALISATION) {
+            Log.d(TAG, "onItemFilterClick InitStatusMediaPlayer.INITIALISATION")
+            this.showToast(getString(R.string.error_loading))
+        } else {
+            Log.d(TAG, "onItemFilterClick InitStatusMediaPlayer.INITIALISATION else")
+            qualityAdapter.checkedPosition = position
+            qualityAdapter.notifyDataSetChanged()
+            urlRadioService = streamLink
+            playAudio(urlRadioService)
+        }
     }
 
 

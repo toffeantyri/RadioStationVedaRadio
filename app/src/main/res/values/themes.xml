@@ -31,6 +31,10 @@
         <item name="android:textColor">@color/green_900</item>
     </style>
 
+    <style name="favorite_filter_spinner" parent="android:Widget.Material.Spinner">
+        <item name="android:background">@drawable/rectangle_r10</item>
+        <item name="backgroundTint">@android:color/transparent</item>
+    </style>
 
     <style name="MainToolbarStyle" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:gravity">center_vertical</item>

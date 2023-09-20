@@ -51,6 +51,7 @@ open class BaseMainActivity : AppCompatActivity() {
 
     var webUrl: String? = "" // url для WebFragment public для webFragment
 
+
     //---------------------- s drawer menu---------------------
     private lateinit var myDrawerLayout: DrawerLayout
     private lateinit var mMenuAdapter: ExpandableListAdapterForNavView
@@ -389,26 +390,14 @@ open class BaseMainActivity : AppCompatActivity() {
             }
 
             toolbarContainer.actionQualityContainer.setOnClickListener {
-                //todo open popup menu
+                with(binding) {
 
-//                R.id.action_low_quality -> {
-//                urlRadioService = getString(R.string.veda_radio_stream_link_low)
-//                playAudio(urlRadioService)
-//            }
-//
-//                R.id.action_medium_quality -> {
-//                urlRadioService = getString(R.string.veda_radio_stream_link_medium)
-//                playAudio(urlRadioService)
-//            }
-//
-//                R.id.action_high_quality -> {
-//                urlRadioService = getString(R.string.veda_radio_stream_link_high)
-//                playAudio(urlRadioService)
-//            }
 
+                }
             }
         }
     }
+
 
     private fun setViewByStatusMediaPlayer(status: InitStatusMediaPlayer) {
         with(binding) {
@@ -462,6 +451,7 @@ open class BaseMainActivity : AppCompatActivity() {
             }
         }
     }
+
     //-------------------init Bottom App Bar (PlayerPanel)------------------
 
 
