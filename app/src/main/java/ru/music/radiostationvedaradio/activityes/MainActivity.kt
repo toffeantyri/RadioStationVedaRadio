@@ -3,9 +3,7 @@ package ru.music.radiostationvedaradio.activityes
 import android.Manifest
 import android.media.AudioManager
 import android.os.Bundle
-import android.util.Log
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.yandex.mobile.ads.banner.BannerAdView
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.databinding.ActivityMainBinding
 import ru.music.radiostationvedaradio.utils.APP_CONTEXT
@@ -21,11 +19,10 @@ class MainActivity : BaseMainActivity() {
         setContentView(binding.root)
 
         urlRadioService =
-            getString(R.string.veda_radio_stream_link_low) // TODO Качество по умолчанию на релиз - MEDIUM
+            getString(R.string.veda_radio_stream_link_low)
         APP_CONTEXT = this
 
 
-        initNavController()
         initToolbar()
         initPlayerPanel()
         initExpandableListInNavView()
@@ -39,27 +36,14 @@ class MainActivity : BaseMainActivity() {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        Log.d("MyLog", "MainActivity onPause")
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.d("MyLog", "MainActivity onStart")
-    }
-
     override fun onResume() {
         super.onResume()
         volumeControlStream = AudioManager.STREAM_MUSIC
     }
 
-    override fun onStop() {
-        super.onStop()
-    }
 
     override fun onDestroy() {
-        findViewById<BannerAdView>(R.id.main_banner).destroy()
+        binding.mainBanner.destroy()
         if (serviceBound) {
             unbindService(serviceConnection)
         }

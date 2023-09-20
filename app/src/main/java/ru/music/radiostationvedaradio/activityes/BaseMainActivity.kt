@@ -9,25 +9,21 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.textview.MaterialTextView
 import com.yandex.mobile.ads.banner.BannerAdEventListener
 import com.yandex.mobile.ads.banner.BannerAdSize
 import com.yandex.mobile.ads.banner.BannerAdView
 import com.yandex.mobile.ads.common.AdRequest
 import com.yandex.mobile.ads.common.AdRequestError
 import com.yandex.mobile.ads.common.ImpressionData
-import es.claucookie.miniequalizerlibrary.EqualizerView
 import kotlinx.coroutines.*
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.busines.model.MetadataRadioService
@@ -36,7 +32,9 @@ import ru.music.radiostationvedaradio.screens.TAG_WEB_URL
 import ru.music.radiostationvedaradio.services.*
 import ru.music.radiostationvedaradio.utils.AUTHOR
 import ru.music.radiostationvedaradio.utils.SONG_NAME
+import ru.music.radiostationvedaradio.utils.invisible
 import ru.music.radiostationvedaradio.utils.myLog
+import ru.music.radiostationvedaradio.utils.show
 import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandableListAdapterForNavView
 import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandedMenuModel
 import ru.music.radiostationvedaradio.view.adapters.listview.ListViewAdapter
@@ -49,9 +47,8 @@ open class BaseMainActivity : AppCompatActivity() {
 
     internal lateinit var binding: ActivityMainBinding
 
-    protected val dataModel: ViewModelMainActivity by viewModels()
+    protected val viewModel: ViewModelMainActivity by viewModels()
 
-    lateinit var navController: NavController
     var webUrl: String? = "" // url для WebFragment public для webFragment
 
     //---------------------- s drawer menu---------------------
@@ -70,12 +67,12 @@ open class BaseMainActivity : AppCompatActivity() {
     protected var statusMediaPlayer = InitStatusMediaPlayer.IDLE
         set(value) {
             field = value
-            dataModel.statusMediaPlayer.value = value
+            viewModel.statusMediaPlayer.value = value
         }
     protected var metadataRadioService: MetadataRadioService? = null
         set(value) {
             field = value
-            dataModel.metadataOfPlayer.value = value
+            viewModel.metadataOfPlayer.value = value
         }
 
     protected var serviceBound = false
@@ -85,12 +82,6 @@ open class BaseMainActivity : AppCompatActivity() {
             field = value
             updateCheckGroupQuality(value)
         }
-
-    protected fun initNavController() {
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.main_nav_host_fragment) as NavHostFragment
-        navController = navHostFragment.navController
-    }
 
     private fun updateCheckGroupQuality(url: String) {
         //todo need add my adapter from sara
@@ -159,7 +150,7 @@ open class BaseMainActivity : AppCompatActivity() {
             val author = intent?.getStringExtra(AUTHOR) ?: getString(R.string.app_name)
             val song = intent?.getStringExtra(SONG_NAME) ?: getString(R.string.app_name)
             myLog("METADATA : $author and $song")
-            dataModel.metadataOfPlayer.value = MetadataRadioService(author, song)
+            viewModel.metadataOfPlayer.value = MetadataRadioService(author, song)
         }
     }
 
@@ -206,6 +197,9 @@ open class BaseMainActivity : AppCompatActivity() {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.main_nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
         if (navController.currentDestination?.id != navController.graph.startDestinationId) {
             super.onBackPressed()
             return
@@ -249,11 +243,11 @@ open class BaseMainActivity : AppCompatActivity() {
     private fun navigateWebFragmentWithUrl(webUrl: String) {
         val bundle = Bundle()
         bundle.putString(TAG_WEB_URL, webUrl)
-        navController.navigate(R.id.webViewFragment, bundle)
+        findNavController(R.id.main_nav_host_fragment).navigate(R.id.webViewFragment, bundle)
     }
 
     private fun navigateMainFragmentToBadAdvancedFrag() {
-        navController.navigate(R.id.badAdviceFragment)
+        findNavController(R.id.main_nav_host_fragment).navigate(R.id.badAdviceFragment)
     }
 
     protected fun initExpandableListInNavView() {
@@ -370,26 +364,13 @@ open class BaseMainActivity : AppCompatActivity() {
     //---------------------initToolbar--------------------------------
     protected fun initToolbar() {
         with(binding) {
-            dataModel.statusMediaPlayer.observe(this@BaseMainActivity) {
-                if (it == InitStatusMediaPlayer.PLAYING) {
-                    slidingPanelPlayer.mainEqualizer.animateBars()
-                    toolbarContainer.actionPlay.setImageResource(R.drawable.ic_pause)
-                } else {
-                    toolbarContainer.actionPlay.setImageResource(R.drawable.ic_baseline_play_circle_filled_24)
-                    slidingPanelPlayer.mainEqualizer.stopBars()
-                }
-            }
-
-            dataModel.statusMediaPlayer.observe(this@BaseMainActivity) {
-                if (it == InitStatusMediaPlayer.INITIALISATION) {
-                    toolbarContainer.actionRefresh.setImageResource(R.drawable.baseline_signal)
-                    //todo animation start
-                } else toolbarContainer.actionRefresh.setImageResource(R.drawable.ic_refresh_black_24dp)
+            viewModel.statusMediaPlayer.observe(this@BaseMainActivity) {
+                setViewByStatusMediaPlayer(it)
             }
 
             toolbarContainer.actionPlay.setOnClickListener {
                 //todo
-                dataModel.statusMediaPlayer.value?.let {
+                viewModel.statusMediaPlayer.value?.let {
                     buttonPlayAction(it)
                 }
             }
@@ -429,6 +410,26 @@ open class BaseMainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setViewByStatusMediaPlayer(status: InitStatusMediaPlayer) {
+        with(binding) {
+            if (status == InitStatusMediaPlayer.INITIALISATION) {
+                toolbarContainer.actionRefresh.invisible()
+                toolbarContainer.refreshProgressbar.show()
+            } else {
+                toolbarContainer.actionRefresh.show()
+                toolbarContainer.refreshProgressbar.invisible()
+            }
+
+            if (status == InitStatusMediaPlayer.PLAYING) {
+                slidingPanelPlayer.mainEqualizer.animateBars()
+                toolbarContainer.actionPlay.setImageResource(R.drawable.ic_pause)
+            } else {
+                toolbarContainer.actionPlay.setImageResource(R.drawable.ic_play_filled)
+                slidingPanelPlayer.mainEqualizer.stopBars()
+            }
+        }
+    }
+
     private fun buttonPlayAction(statusService: InitStatusMediaPlayer) {
         when (statusService) {
             InitStatusMediaPlayer.INIT_COMPLETE -> mediaService?.playMedia()
@@ -442,25 +443,23 @@ open class BaseMainActivity : AppCompatActivity() {
 
     //-------------------init Bottom App Bar (PlayerPanel)------------------
     protected fun initPlayerPanel() {
-        val fabPlayPause = findViewById<ImageButton>(R.id.fab_play_pause)
-        val mainEqualizer = findViewById<EqualizerView>(R.id.main_equalizer)
-        val tvSongAuthor = findViewById<MaterialTextView>(R.id.tv_song_autor)
-        val tvSongTrack = findViewById<MaterialTextView>(R.id.tv_song_track)
-        fabPlayPause.setOnClickListener {
-            dataModel.statusMediaPlayer.value?.let { buttonPlayAction(it) }
-        }
-        dataModel.statusMediaPlayer.observe(this) {
-            if (it == InitStatusMediaPlayer.PLAYING) {
-                mainEqualizer?.animateBars()
-                fabPlayPause.setImageResource(android.R.drawable.ic_media_pause)
-            } else {
-                fabPlayPause.setImageResource(android.R.drawable.ic_media_play)
-                mainEqualizer?.stopBars()
+        with(binding.slidingPanelPlayer) {
+            fabPlayPause.setOnClickListener {
+                viewModel.statusMediaPlayer.value?.let { buttonPlayAction(it) }
             }
-        }
-        dataModel.metadataOfPlayer.observe(this) {
-            tvSongAuthor.text = it.artist
-            tvSongTrack.text = it.song
+            viewModel.statusMediaPlayer.observe(this@BaseMainActivity) {
+                if (it == InitStatusMediaPlayer.PLAYING) {
+                    mainEqualizer.animateBars()
+                    fabPlayPause.setImageResource(android.R.drawable.ic_media_pause)
+                } else {
+                    fabPlayPause.setImageResource(android.R.drawable.ic_media_play)
+                    mainEqualizer.stopBars()
+                }
+            }
+            viewModel.metadataOfPlayer.observe(this@BaseMainActivity) {
+                tvSongAutor.text = it.artist
+                tvSongTrack.text = it.song
+            }
         }
     }
     //-------------------init Bottom App Bar (PlayerPanel)------------------
