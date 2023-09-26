@@ -48,13 +48,6 @@ import ru.music.radiostationvedaradio.utils.AUTHOR
 import ru.music.radiostationvedaradio.utils.SONG_NAME
 
 
-const val ACTION_PLAY = "ru.music.vedaradio.ACTION_PLAY"
-const val ACTION_PAUSE = "ru.music.vedaradio.ACTION_PAUSE"
-const val ACTION_CANCEL = "ru.music.vedaradio.ACTION_CANCEL"
-const val CHANNEL_ID = "ru.music.vedaradio.ID"
-const val NOTIFICATION_ID = 77777
-
-
 class RadioPlayerService : Service(), MediaPlayer.OnCompletionListener,
     MediaPlayer.OnPreparedListener,
     MediaPlayer.OnErrorListener, MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnInfoListener,

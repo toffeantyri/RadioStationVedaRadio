@@ -49,6 +49,9 @@ core-splashscreen = { group = "androidx.core", name = "core-splashscreen", versi
 
 #media
 androidx-media = { group = "androidx.media", name = "media", version.ref = "andx-media" }
+androidx-media3-session = { group = "androidx.media3", name = "media3-session", version = "1.1.1" }
+
+
 
 #навигация
 navigation-dynamic-features-fragment = { group = "androidx.navigation", name = "navigation-dynamic-features-fragment", version.ref = "android-navigation" }
@@ -99,6 +102,7 @@ jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-
 room_runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room_ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room_compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+
 
 
 [plugins]
