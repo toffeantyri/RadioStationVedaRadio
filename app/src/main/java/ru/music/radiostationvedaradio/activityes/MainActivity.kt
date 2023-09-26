@@ -36,7 +36,8 @@ class MainActivity : BaseMainActivity(), OnFilterClickListener {
             getString(R.string.veda_radio_stream_link_low)
         APP_CONTEXT = this
 
-
+        mediaListAdapter =
+            FolderMediaItemArrayAdapter(this, R.layout.folder_items, subItemMediaList)
         initToolbar()
         initQualityChooser()
         initPlayerPanel()
@@ -47,7 +48,8 @@ class MainActivity : BaseMainActivity(), OnFilterClickListener {
         loadAndShowBanner()
 
         checkPermissionSingle(Manifest.permission.READ_PHONE_STATE) {
-            playAudio(urlRadioService)
+            //playAudio(urlRadioService)
+            startPlayerService(urlRadioService)
         }
     }
 

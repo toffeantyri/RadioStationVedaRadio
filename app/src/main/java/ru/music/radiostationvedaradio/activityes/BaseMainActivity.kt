@@ -9,15 +9,24 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.media3.common.MediaItem
+import androidx.media3.session.LibraryResult
+import androidx.media3.session.MediaBrowser
+import androidx.media3.session.SessionToken
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.navigation.NavigationView
+import com.google.common.util.concurrent.ListenableFuture
 import com.yandex.mobile.ads.banner.BannerAdEventListener
 import com.yandex.mobile.ads.banner.BannerAdSize
 import com.yandex.mobile.ads.banner.BannerAdView
@@ -30,6 +39,7 @@ import ru.music.radiostationvedaradio.busines.model.MetadataRadioService
 import ru.music.radiostationvedaradio.databinding.ActivityMainBinding
 import ru.music.radiostationvedaradio.screens.TAG_WEB_URL
 import ru.music.radiostationvedaradio.services.*
+import ru.music.radiostationvedaradio.services.player_service.PlayerService
 import ru.music.radiostationvedaradio.utils.AUTHOR
 import ru.music.radiostationvedaradio.utils.SONG_NAME
 import ru.music.radiostationvedaradio.utils.invisible
@@ -44,6 +54,16 @@ import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 @SuppressLint("Registered")
 open class BaseMainActivity : AppCompatActivity() {
+
+    private lateinit var browserFuture: ListenableFuture<MediaBrowser>
+    private val browser: MediaBrowser?
+        get() = if (browserFuture.isDone && !browserFuture.isCancelled) browserFuture.get() else null
+
+    private val treePathStack: ArrayDeque<MediaItem> = ArrayDeque()
+    var subItemMediaList: MutableList<MediaItem> = mutableListOf()
+    protected lateinit var mediaListAdapter: FolderMediaItemArrayAdapter
+
+    //------------------------------------------------------------------
 
     internal lateinit var binding: ActivityMainBinding
 
@@ -122,6 +142,68 @@ open class BaseMainActivity : AppCompatActivity() {
             sendBroadcast(broadcastIntent)
         }
     }
+
+    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+    protected fun startPlayerService(urlStream: String) {
+
+        browserFuture =
+            MediaBrowser.Builder(
+                this,
+                SessionToken(this, ComponentName(this, PlayerService::class.java))
+            )
+                .buildAsync()
+        browserFuture.addListener({ pushRoot() }, ContextCompat.getMainExecutor(this))
+    }
+
+
+    private fun pushRoot() {
+        // browser can be initialized many times
+        // only push root at the first initialization
+        if (!treePathStack.isEmpty()) {
+            return
+        }
+        val browser = this.browser ?: return
+        val rootFuture = browser.getLibraryRoot(/* params= */ null)
+        rootFuture.addListener(
+            {
+                val result: LibraryResult<MediaItem> = rootFuture.get()!!
+                val root: MediaItem = result.value!!
+                pushPathStack(root)
+            },
+            ContextCompat.getMainExecutor(this)
+        )
+    }
+
+    private fun pushPathStack(mediaItem: MediaItem) {
+        treePathStack.addLast(mediaItem)
+        displayChildrenList(treePathStack.last())
+    }
+
+
+    private fun displayChildrenList(mediaItem: MediaItem) {
+        val browser = this.browser ?: return
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(treePathStack.size != 1)
+        val childrenFuture =
+            browser.getChildren(
+                mediaItem.mediaId,
+                /* page= */ 0,
+                /* pageSize= */ Int.MAX_VALUE,
+                /* params= */ null
+            )
+
+        subItemMediaList.clear()
+        childrenFuture.addListener(
+            {
+                val result = childrenFuture.get()!!
+                val children = result.value!!
+                subItemMediaList.addAll(children)
+                mediaListAdapter.notifyDataSetChanged()
+            },
+            ContextCompat.getMainExecutor(this)
+        )
+    }
+
 
     protected val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -454,5 +536,20 @@ open class BaseMainActivity : AppCompatActivity() {
 
     //-------------------init Bottom App Bar (PlayerPanel)------------------
 
+    class FolderMediaItemArrayAdapter(
+        context: Context,
+        viewID: Int,
+        mediaItemList: List<MediaItem>
+    ) : ArrayAdapter<MediaItem>(context, viewID, mediaItemList) {
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            val mediaItem = getItem(position)!!
+            val returnConvertView =
+                convertView ?: LayoutInflater.from(context)
+                    .inflate(R.layout.folder_items, parent, false)
 
+            returnConvertView.findViewById<TextView>(R.id.media_item).text =
+                mediaItem.mediaMetadata.title
+            return returnConvertView
+        }
+    }
 }
