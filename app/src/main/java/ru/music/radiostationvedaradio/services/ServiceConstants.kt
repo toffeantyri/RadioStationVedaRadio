@@ -17,3 +17,6 @@ const val Broadcast_METADATA_SERVICE = "ru.music.vedaradio.METADATA_SERVICE"
 const val TAG_NEW_AUDIO_URL = "NewAudio"
 const val Broadcast_NEW_AUDIO = "ru.music.vedaradio.NEW_AUDIO"
 
+//new service
+const val LOG_TAG = "LOG_TAG"
+

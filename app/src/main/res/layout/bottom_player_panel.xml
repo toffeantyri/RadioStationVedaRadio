@@ -7,7 +7,26 @@
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
-    <es.claucookie.miniequalizerlibrary.EqualizerView
+    <androidx.media3.ui.AspectRatioFrameLayout
+        android:layout_height="@dimen/player_plate_height"
+        android:layout_width="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.media3.ui.PlayerView
+            android:id="@+id/player_view"
+            android:background="@color/green_200"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:artwork_display_mode="fill"
+            app:default_artwork="@drawable/artwork_placeholder"
+            app:repeat_toggle_modes="one|all"
+            app:show_shuffle_button="true"
+            app:shutter_background_color="@color/green_200" />
+    </androidx.media3.ui.AspectRatioFrameLayout>
+
+    <!--es.claucookie.miniequalizerlibrary.EqualizerView
         android:id="@+id/main_equalizer"
         android:layout_width="50dp"
         android:layout_height="50dp"
@@ -79,7 +98,7 @@
         android:src="@android:drawable/ic_media_play"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" /-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

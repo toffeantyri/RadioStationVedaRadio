@@ -1,15 +1,20 @@
 package ru.music.radiostationvedaradio.activityes
 
 import android.Manifest
+import android.content.ComponentName
 import android.media.AudioManager
+import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.media3.common.MediaItem
+import androidx.media3.session.MediaController
+import androidx.media3.session.SessionToken
+import com.google.common.util.concurrent.ListenableFuture
+import com.google.common.util.concurrent.MoreExecutors
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.databinding.ActivityMainBinding
 import ru.music.radiostationvedaradio.services.InitStatusMediaPlayer
-import ru.music.radiostationvedaradio.utils.APP_CONTEXT
-import ru.music.radiostationvedaradio.utils.TAG
+import ru.music.radiostationvedaradio.services.player_service.NewService
 import ru.music.radiostationvedaradio.utils.checkPermissionSingle
 import ru.music.radiostationvedaradio.utils.showToast
 import ru.music.radiostationvedaradio.view.adapters.OnFilterClickListener
@@ -17,6 +22,9 @@ import ru.music.radiostationvedaradio.view.adapters.filter_adapter.MenuArrayAdap
 
 
 class MainActivity : BaseMainActivity(), OnFilterClickListener {
+
+    private var controllerFuture: ListenableFuture<MediaController>? = null
+    private lateinit var controller: MediaController
 
     private val qualityAdapter by lazy {
         MenuArrayAdapter(
@@ -32,15 +40,8 @@ class MainActivity : BaseMainActivity(), OnFilterClickListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        urlRadioService =
-            getString(R.string.veda_radio_stream_link_low)
-        APP_CONTEXT = this
-
-        mediaListAdapter =
-            FolderMediaItemArrayAdapter(this, R.layout.folder_items, subItemMediaList)
         initToolbar()
         initQualityChooser()
-        initPlayerPanel()
         initExpandableListInNavView()
         initListViewOfNavMenuListener()
         registerBroadcastStateService()
@@ -49,8 +50,28 @@ class MainActivity : BaseMainActivity(), OnFilterClickListener {
 
         checkPermissionSingle(Manifest.permission.READ_PHONE_STATE) {
             //playAudio(urlRadioService)
-            startPlayerService(urlRadioService)
+
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val sessionToken = SessionToken(this, ComponentName(this, NewService::class.java))
+        controllerFuture = MediaController.Builder(this, sessionToken).buildAsync()
+        controllerFuture?.addListener({
+            controllerFuture?.let {
+                controller = it.get()
+                binding.slidingPanelPlayer.playerView.player = controller
+                controller.pushUrl(viewModel.getPlayingUrl())
+            }
+        }, MoreExecutors.directExecutor())
+    }
+
+    override fun onStop() {
+        controllerFuture?.let { controller ->
+            MediaController.releaseFuture(controller)
+        }
+        super.onStop()
     }
 
     override fun onResume() {
@@ -64,7 +85,6 @@ class MainActivity : BaseMainActivity(), OnFilterClickListener {
         if (serviceBound) {
             unbindService(serviceConnection)
         }
-        APP_CONTEXT = null
         super.onDestroy()
     }
 
@@ -80,33 +100,31 @@ class MainActivity : BaseMainActivity(), OnFilterClickListener {
     }
 
     override fun onItemFilterClick(position: Int) {
-        Log.d(TAG, "onItemFilterClick $position")
         when (position) {
-            0 -> {
-                setQualityAndPlay(getString(R.string.veda_radio_stream_link_low), position)
-            }
-
-            1 -> {
-                setQualityAndPlay(getString(R.string.veda_radio_stream_link_medium), position)
-            }
-
-            2 -> {
-                setQualityAndPlay(getString(R.string.veda_radio_stream_link_high), position)
-            }
+            0 -> setQualityAndPlay(getString(R.string.veda_radio_stream_link_low), position)
+            1 -> setQualityAndPlay(getString(R.string.veda_radio_stream_link_medium), position)
+            2 -> setQualityAndPlay(getString(R.string.veda_radio_stream_link_high), position)
         }
     }
 
     private fun setQualityAndPlay(streamLink: String, position: Int) {
-        Log.d(TAG, "setQualityAndPlay")
         if (viewModel.statusMediaPlayer.value == InitStatusMediaPlayer.INITIALISATION) {
-            Log.d(TAG, "onItemFilterClick InitStatusMediaPlayer.INITIALISATION")
             this.showToast(getString(R.string.error_loading))
         } else {
-            Log.d(TAG, "onItemFilterClick InitStatusMediaPlayer.INITIALISATION else")
             qualityAdapter.checkedPosition = position
             qualityAdapter.notifyDataSetChanged()
-            urlRadioService = streamLink
-            playAudio(urlRadioService)
+            viewModel.playingUrl.value = streamLink
+            playAudio(streamLink)
+        }
+    }
+
+    private fun MediaController.pushUrl(urlStream: String) {
+        this.apply {
+            val uri = Uri.parse(urlStream)
+            val newItem = MediaItem.Builder().setMediaId(urlStream).setUri(uri).build()
+            setMediaItem(newItem)
+            prepare()
+            playWhenReady = true
         }
     }
 

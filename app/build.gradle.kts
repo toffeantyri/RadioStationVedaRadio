@@ -104,9 +104,8 @@ dependencies {
     //media
     implementation(libs.androidx.media)
     implementation(libs.androidx.media3.session)
-
-    val media3Version = "1.1.1"
-    implementation("androidx.media3:media3-exoplayer:$media3Version")
+    implementation(libs.androidx.media3.ui)
+    implementation(libs.androidx.media3.exoplayer)
 
     //db
     implementation(libs.room.runtime)

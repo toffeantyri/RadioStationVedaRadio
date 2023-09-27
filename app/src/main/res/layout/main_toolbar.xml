@@ -34,6 +34,7 @@
             android:layout_height="match_parent"
             android:layout_marginVertical="@dimen/default_margin"
             android:indeterminate="true"
+            android:visibility="invisible"
             android:indeterminateTint="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/action_refresh"

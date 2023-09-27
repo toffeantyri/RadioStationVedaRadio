@@ -16,17 +16,12 @@ import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.media3.common.MediaItem
-import androidx.media3.session.LibraryResult
-import androidx.media3.session.MediaBrowser
-import androidx.media3.session.SessionToken
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.navigation.NavigationView
-import com.google.common.util.concurrent.ListenableFuture
 import com.yandex.mobile.ads.banner.BannerAdEventListener
 import com.yandex.mobile.ads.banner.BannerAdSize
 import com.yandex.mobile.ads.banner.BannerAdView
@@ -39,7 +34,6 @@ import ru.music.radiostationvedaradio.busines.model.MetadataRadioService
 import ru.music.radiostationvedaradio.databinding.ActivityMainBinding
 import ru.music.radiostationvedaradio.screens.TAG_WEB_URL
 import ru.music.radiostationvedaradio.services.*
-import ru.music.radiostationvedaradio.services.player_service.PlayerService
 import ru.music.radiostationvedaradio.utils.AUTHOR
 import ru.music.radiostationvedaradio.utils.SONG_NAME
 import ru.music.radiostationvedaradio.utils.invisible
@@ -54,14 +48,6 @@ import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 @SuppressLint("Registered")
 open class BaseMainActivity : AppCompatActivity() {
-
-    private lateinit var browserFuture: ListenableFuture<MediaBrowser>
-    private val browser: MediaBrowser?
-        get() = if (browserFuture.isDone && !browserFuture.isCancelled) browserFuture.get() else null
-
-    private val treePathStack: ArrayDeque<MediaItem> = ArrayDeque()
-    var subItemMediaList: MutableList<MediaItem> = mutableListOf()
-    protected lateinit var mediaListAdapter: FolderMediaItemArrayAdapter
 
     //------------------------------------------------------------------
 
@@ -98,34 +84,7 @@ open class BaseMainActivity : AppCompatActivity() {
 
     protected var serviceBound = false
     protected var mediaService: RadioPlayerService? = null
-    protected var urlRadioService: String = ""
-        set(value) {
-            field = value
-            updateCheckGroupQuality(value)
-        }
 
-    private fun updateCheckGroupQuality(url: String) {
-        //todo need add my adapter from sara
-//        myMenu?.apply {
-//            findItem(R.id.action_low_quality)?.isChecked = false
-//            findItem(R.id.action_medium_quality)?.isChecked = false
-//            findItem(R.id.action_high_quality)?.isChecked = false
-//        }
-//
-//        when (url) {
-//            getString(R.string.veda_radio_stream_link_low) -> {
-//                myMenu?.findItem(R.id.action_low_quality)?.isChecked = true
-//            }
-//
-//            getString(R.string.veda_radio_stream_link_medium) -> {
-//                myMenu?.findItem(R.id.action_medium_quality)?.isChecked = true
-//            }
-//
-//            getString(R.string.veda_radio_stream_link_high) -> {
-//                myMenu?.findItem(R.id.action_high_quality)?.isChecked = true
-//            }
-//        }
-    }
 
     protected fun playAudio(urlStream: String) {
         if (!serviceBound) {
@@ -143,66 +102,6 @@ open class BaseMainActivity : AppCompatActivity() {
         }
     }
 
-    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
-    protected fun startPlayerService(urlStream: String) {
-
-        browserFuture =
-            MediaBrowser.Builder(
-                this,
-                SessionToken(this, ComponentName(this, PlayerService::class.java))
-            )
-                .buildAsync()
-        browserFuture.addListener({ pushRoot() }, ContextCompat.getMainExecutor(this))
-    }
-
-
-    private fun pushRoot() {
-        // browser can be initialized many times
-        // only push root at the first initialization
-        if (!treePathStack.isEmpty()) {
-            return
-        }
-        val browser = this.browser ?: return
-        val rootFuture = browser.getLibraryRoot(/* params= */ null)
-        rootFuture.addListener(
-            {
-                val result: LibraryResult<MediaItem> = rootFuture.get()!!
-                val root: MediaItem = result.value!!
-                pushPathStack(root)
-            },
-            ContextCompat.getMainExecutor(this)
-        )
-    }
-
-    private fun pushPathStack(mediaItem: MediaItem) {
-        treePathStack.addLast(mediaItem)
-        displayChildrenList(treePathStack.last())
-    }
-
-
-    private fun displayChildrenList(mediaItem: MediaItem) {
-        val browser = this.browser ?: return
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(treePathStack.size != 1)
-        val childrenFuture =
-            browser.getChildren(
-                mediaItem.mediaId,
-                /* page= */ 0,
-                /* pageSize= */ Int.MAX_VALUE,
-                /* params= */ null
-            )
-
-        subItemMediaList.clear()
-        childrenFuture.addListener(
-            {
-                val result = childrenFuture.get()!!
-                val children = result.value!!
-                subItemMediaList.addAll(children)
-                mediaListAdapter.notifyDataSetChanged()
-            },
-            ContextCompat.getMainExecutor(this)
-        )
-    }
 
 
     protected val serviceConnection: ServiceConnection = object : ServiceConnection {
@@ -212,7 +111,7 @@ open class BaseMainActivity : AppCompatActivity() {
             serviceBound = true
             statusMediaPlayer = mediaService?.getStatusMediaMplayer() ?: InitStatusMediaPlayer.IDLE
             metadataRadioService = mediaService?.getMetadata()
-            urlRadioService = mediaService?.getPlayingURL() ?: ""
+            viewModel.playingUrl.value = mediaService?.getPlayingURL() ?: ""
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -397,15 +296,12 @@ open class BaseMainActivity : AppCompatActivity() {
                         delay(300)
                         navigateMainFragmentToBadAdvancedFrag()
                     }
-
                 }
-
                 1 -> {
                     val intent =
                         Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.link_on_this_app)))
                     startActivity(intent)
                 }
-
                 2 -> alertDialogExit()
             }
         }
@@ -452,14 +348,13 @@ open class BaseMainActivity : AppCompatActivity() {
             }
 
             toolbarContainer.actionPlay.setOnClickListener {
-                //todo
                 viewModel.statusMediaPlayer.value?.let {
                     buttonPlayAction(it)
                 }
             }
 
             toolbarContainer.actionRefresh.setOnClickListener {
-                playAudio(urlRadioService)
+                playAudio(viewModel.getPlayingUrl())
             }
 
             toolbarContainer.actionHome.setOnClickListener {
@@ -468,13 +363,6 @@ open class BaseMainActivity : AppCompatActivity() {
                         GravityCompat.START
                     )
                     else myDrawerLayout.openDrawer(GravityCompat.START)
-                }
-            }
-
-            toolbarContainer.actionQualityContainer.setOnClickListener {
-                with(binding) {
-
-
                 }
             }
         }
@@ -490,14 +378,6 @@ open class BaseMainActivity : AppCompatActivity() {
                 toolbarContainer.actionRefresh.show()
                 toolbarContainer.refreshProgressbar.invisible()
             }
-
-            if (status == InitStatusMediaPlayer.PLAYING) {
-                slidingPanelPlayer.mainEqualizer.animateBars()
-                toolbarContainer.actionPlay.setImageResource(R.drawable.ic_pause)
-            } else {
-                toolbarContainer.actionPlay.setImageResource(R.drawable.ic_play_filled)
-                slidingPanelPlayer.mainEqualizer.stopBars()
-            }
         }
     }
 
@@ -505,36 +385,13 @@ open class BaseMainActivity : AppCompatActivity() {
         when (statusService) {
             InitStatusMediaPlayer.INIT_COMPLETE -> mediaService?.playMedia()
             InitStatusMediaPlayer.PLAYING -> mediaService?.pauseMedia()
-            InitStatusMediaPlayer.IDLE -> playAudio(urlRadioService)
+            InitStatusMediaPlayer.IDLE -> playAudio(viewModel.getPlayingUrl())
             InitStatusMediaPlayer.INITIALISATION -> {
                 Toast.makeText(this, "Loading", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    //-------------------init Bottom App Bar (PlayerPanel)------------------
-    protected fun initPlayerPanel() {
-        with(binding.slidingPanelPlayer) {
-            fabPlayPause.setOnClickListener {
-                viewModel.statusMediaPlayer.value?.let { buttonPlayAction(it) }
-            }
-            viewModel.statusMediaPlayer.observe(this@BaseMainActivity) {
-                if (it == InitStatusMediaPlayer.PLAYING) {
-                    mainEqualizer.animateBars()
-                    fabPlayPause.setImageResource(android.R.drawable.ic_media_pause)
-                } else {
-                    fabPlayPause.setImageResource(android.R.drawable.ic_media_play)
-                    mainEqualizer.stopBars()
-                }
-            }
-            viewModel.metadataOfPlayer.observe(this@BaseMainActivity) {
-                tvSongAutor.text = it.artist
-                tvSongTrack.text = it.song
-            }
-        }
-    }
-
-    //-------------------init Bottom App Bar (PlayerPanel)------------------
 
     class FolderMediaItemArrayAdapter(
         context: Context,
