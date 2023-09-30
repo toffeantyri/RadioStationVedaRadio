@@ -44,7 +44,7 @@
             tools:ignore="ExportedService" />
 
         <service
-            android:name=".services.player_service.NewService"
+            android:name=".services.player_service.RadioMediaService"
             android:foregroundServiceType="mediaPlayback"
             android:exported="false"
             android:enabled="true"

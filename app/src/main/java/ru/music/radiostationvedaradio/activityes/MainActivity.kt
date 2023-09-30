@@ -14,7 +14,7 @@ import com.google.common.util.concurrent.MoreExecutors
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.databinding.ActivityMainBinding
 import ru.music.radiostationvedaradio.services.InitStatusMediaPlayer
-import ru.music.radiostationvedaradio.services.player_service.NewService
+import ru.music.radiostationvedaradio.services.player_service.RadioMediaService
 import ru.music.radiostationvedaradio.utils.checkPermissionSingle
 import ru.music.radiostationvedaradio.utils.showToast
 import ru.music.radiostationvedaradio.view.adapters.OnFilterClickListener
@@ -56,7 +56,7 @@ class MainActivity : BaseMainActivity(), OnFilterClickListener {
 
     override fun onStart() {
         super.onStart()
-        val sessionToken = SessionToken(this, ComponentName(this, NewService::class.java))
+        val sessionToken = SessionToken(this, ComponentName(this, RadioMediaService::class.java))
         controllerFuture = MediaController.Builder(this, sessionToken).buildAsync()
         controllerFuture?.addListener({
             controllerFuture?.let {

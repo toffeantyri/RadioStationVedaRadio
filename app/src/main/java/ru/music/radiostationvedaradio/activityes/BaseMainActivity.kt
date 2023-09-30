@@ -9,16 +9,12 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.media3.common.MediaItem
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.navigation.NavigationView
@@ -59,13 +55,12 @@ open class BaseMainActivity : AppCompatActivity() {
 
 
     //---------------------- s drawer menu---------------------
-    private lateinit var myDrawerLayout: DrawerLayout
+
+
     private lateinit var mMenuAdapter: ExpandableListAdapterForNavView
-    private lateinit var expandableList: ExpandableListView
     private lateinit var listDataHeader: ArrayList<ExpandedMenuModel>
     private lateinit var listDataChild: HashMap<ExpandedMenuModel, List<String>>
-    private lateinit var parentNavView: NavigationView
-    private lateinit var listView: ListView
+
     private lateinit var adapterListView: BaseAdapter
     private lateinit var listViewData: ArrayList<ListViewItemModel>
     //----------------------e drawer menu---------------------
@@ -76,6 +71,7 @@ open class BaseMainActivity : AppCompatActivity() {
             field = value
             viewModel.statusMediaPlayer.value = value
         }
+
     protected var metadataRadioService: MetadataRadioService? = null
         set(value) {
             field = value
@@ -101,7 +97,6 @@ open class BaseMainActivity : AppCompatActivity() {
             sendBroadcast(broadcastIntent)
         }
     }
-
 
 
     protected val serviceConnection: ServiceConnection = object : ServiceConnection {
@@ -233,28 +228,32 @@ open class BaseMainActivity : AppCompatActivity() {
     }
 
     protected fun initExpandableListInNavView() {
-        myDrawerLayout = findViewById(R.id.drawer_menu)
-        expandableList = findViewById(R.id.exp_list_nav_menu)
-        parentNavView = findViewById(R.id.draw_navView)
-        setupDrawerContent(parentNavView)
-        prepareExpListData()
-        mMenuAdapter =
-            ExpandableListAdapterForNavView(this, listDataHeader, listDataChild, expandableList)
-        expandableList.setAdapter(mMenuAdapter)
-        fun navigateWebFragWithUrlCloseDraver(url: String) {
-            webUrl = url
-            navigateWebFragmentWithUrl(url)
-            myDrawerLayout.closeDrawer(GravityCompat.START)
-        }
-        expandableList.setOnChildClickListener { _, _, groupPosition, childPosition, _ ->
-            if (groupPosition == 0) {
-                when (childPosition) {
-                    0 -> navigateWebFragWithUrlCloseDraver(getString(R.string.veda_radio_site))
-                    1 -> navigateWebFragWithUrlCloseDraver(getString(R.string.torsunov_site))
-                    2 -> navigateWebFragWithUrlCloseDraver(getString(R.string.provedy_site))
-                }
+        with(binding) {
+            setupDrawerContent(drawNavView)
+            prepareExpListData()
+            mMenuAdapter =
+                ExpandableListAdapterForNavView(
+                    this@BaseMainActivity,
+                    listDataHeader,
+                    listDataChild,
+                    expListNavMenu
+                )
+            expListNavMenu.setAdapter(mMenuAdapter)
+            fun navigateWebFragWithUrlCloseDraver(url: String) {
+                webUrl = url
+                navigateWebFragmentWithUrl(url)
+                drawerMenu.closeDrawer(GravityCompat.START)
             }
-            true
+            expListNavMenu.setOnChildClickListener { _, _, groupPosition, childPosition, _ ->
+                if (groupPosition == 0) {
+                    when (childPosition) {
+                        0 -> navigateWebFragWithUrlCloseDraver(getString(R.string.veda_radio_site))
+                        1 -> navigateWebFragWithUrlCloseDraver(getString(R.string.torsunov_site))
+                        2 -> navigateWebFragWithUrlCloseDraver(getString(R.string.provedy_site))
+                    }
+                }
+                true
+            }
         }
     }
 
@@ -284,11 +283,9 @@ open class BaseMainActivity : AppCompatActivity() {
     protected fun initListViewOfNavMenuListener() {
         prepareListViewData()
         adapterListView = ListViewAdapter(listViewData)
-        listView = findViewById(R.id.listview_nav_menu)
-        listView.adapter = adapterListView
+        binding.listviewNavMenu.adapter = adapterListView
 
-
-        listView.setOnItemClickListener { _, _, position, _ ->
+        binding.listviewNavMenu.setOnItemClickListener { _, _, position, _ ->
             when (position) {
                 0 -> {
                     CoroutineScope(Dispatchers.Main).launch {
@@ -297,11 +294,13 @@ open class BaseMainActivity : AppCompatActivity() {
                         navigateMainFragmentToBadAdvancedFrag()
                     }
                 }
+
                 1 -> {
                     val intent =
                         Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.link_on_this_app)))
                     startActivity(intent)
                 }
+
                 2 -> alertDialogExit()
             }
         }
@@ -309,7 +308,7 @@ open class BaseMainActivity : AppCompatActivity() {
     }
 
     private fun prepareListViewData() {
-        listViewData = arrayListOf<ListViewItemModel>()
+        listViewData = arrayListOf()
 
         val badAdvice = ListViewItemModel().apply {
             setTitle(getString(R.string.bad_advice_header_name))
@@ -332,7 +331,7 @@ open class BaseMainActivity : AppCompatActivity() {
     private fun setupDrawerContent(navigationView: NavigationView) {
         navigationView.setNavigationItemSelectedListener { item ->
             item.isChecked = true
-            myDrawerLayout.closeDrawers()
+            binding.drawerMenu.closeDrawers()
             true
         }
     }
@@ -359,10 +358,10 @@ open class BaseMainActivity : AppCompatActivity() {
 
             toolbarContainer.actionHome.setOnClickListener {
                 CoroutineScope(Dispatchers.Main).launch {
-                    if (myDrawerLayout.isDrawerOpen(GravityCompat.START)) myDrawerLayout.closeDrawer(
+                    if (binding.drawerMenu.isDrawerOpen(GravityCompat.START)) binding.drawerMenu.closeDrawer(
                         GravityCompat.START
                     )
-                    else myDrawerLayout.openDrawer(GravityCompat.START)
+                    else binding.drawerMenu.openDrawer(GravityCompat.START)
                 }
             }
         }
@@ -392,21 +391,4 @@ open class BaseMainActivity : AppCompatActivity() {
         }
     }
 
-
-    class FolderMediaItemArrayAdapter(
-        context: Context,
-        viewID: Int,
-        mediaItemList: List<MediaItem>
-    ) : ArrayAdapter<MediaItem>(context, viewID, mediaItemList) {
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-            val mediaItem = getItem(position)!!
-            val returnConvertView =
-                convertView ?: LayoutInflater.from(context)
-                    .inflate(R.layout.folder_items, parent, false)
-
-            returnConvertView.findViewById<TextView>(R.id.media_item).text =
-                mediaItem.mediaMetadata.title
-            return returnConvertView
-        }
-    }
 }

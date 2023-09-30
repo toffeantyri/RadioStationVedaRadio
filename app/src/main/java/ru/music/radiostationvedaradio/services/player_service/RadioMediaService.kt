@@ -14,7 +14,7 @@ import ru.music.radiostationvedaradio.activityes.MainActivity
 import ru.music.radiostationvedaradio.services.LOG_TAG
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
-class NewService : MediaSessionService(), MediaSession.Callback {
+class RadioMediaService : MediaSessionService(), MediaSession.Callback {
 
     private var mediaSession: MediaSession? = null
     private lateinit var player: Player

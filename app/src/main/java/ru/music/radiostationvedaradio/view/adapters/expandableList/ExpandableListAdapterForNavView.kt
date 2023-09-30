@@ -1,8 +1,6 @@
 package ru.music.radiostationvedaradio.view.adapters.expandableList
 
 import android.content.Context
-import android.graphics.Typeface
-import android.graphics.fonts.FontFamily
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,10 +12,10 @@ import ru.music.radiostationvedaradio.R
 
 class ExpandableListAdapterForNavView() : BaseExpandableListAdapter() {
 
-    lateinit var context0: Context
-    lateinit var listDataHeader: ArrayList<ExpandedMenuModel>
-    lateinit var listDataChild: HashMap<ExpandedMenuModel, List<String>>
-    lateinit var expandList: ExpandableListView
+    private lateinit var context: Context
+    private lateinit var listDataHeader: ArrayList<ExpandedMenuModel>
+    private lateinit var listDataChild: HashMap<ExpandedMenuModel, List<String>>
+    private lateinit var expandList: ExpandableListView
 
     constructor(
         context: Context,
@@ -25,7 +23,7 @@ class ExpandableListAdapterForNavView() : BaseExpandableListAdapter() {
         listDataChild: HashMap<ExpandedMenuModel, List<String>>,
         view: ExpandableListView
     ) : this() {
-        this.context0 = context
+        this.context = context
         this.listDataHeader = listDataHeader
         this.listDataChild = listDataChild
         this.expandList = view
@@ -65,7 +63,7 @@ class ExpandableListAdapterForNavView() : BaseExpandableListAdapter() {
         var convertView0 : View? = convertView
         if (convertView0 == null) {
             val inflater: LayoutInflater =
-                this.context0.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+                this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             convertView0 = inflater.inflate(R.layout.ex_list_item_header, null)
         }
         val headerText : TextView? = convertView0?.findViewById<TextView>(R.id.tv_listitemheader)
@@ -89,7 +87,8 @@ class ExpandableListAdapterForNavView() : BaseExpandableListAdapter() {
         var convertView0 = convertView
 
         if(convertView0 == null){
-            val inflater = this.context0.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val inflater =
+                this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             convertView0 = inflater.inflate(R.layout.ex_list_item_submenu, null)
         }
 
