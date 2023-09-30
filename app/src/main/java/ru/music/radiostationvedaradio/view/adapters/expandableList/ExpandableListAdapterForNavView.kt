@@ -8,11 +8,13 @@ import android.widget.BaseExpandableListAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import ru.music.radiostationvedaradio.R
+import ru.music.radiostationvedaradio.data.models.menus.ExpandableChildItem
+import ru.music.radiostationvedaradio.data.models.menus.ExpandableMenuItem
 
 class ExpandableListAdapterForNavView(
     private val context: Context,
-    private val listDataHeader: ArrayList<ExpandedMenuItem>,
-    private val listDataChild: HashMap<ExpandedMenuItem, List<String>>
+    private val listDataHeader: ArrayList<ExpandableMenuItem>,
+    private val listDataChild: HashMap<ExpandableMenuItem, List<ExpandableChildItem>>
 ) : BaseExpandableListAdapter() {
 
     override fun getGroupCount(): Int = listDataHeader.size
@@ -27,11 +29,13 @@ class ExpandableListAdapterForNavView(
     }
 
 
-    override fun getGroup(groupPosition: Int): ExpandedMenuItem = listDataHeader[groupPosition]
+    override fun getGroup(groupPosition: Int): ExpandableMenuItem = listDataHeader[groupPosition]
 
 
     override fun getChild(groupPosition: Int, childPosition: Int): String? {
-        return this.listDataChild[this.listDataHeader[groupPosition]]?.get(childPosition)
+        val key = listDataHeader[groupPosition]
+        val child = listDataChild[key]
+        return child?.get(childPosition)?.linkName?.let { context.getString(it) }
     }
 
     override fun getGroupId(groupPosition: Int): Long = groupPosition.toLong()
@@ -44,7 +48,7 @@ class ExpandableListAdapterForNavView(
 
 
     override fun getGroupView(groupPosition: Int, isExpanded: Boolean, convertView: View?, parent: ViewGroup?): View {
-        val headerTitle: ExpandedMenuItem = getGroup(groupPosition)
+        val headerTitle: ExpandableMenuItem = getGroup(groupPosition)
         var convertView0: View? = convertView
         if (convertView0 == null) {
             val inflater: LayoutInflater =

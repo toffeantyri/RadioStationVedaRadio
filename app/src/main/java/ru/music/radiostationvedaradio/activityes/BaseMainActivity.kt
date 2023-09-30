@@ -12,7 +12,6 @@ import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.navigation.NavigationView
@@ -25,19 +24,18 @@ import com.yandex.mobile.ads.common.ImpressionData
 import kotlinx.coroutines.*
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.busines.model.MetadataRadioService
+import ru.music.radiostationvedaradio.data.models.menus.ExpandableChildItem
+import ru.music.radiostationvedaradio.data.models.menus.ExpandableMenuItem
+import ru.music.radiostationvedaradio.data.models.menus.SimpleMenuItem
 import ru.music.radiostationvedaradio.databinding.ActivityMainBinding
 import ru.music.radiostationvedaradio.screens.TAG_WEB_URL
 import ru.music.radiostationvedaradio.services.*
 import ru.music.radiostationvedaradio.utils.AUTHOR
 import ru.music.radiostationvedaradio.utils.SONG_NAME
 import ru.music.radiostationvedaradio.utils.exitDialog
-import ru.music.radiostationvedaradio.utils.invisible
 import ru.music.radiostationvedaradio.utils.myLog
-import ru.music.radiostationvedaradio.utils.show
 import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandableListAdapterForNavView
-import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandedMenuItem
 import ru.music.radiostationvedaradio.view.adapters.listview.ListViewAdapter
-import ru.music.radiostationvedaradio.view.adapters.listview.MenuItem
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 
@@ -53,40 +51,42 @@ open class BaseMainActivity : AppCompatActivity() {
     var webUrl: String? = "" // url для WebFragment public для webFragment
 
 
-    //---------------------- s drawer menu---------------------
-
-
     private val mMenuAdapter: ExpandableListAdapterForNavView by lazy {
         ExpandableListAdapterForNavView(this, listDataHeader, listDataChild)
     }
 
-    private val listDataHeader: ArrayList<ExpandedMenuItem> by lazy {
-        arrayListOf(ExpandedMenuItem(getString(R.string.link_header_name), R.drawable.ic_bookmark))
+    private val listDataHeader: ArrayList<ExpandableMenuItem> by lazy {
+        arrayListOf(
+            ExpandableMenuItem(
+                getString(R.string.link_header_name),
+                R.drawable.ic_bookmark
+            )
+        )
     }
-    private val listDataChild: HashMap<ExpandedMenuItem, List<String>> by lazy {
+    private val listDataChild: HashMap<ExpandableMenuItem, List<ExpandableChildItem>> by lazy {
         hashMapOf(
             Pair(
                 listDataHeader[0],
                 listOf(
-                    getString(R.string.name_veda_radio_site),
-                    getString(R.string.name_torsunov_site),
-                    getString(R.string.name_provedy_site)
+                    ExpandableChildItem(R.string.name_veda_radio_site, R.string.veda_radio_site),
+                    ExpandableChildItem(R.string.name_torsunov_site, R.string.torsunov_site),
+                    ExpandableChildItem(R.string.name_provedy_site, R.string.provedy_site)
                 )
             )
         )
     }
 
-    private val listViewData: ArrayList<MenuItem> by lazy {
+    private val listViewData: ArrayList<SimpleMenuItem> by lazy {
         arrayListOf(
-            MenuItem(getString(R.string.bad_advice_header_name), R.drawable.ic_note),
-            MenuItem(getString(R.string.item_about_app), R.drawable.ic_star_rate),
-            MenuItem(getString(R.string.item_exit), R.drawable.ic_exit)
+            SimpleMenuItem(getString(R.string.bad_advice_header_name), R.drawable.ic_note),
+            SimpleMenuItem(getString(R.string.item_about_app), R.drawable.ic_star_rate),
+            SimpleMenuItem(getString(R.string.item_exit), R.drawable.ic_exit)
         )
     }
     private val adapterListView: BaseAdapter by lazy {
         ListViewAdapter(listViewData)
     }
-    //----------------------e drawer menu---------------------
+
 
     //----------------------------s service----------------------------------------------------------------------
     protected var statusMediaPlayer = InitStatusMediaPlayer.IDLE
@@ -229,18 +229,14 @@ open class BaseMainActivity : AppCompatActivity() {
         with(binding) {
             setupDrawerContent(drawNavView)
             expListNavMenu.setAdapter(mMenuAdapter)
-            fun navigateWebFragWithUrlCloseDraver(url: String) {
-                webUrl = url
-                navigateWebFragmentWithUrl(url)
-                drawerMenu.closeDrawer(GravityCompat.START)
-            }
             expListNavMenu.setOnChildClickListener { _, _, groupPosition, childPosition, _ ->
-                if (groupPosition == 0) {
-                    when (childPosition) {
-                        0 -> navigateWebFragWithUrlCloseDraver(getString(R.string.veda_radio_site))
-                        1 -> navigateWebFragWithUrlCloseDraver(getString(R.string.torsunov_site))
-                        2 -> navigateWebFragWithUrlCloseDraver(getString(R.string.provedy_site))
-                    }
+                val key = listDataHeader[groupPosition]
+                val list = listDataChild[key]
+                list?.get(childPosition)?.let {
+                    val newUrl = getString(it.linkUrl)
+                    webUrl = newUrl
+                    navigateWebFragmentWithUrl(newUrl)
+                    drawerMenu.closeDrawer(GravityCompat.START)
                 }
                 true
             }
@@ -249,14 +245,12 @@ open class BaseMainActivity : AppCompatActivity() {
 
 
     protected fun initListViewOfNavMenuListener() {
-
         binding.listviewNavMenu.adapter = adapterListView
-
         binding.listviewNavMenu.setOnItemClickListener { _, _, position, _ ->
             when (position) {
                 0 -> {
                     CoroutineScope(Dispatchers.Main).launch {
-                        findViewById<DrawerLayout>(R.id.drawer_menu).closeDrawer(GravityCompat.START)
+                        binding.drawerMenu.closeDrawer(GravityCompat.START)
                         delay(300)
                         navigateMainFragmentToBadAdvancedFrag()
                     }
@@ -281,26 +275,8 @@ open class BaseMainActivity : AppCompatActivity() {
         }
     }
 
-    //---------------------initNavigationView end--------------------------------
-
-
-    //---------------------initToolbar--------------------------------
     protected fun initToolbar() {
         with(binding) {
-            viewModel.statusMediaPlayer.observe(this@BaseMainActivity) {
-                setViewByStatusMediaPlayer(it)
-            }
-
-            toolbarContainer.actionPlay.setOnClickListener {
-                viewModel.statusMediaPlayer.value?.let {
-                    buttonPlayAction(it)
-                }
-            }
-
-            toolbarContainer.actionRefresh.setOnClickListener {
-                playAudio(viewModel.getPlayingUrl())
-            }
-
             toolbarContainer.actionHome.setOnClickListener {
                 CoroutineScope(Dispatchers.Main).launch {
                     if (binding.drawerMenu.isDrawerOpen(GravityCompat.START)) binding.drawerMenu.closeDrawer(
@@ -312,28 +288,5 @@ open class BaseMainActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun setViewByStatusMediaPlayer(status: InitStatusMediaPlayer) {
-        with(binding) {
-            if (status == InitStatusMediaPlayer.INITIALISATION) {
-                toolbarContainer.actionRefresh.invisible()
-                toolbarContainer.refreshProgressbar.show()
-            } else {
-                toolbarContainer.actionRefresh.show()
-                toolbarContainer.refreshProgressbar.invisible()
-            }
-        }
-    }
-
-    private fun buttonPlayAction(statusService: InitStatusMediaPlayer) {
-        when (statusService) {
-            InitStatusMediaPlayer.INIT_COMPLETE -> mediaService?.playMedia()
-            InitStatusMediaPlayer.PLAYING -> mediaService?.pauseMedia()
-            InitStatusMediaPlayer.IDLE -> playAudio(viewModel.getPlayingUrl())
-            InitStatusMediaPlayer.INITIALISATION -> {
-                Toast.makeText(this, "Loading", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
 
 }
