@@ -7,7 +7,7 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textview.MaterialTextView
 import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.busines.model.antihoro.HoroItemHolder
+import ru.music.radiostationvedaradio.data.model.antihoro.HoroItemHolder
 
 
 class AntiHoroAdapter : RecyclerView.Adapter<AntiHoroAdapter.HoroViewHolder>() {

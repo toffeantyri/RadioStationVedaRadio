@@ -7,9 +7,9 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.busines.api.ApiProvider
-import ru.music.radiostationvedaradio.busines.model.MetadataRadioService
-import ru.music.radiostationvedaradio.busines.repository.MainRepository
+import ru.music.radiostationvedaradio.data.api.ApiProvider
+import ru.music.radiostationvedaradio.data.model.MetadataRadioService
+import ru.music.radiostationvedaradio.data.repository.MainRepository
 import ru.music.radiostationvedaradio.services.InitStatusMediaPlayer
 
 class ViewModelMainActivity(private val application: Application) : AndroidViewModel(application) {

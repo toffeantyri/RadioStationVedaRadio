@@ -6,9 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.music.radiostationvedaradio.busines.api.ApiProvider
-import ru.music.radiostationvedaradio.busines.model.antihoro.HoroItemHolder
-import ru.music.radiostationvedaradio.busines.repository.BadAdviceReposotory
+import ru.music.radiostationvedaradio.data.api.ApiProvider
+import ru.music.radiostationvedaradio.data.model.antihoro.HoroItemHolder
+import ru.music.radiostationvedaradio.data.repository.BadAdviceReposotory
 
 class BadAdviceViewModel(application: Application) : AndroidViewModel(application) {
 

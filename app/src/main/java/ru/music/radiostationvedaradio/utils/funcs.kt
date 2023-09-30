@@ -8,9 +8,9 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import ru.music.radiostationvedaradio.busines.database.room.AntiHoroTodayEntity
-import ru.music.radiostationvedaradio.busines.model.antihoro.HoroItemHolder
-import ru.music.radiostationvedaradio.busines.model.antihoro.HoroscopeModelClasses
+import ru.music.radiostationvedaradio.data.database.room.AntiHoroTodayEntity
+import ru.music.radiostationvedaradio.data.model.antihoro.HoroItemHolder
+import ru.music.radiostationvedaradio.data.model.antihoro.HoroscopeModelClasses
 import java.text.SimpleDateFormat
 import java.util.*
 

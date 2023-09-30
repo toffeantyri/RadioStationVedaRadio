@@ -8,9 +8,9 @@ import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.data.models.menus.SimpleMenuItem
+import ru.music.radiostationvedaradio.data.model.menus.SimpleMenuItem
 
-class ListViewAdapter(list: ArrayList<SimpleMenuItem>) : BaseAdapter() {
+class ListViewAdapter(list: List<SimpleMenuItem>) : BaseAdapter() {
 
     private var mListItems = list
 

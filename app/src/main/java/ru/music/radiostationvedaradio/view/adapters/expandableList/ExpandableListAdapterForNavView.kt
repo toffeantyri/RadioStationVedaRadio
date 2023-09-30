@@ -8,12 +8,12 @@ import android.widget.BaseExpandableListAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.data.models.menus.ExpandableChildItem
-import ru.music.radiostationvedaradio.data.models.menus.ExpandableMenuItem
+import ru.music.radiostationvedaradio.data.model.menus.ExpandableChildItem
+import ru.music.radiostationvedaradio.data.model.menus.ExpandableMenuItem
 
 class ExpandableListAdapterForNavView(
     private val context: Context,
-    private val listDataHeader: ArrayList<ExpandableMenuItem>,
+    private val listDataHeader: List<ExpandableMenuItem>,
     private val listDataChild: HashMap<ExpandableMenuItem, List<ExpandableChildItem>>
 ) : BaseExpandableListAdapter() {
 

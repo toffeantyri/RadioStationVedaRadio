@@ -2,7 +2,6 @@ package ru.music.radiostationvedaradio.activityes
 
 import android.annotation.SuppressLint
 import android.content.*
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
@@ -14,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import com.google.android.material.navigation.NavigationView
 import com.yandex.mobile.ads.banner.BannerAdEventListener
 import com.yandex.mobile.ads.banner.BannerAdSize
 import com.yandex.mobile.ads.banner.BannerAdView
@@ -23,10 +21,10 @@ import com.yandex.mobile.ads.common.AdRequestError
 import com.yandex.mobile.ads.common.ImpressionData
 import kotlinx.coroutines.*
 import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.busines.model.MetadataRadioService
-import ru.music.radiostationvedaradio.data.models.menus.ExpandableChildItem
-import ru.music.radiostationvedaradio.data.models.menus.ExpandableMenuItem
-import ru.music.radiostationvedaradio.data.models.menus.SimpleMenuItem
+import ru.music.radiostationvedaradio.data.model.MetadataRadioService
+import ru.music.radiostationvedaradio.data.model.menus.ExpandableChildItem
+import ru.music.radiostationvedaradio.data.model.menus.ExpandableMenuItem
+import ru.music.radiostationvedaradio.data.model.menus.SimpleMenuItem
 import ru.music.radiostationvedaradio.databinding.ActivityMainBinding
 import ru.music.radiostationvedaradio.screens.TAG_WEB_URL
 import ru.music.radiostationvedaradio.services.*
@@ -34,6 +32,7 @@ import ru.music.radiostationvedaradio.utils.AUTHOR
 import ru.music.radiostationvedaradio.utils.SONG_NAME
 import ru.music.radiostationvedaradio.utils.exitDialog
 import ru.music.radiostationvedaradio.utils.myLog
+import ru.music.radiostationvedaradio.utils.openIntentUrl
 import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandableListAdapterForNavView
 import ru.music.radiostationvedaradio.view.adapters.listview.ListViewAdapter
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
@@ -55,8 +54,8 @@ open class BaseMainActivity : AppCompatActivity() {
         ExpandableListAdapterForNavView(this, listDataHeader, listDataChild)
     }
 
-    private val listDataHeader: ArrayList<ExpandableMenuItem> by lazy {
-        arrayListOf(
+    private val listDataHeader: List<ExpandableMenuItem> by lazy {
+        listOf(
             ExpandableMenuItem(
                 getString(R.string.link_header_name),
                 R.drawable.ic_bookmark
@@ -76,8 +75,8 @@ open class BaseMainActivity : AppCompatActivity() {
         )
     }
 
-    private val listViewData: ArrayList<SimpleMenuItem> by lazy {
-        arrayListOf(
+    private val listViewData: List<SimpleMenuItem> by lazy {
+        listOf(
             SimpleMenuItem(getString(R.string.bad_advice_header_name), R.drawable.ic_note),
             SimpleMenuItem(getString(R.string.item_about_app), R.drawable.ic_star_rate),
             SimpleMenuItem(getString(R.string.item_exit), R.drawable.ic_exit)
@@ -221,13 +220,14 @@ open class BaseMainActivity : AppCompatActivity() {
         findNavController(R.id.main_nav_host_fragment).navigate(R.id.webViewFragment, bundle)
     }
 
-    private fun navigateMainFragmentToBadAdvancedFrag() {
-        findNavController(R.id.main_nav_host_fragment).navigate(R.id.badAdviceFragment)
-    }
-
     protected fun initExpandableListInNavView() {
         with(binding) {
-            setupDrawerContent(drawNavView)
+            drawNavView.setNavigationItemSelectedListener { item ->
+                item.isChecked = true
+                binding.drawerMenu.closeDrawers()
+                true
+            }
+
             expListNavMenu.setAdapter(mMenuAdapter)
             expListNavMenu.setOnChildClickListener { _, _, groupPosition, childPosition, _ ->
                 val key = listDataHeader[groupPosition]
@@ -249,29 +249,15 @@ open class BaseMainActivity : AppCompatActivity() {
         binding.listviewNavMenu.setOnItemClickListener { _, _, position, _ ->
             when (position) {
                 0 -> {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        binding.drawerMenu.closeDrawer(GravityCompat.START)
-                        delay(300)
-                        navigateMainFragmentToBadAdvancedFrag()
-                    }
+                    binding.drawerMenu.closeDrawer(GravityCompat.START)
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        findNavController(R.id.main_nav_host_fragment).navigate(R.id.badAdviceFragment)
+                    }, 300)
                 }
 
-                1 -> {
-                    val intent =
-                        Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.link_on_this_app)))
-                    startActivity(intent)
-                }
-
+                1 -> this.openIntentUrl(getString(R.string.link_on_this_app))
                 2 -> this.exitDialog(onFullExit = {})
             }
-        }
-    }
-
-    private fun setupDrawerContent(navigationView: NavigationView) {
-        navigationView.setNavigationItemSelectedListener { item ->
-            item.isChecked = true
-            binding.drawerMenu.closeDrawers()
-            true
         }
     }
 
