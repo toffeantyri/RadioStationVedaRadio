@@ -5,30 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
-import android.widget.ExpandableListView
 import android.widget.ImageView
 import android.widget.TextView
 import ru.music.radiostationvedaradio.R
 
-class ExpandableListAdapterForNavView() : BaseExpandableListAdapter() {
-
-    private lateinit var context: Context
-    private lateinit var listDataHeader: ArrayList<ExpandedMenuModel>
-    private lateinit var listDataChild: HashMap<ExpandedMenuModel, List<String>>
-    private lateinit var expandList: ExpandableListView
-
-    constructor(
-        context: Context,
-        listDataHeader: ArrayList<ExpandedMenuModel>,
-        listDataChild: HashMap<ExpandedMenuModel, List<String>>,
-        view: ExpandableListView
-    ) : this() {
-        this.context = context
-        this.listDataHeader = listDataHeader
-        this.listDataChild = listDataChild
-        this.expandList = view
-    }
-
+class ExpandableListAdapterForNavView(
+    private val context: Context,
+    private val listDataHeader: ArrayList<ExpandedMenuItem>,
+    private val listDataChild: HashMap<ExpandedMenuItem, List<String>>
+) : BaseExpandableListAdapter() {
 
     override fun getGroupCount(): Int = listDataHeader.size
 
@@ -42,7 +27,7 @@ class ExpandableListAdapterForNavView() : BaseExpandableListAdapter() {
     }
 
 
-    override fun getGroup(groupPosition: Int): ExpandedMenuModel = listDataHeader[groupPosition]
+    override fun getGroup(groupPosition: Int): ExpandedMenuItem = listDataHeader[groupPosition]
 
 
     override fun getChild(groupPosition: Int, childPosition: Int): String? {
@@ -59,8 +44,8 @@ class ExpandableListAdapterForNavView() : BaseExpandableListAdapter() {
 
 
     override fun getGroupView(groupPosition: Int, isExpanded: Boolean, convertView: View?, parent: ViewGroup?): View {
-        val headerTitle: ExpandedMenuModel = getGroup(groupPosition)
-        var convertView0 : View? = convertView
+        val headerTitle: ExpandedMenuItem = getGroup(groupPosition)
+        var convertView0: View? = convertView
         if (convertView0 == null) {
             val inflater: LayoutInflater =
                 this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -70,9 +55,9 @@ class ExpandableListAdapterForNavView() : BaseExpandableListAdapter() {
         val headerIcon : ImageView? = convertView0?.findViewById<ImageView>(R.id.iv_listitemheader)
 
         headerText?.apply {
-            text = headerTitle.getIconName()
+            text = headerTitle.iconName
         }
-        headerIcon?.setImageResource(headerTitle.getIconImage())
+        headerIcon?.setImageResource(headerTitle.iconImageId)
         return convertView0!!
     }
 

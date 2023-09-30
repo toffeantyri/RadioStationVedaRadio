@@ -36,9 +36,9 @@ import ru.music.radiostationvedaradio.utils.invisible
 import ru.music.radiostationvedaradio.utils.myLog
 import ru.music.radiostationvedaradio.utils.show
 import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandableListAdapterForNavView
-import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandedMenuModel
+import ru.music.radiostationvedaradio.view.adapters.expandableList.ExpandedMenuItem
 import ru.music.radiostationvedaradio.view.adapters.listview.ListViewAdapter
-import ru.music.radiostationvedaradio.view.adapters.listview.ListViewItemModel
+import ru.music.radiostationvedaradio.view.adapters.listview.MenuItem
 import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 
@@ -57,12 +57,36 @@ open class BaseMainActivity : AppCompatActivity() {
     //---------------------- s drawer menu---------------------
 
 
-    private lateinit var mMenuAdapter: ExpandableListAdapterForNavView
-    private lateinit var listDataHeader: ArrayList<ExpandedMenuModel>
-    private lateinit var listDataChild: HashMap<ExpandedMenuModel, List<String>>
+    private val mMenuAdapter: ExpandableListAdapterForNavView by lazy {
+        ExpandableListAdapterForNavView(this, listDataHeader, listDataChild)
+    }
 
-    private lateinit var adapterListView: BaseAdapter
-    private lateinit var listViewData: ArrayList<ListViewItemModel>
+    private val listDataHeader: ArrayList<ExpandedMenuItem> by lazy {
+        arrayListOf(ExpandedMenuItem(getString(R.string.link_header_name), R.drawable.ic_bookmark))
+    }
+    private val listDataChild: HashMap<ExpandedMenuItem, List<String>> by lazy {
+        hashMapOf(
+            Pair(
+                listDataHeader[0],
+                listOf(
+                    getString(R.string.name_veda_radio_site),
+                    getString(R.string.name_torsunov_site),
+                    getString(R.string.name_provedy_site)
+                )
+            )
+        )
+    }
+
+    private val listViewData: ArrayList<MenuItem> by lazy {
+        arrayListOf(
+            MenuItem(getString(R.string.bad_advice_header_name), R.drawable.ic_note),
+            MenuItem(getString(R.string.item_about_app), R.drawable.ic_star_rate),
+            MenuItem(getString(R.string.item_exit), R.drawable.ic_exit)
+        )
+    }
+    private val adapterListView: BaseAdapter by lazy {
+        ListViewAdapter(listViewData)
+    }
     //----------------------e drawer menu---------------------
 
     //----------------------------s service----------------------------------------------------------------------
@@ -230,14 +254,6 @@ open class BaseMainActivity : AppCompatActivity() {
     protected fun initExpandableListInNavView() {
         with(binding) {
             setupDrawerContent(drawNavView)
-            prepareExpListData()
-            mMenuAdapter =
-                ExpandableListAdapterForNavView(
-                    this@BaseMainActivity,
-                    listDataHeader,
-                    listDataChild,
-                    expListNavMenu
-                )
             expListNavMenu.setAdapter(mMenuAdapter)
             fun navigateWebFragWithUrlCloseDraver(url: String) {
                 webUrl = url
@@ -257,32 +273,9 @@ open class BaseMainActivity : AppCompatActivity() {
         }
     }
 
-    private fun prepareExpListData() {
-        listDataHeader = arrayListOf()
-        listDataChild = HashMap<ExpandedMenuModel, List<String>>()
-
-        //headers
-        val headerItem0 = ExpandedMenuModel().apply {
-            setIconName(getString(R.string.link_header_name))
-            setIconImage(R.drawable.ic_bookmark)
-        }
-        listDataHeader.add(headerItem0)
-
-        //subitems
-        val subItem0 = arrayListOf<String>()
-        subItem0.apply {
-            add(getString(R.string.name_veda_radio_site))
-            add(getString(R.string.name_torsunov_site))
-            add(getString(R.string.name_provedy_site))
-        }
-
-        listDataChild[listDataHeader[0]] = subItem0
-    }
-
 
     protected fun initListViewOfNavMenuListener() {
-        prepareListViewData()
-        adapterListView = ListViewAdapter(listViewData)
+
         binding.listviewNavMenu.adapter = adapterListView
 
         binding.listviewNavMenu.setOnItemClickListener { _, _, position, _ ->
@@ -304,28 +297,6 @@ open class BaseMainActivity : AppCompatActivity() {
                 2 -> alertDialogExit()
             }
         }
-
-    }
-
-    private fun prepareListViewData() {
-        listViewData = arrayListOf()
-
-        val badAdvice = ListViewItemModel().apply {
-            setTitle(getString(R.string.bad_advice_header_name))
-            setIconId(R.drawable.ic_note)
-        }
-
-        val rate = ListViewItemModel().apply {
-            setTitle(getString(R.string.item_about_app))
-            setIconId(R.drawable.ic_star_rate)
-        }
-        val exit = ListViewItemModel().apply {
-            setTitle(getString(R.string.item_exit))
-            setIconId(R.drawable.ic_exit)
-        }
-        listViewData.add(badAdvice)
-        listViewData.add(rate)
-        listViewData.add(exit)
     }
 
     private fun setupDrawerContent(navigationView: NavigationView) {
