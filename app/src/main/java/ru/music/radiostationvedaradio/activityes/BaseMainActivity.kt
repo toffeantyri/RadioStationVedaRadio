@@ -1,7 +1,6 @@
 package ru.music.radiostationvedaradio.activityes
 
 import android.annotation.SuppressLint
-import android.app.Service
 import android.content.*
 import android.net.Uri
 import android.os.Bundle
@@ -11,7 +10,6 @@ import android.os.Looper
 import android.util.Log
 import android.widget.*
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -32,6 +30,7 @@ import ru.music.radiostationvedaradio.screens.TAG_WEB_URL
 import ru.music.radiostationvedaradio.services.*
 import ru.music.radiostationvedaradio.utils.AUTHOR
 import ru.music.radiostationvedaradio.utils.SONG_NAME
+import ru.music.radiostationvedaradio.utils.exitDialog
 import ru.music.radiostationvedaradio.utils.invisible
 import ru.music.radiostationvedaradio.utils.myLog
 import ru.music.radiostationvedaradio.utils.show
@@ -209,34 +208,9 @@ open class BaseMainActivity : AppCompatActivity() {
         doubleBackPress = true
         val handler = Handler(Looper.getMainLooper())
         handler.postDelayed({ doubleBackPress = false }, 2000)
-        alertDialogExit()
+        this.exitDialog(onFullExit = {})
     }
 
-    private fun alertDialogExit() {
-        val aDialog = AlertDialog.Builder(this)
-        aDialog.apply {
-            setMessage(R.string.alert_mes_exit)
-                .setCancelable(true)
-                .setPositiveButton(
-                    R.string.alert_mes_yes_all
-                ) { _, _ ->
-                    mediaService?.stopForeground(Service.STOP_FOREGROUND_DETACH)
-                    mediaService?.stopSelf()
-                    finish()
-                }
-        }
-        aDialog.setNegativeButton(
-            R.string.alert_mes_yes
-        ) { _, _ ->
-            finish()
-        }
-        aDialog.setNeutralButton(
-            R.string.alert_mes_no
-        ) { dialog, _ -> dialog.cancel() }
-        val alert = aDialog.create()
-        alert.show()
-
-    }
     // ----------------------------------------- other init ------------------------------------------
 
     //---------------------initNavigationView start--------------------------------
@@ -294,7 +268,7 @@ open class BaseMainActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
 
-                2 -> alertDialogExit()
+                2 -> this.exitDialog(onFullExit = {})
             }
         }
     }
