@@ -1,3 +1,5 @@
+import java.util.*
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -22,7 +24,15 @@ android {
         versionName = "1.1"
     }
 
+
+
     buildTypes {
+        android.buildFeatures.buildConfig = true
+
+        val myProperties = Properties().apply {
+            load(file("prop_all.properties").inputStream())
+        }
+
         getByName("release") {
             isMinifyEnabled = false
             isShrinkResources = false
@@ -30,9 +40,13 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            val bannerID = myProperties.getProperty("YANDEX_BANNER_ID") as String
+            buildConfigField("String", "YANDEX_BANNER_ID", bannerID)
         }
         getByName("debug") {
             versionNameSuffix = ".debug"
+            val bannerID = myProperties.getProperty("YANDEX_BANNER_ID_TEST") as String
+            buildConfigField("String", "YANDEX_BANNER_ID", bannerID)
         }
     }
 

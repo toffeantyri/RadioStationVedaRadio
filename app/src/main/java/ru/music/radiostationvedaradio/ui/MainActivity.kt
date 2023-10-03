@@ -30,6 +30,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import ru.music.radiostationvedaradio.BuildConfig
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.data.model.menus.ExpandableChildItem
 import ru.music.radiostationvedaradio.data.model.menus.ExpandableMenuItem
@@ -225,7 +226,8 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
     private fun loadAndShowBanner() {
         with(binding) {
             mainBanner.apply {
-                setAdUnitId(getString(R.string.yandex_banner_desc_id_test))
+                val bannerId: String = BuildConfig.YANDEX_BANNER_ID
+                setAdUnitId(bannerId)
                 setAdSize(BannerAdSize.inlineSize(context, 320, 50))
             }
             val adRequest = AdRequest.Builder().build()
