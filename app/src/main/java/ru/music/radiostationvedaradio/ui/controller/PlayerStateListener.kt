@@ -1,35 +1,18 @@
 package ru.music.radiostationvedaradio.ui.controller
 
 import android.media.session.PlaybackState
-import android.net.Uri
 import android.util.Log
-import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import kotlinx.coroutines.flow.MutableStateFlow
-import ru.music.radiostationvedaradio.services.LOG_TAG
+import ru.music.radiostationvedaradio.utils.LOG_TAG
 
-class PlayController(
+class PlayerStateListener(
     private val controller: MediaController
 ) : Player.Listener {
 
     val playStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(controller.isPlaying)
-    private var url: String = ""
-    fun pushUrl(urlStream: String) {
-        if (urlStream != url) {
-            url = urlStream
-            controller.apply {
-                val uri = Uri.parse(urlStream)
-                val newItem = MediaItem.Builder().setMediaId(urlStream).setUri(uri).build()
-                setMediaItem(newItem)
-                prepare()
-                controller.playWhenReady = true
-            }
-        }
-    }
-
-
 
     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
         Log.d(LOG_TAG, "onMediaMetadataChanged ${mediaMetadata.title}")

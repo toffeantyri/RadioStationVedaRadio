@@ -11,6 +11,7 @@ import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import com.google.common.util.concurrent.ListenableFuture
 import ru.music.radiostationvedaradio.ui.MainActivity
+import ru.music.radiostationvedaradio.utils.LOG_TAG
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class RadioMediaService : MediaSessionService(), MediaSession.Callback {

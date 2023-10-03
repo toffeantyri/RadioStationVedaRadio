@@ -37,7 +37,7 @@ fun View.invisible() {
 }
 
 fun myLog(message: String) {
-    Log.d(TAG, message)
+    Log.d(LOG_TAG, message)
 }
 
 fun myLogNet(message: String) {

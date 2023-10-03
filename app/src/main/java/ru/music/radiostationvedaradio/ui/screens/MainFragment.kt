@@ -14,14 +14,14 @@ import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.databinding.FragmentMainBinding
 import ru.music.radiostationvedaradio.ui.MainActivity
 import ru.music.radiostationvedaradio.ui.viewmodel.ViewModelMainActivity
-import ru.music.radiostationvedaradio.utils.TAG
+import ru.music.radiostationvedaradio.utils.LOG_TAG
 import ru.music.radiostationvedaradio.utils.myLog
 
 class MainFragment : Fragment() {
 
     private val mViewModel: ViewModelMainActivity by activityViewModels()
-    lateinit var parentActivity: MainActivity
-    lateinit var binding: FragmentMainBinding
+    private lateinit var parentActivity: MainActivity
+    private lateinit var binding: FragmentMainBinding
 
     override fun onAttach(context: Context) {
         myLog("MainFragment onAttach")
@@ -60,7 +60,7 @@ class MainFragment : Fragment() {
         try {
             mViewModel.nounText.removeObservers(this)
         } catch (e: UninitializedPropertyAccessException) {
-            Log.d(TAG, "${e.message}")
+            Log.d(LOG_TAG, "${e.message}")
         }
 
         super.onDestroy()

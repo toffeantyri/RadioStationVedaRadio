@@ -3,6 +3,7 @@ package ru.music.radiostationvedaradio.ui
 import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.media.AudioManager
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import androidx.navigation.findNavController
@@ -33,15 +35,15 @@ import ru.music.radiostationvedaradio.data.model.menus.ExpandableChildItem
 import ru.music.radiostationvedaradio.data.model.menus.ExpandableMenuItem
 import ru.music.radiostationvedaradio.data.model.menus.SimpleMenuItem
 import ru.music.radiostationvedaradio.databinding.ActivityMainBinding
-import ru.music.radiostationvedaradio.services.LOG_TAG
 import ru.music.radiostationvedaradio.services.RadioMediaService
 import ru.music.radiostationvedaradio.ui.adapters.OnFilterClickListener
 import ru.music.radiostationvedaradio.ui.adapters.expandableList.ExpandableListAdapterForNavView
 import ru.music.radiostationvedaradio.ui.adapters.filter_adapter.MenuArrayAdapter
 import ru.music.radiostationvedaradio.ui.adapters.listview.ListViewAdapter
-import ru.music.radiostationvedaradio.ui.controller.PlayController
+import ru.music.radiostationvedaradio.ui.controller.PlayerStateListener
 import ru.music.radiostationvedaradio.ui.screens.TAG_WEB_URL
 import ru.music.radiostationvedaradio.ui.viewmodel.ViewModelMainActivity
+import ru.music.radiostationvedaradio.utils.LOG_TAG
 import ru.music.radiostationvedaradio.utils.exitDialog
 import ru.music.radiostationvedaradio.utils.openIntentUrl
 
@@ -60,7 +62,7 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
         )
     }
 
-    private val playerListener by lazy { PlayController(controller) }
+    private val playerListener by lazy { PlayerStateListener(controller) }
 
     private lateinit var binding: ActivityMainBinding
 
@@ -100,12 +102,7 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
 
 
     override fun onItemFilterClick(position: Int) {
-        playerListener.pushUrl(getUrlByPos(position))
-        when (position) {
-            0 -> playerListener.pushUrl(getString(R.string.veda_radio_stream_link_low))
-            1 -> playerListener.pushUrl(getString(R.string.veda_radio_stream_link_medium))
-            2 -> playerListener.pushUrl(getString(R.string.veda_radio_stream_link_high))
-        }
+        pushUrl(getUrlByPos(position))
         qualityAdapter.checkedPosition = position
         qualityAdapter.notifyDataSetChanged()
     }
@@ -116,6 +113,15 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
             1 -> getString(R.string.veda_radio_stream_link_medium)
             2 -> getString(R.string.veda_radio_stream_link_high)
             else -> getString(R.string.veda_radio_stream_link_low)
+        }
+    }
+
+    private fun getPosByUrl(url: String?): Int {
+        return when (url) {
+            getString(R.string.veda_radio_stream_link_low) -> 0
+            getString(R.string.veda_radio_stream_link_medium) -> 1
+            getString(R.string.veda_radio_stream_link_high) -> 2
+            else -> 0
         }
     }
 
@@ -163,8 +169,9 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
                 binding.slidingPanelPlayer.playerView.player = controller
                 controller.addListener(playerListener)
                 collectorPlayerState()
+                initQualityChooser()
                 if (controller.isPlaying.not()) {
-                    playerListener.pushUrl(getUrlByPos(qualityAdapter.checkedPosition))
+                    pushUrl(getUrlByPos(qualityAdapter.checkedPosition))
                 }
             }
         }, MoreExecutors.directExecutor())
@@ -278,7 +285,6 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
     }
 
     private fun initView() {
-        initQualityChooser()
         initMenuList()
         with(binding) {
             toolbarContainer.actionHome.setOnClickListener {
@@ -289,21 +295,33 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
                     else binding.drawerMenu.openDrawer(GravityCompat.START)
                 }
             }
-            toolbarContainer.actionPlay.setOnClickListener {
-
-            }
-
         }
     }
 
 
     private fun initQualityChooser() {
         with(binding.toolbarContainer) {
+            val playingUrl = if (controller.mediaItemCount > 0) {
+                controller.getMediaItemAt(0).mediaId
+            } else {
+                null
+            }
+            qualityAdapter.checkedPosition = getPosByUrl(playingUrl)
             qualityAdapter.setHeaderViewVisibility(false)
             qualityAdapter.setArrowViewVisibility(false)
             qualitySpinner.adapter = qualityAdapter
             qualitySpinner.setOnTouchListener(qualityAdapter.getUserSelectionClickListener())
             qualitySpinner.onItemSelectedListener = qualityAdapter.getUserSelectionClickListener()
+        }
+    }
+
+    private fun pushUrl(urlStream: String) {
+        controller.apply {
+            val uri = Uri.parse(urlStream)
+            val newItem = MediaItem.Builder().setMediaId(urlStream).setUri(uri).build()
+            setMediaItem(newItem)
+            prepare()
+            controller.playWhenReady = true
         }
     }
 
