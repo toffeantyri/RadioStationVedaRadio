@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.viewmodel
+package ru.music.radiostationvedaradio.ui.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

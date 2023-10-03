@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="ru.music.radiostationvedaradio.screens.MainFragment"
+        android:name="ru.music.radiostationvedaradio.ui.screens.MainFragment"
         android:label="fragment_main"
         tools:layout="@layout/fragment_main">
         <action
@@ -26,7 +26,7 @@
     </fragment>
     <fragment
         android:id="@+id/webViewFragment"
-        android:name="ru.music.radiostationvedaradio.screens.WebViewFragment"
+        android:name="ru.music.radiostationvedaradio.ui.screens.WebViewFragment"
         android:label="fragment_web_view"
         tools:layout="@layout/fragment_web_view">
         <action
@@ -39,7 +39,7 @@
     </fragment>
     <fragment
         android:id="@+id/badAdviceFragment"
-        android:name="ru.music.radiostationvedaradio.screens.BadAdviceFragment"
+        android:name="ru.music.radiostationvedaradio.ui.screens.BadAdviceFragment"
         android:label="BadAdviceFragment" >
         <action
             android:id="@+id/action_badAdviceFragment_to_mainFragment"
@@ -51,7 +51,7 @@
     </fragment>
     <fragment
         android:id="@+id/epubReaderFragment"
-        android:name="ru.music.radiostationvedaradio.screens.ReaderListFragment"
+        android:name="ru.music.radiostationvedaradio.ui.screens.ReaderListFragment"
         android:label="epub_reader_fragment"
         tools:layout="@layout/reader_list_fragment" >
         <action
@@ -67,7 +67,7 @@
     </fragment>
     <fragment
         android:id="@+id/viewPagerFragment"
-        android:name="ru.music.radiostationvedaradio.screens.ViewPagerFragment"
+        android:name="ru.music.radiostationvedaradio.ui.screens.ViewPagerFragment"
         android:label="fragment_view_pager"
         tools:layout="@layout/fragment_view_pager" >
         <action

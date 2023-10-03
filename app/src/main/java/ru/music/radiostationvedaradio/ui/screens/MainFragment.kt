@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.screens
+package ru.music.radiostationvedaradio.ui.screens
 
 
 import android.content.Context
@@ -11,11 +11,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.activityes.MainActivity
 import ru.music.radiostationvedaradio.databinding.FragmentMainBinding
+import ru.music.radiostationvedaradio.ui.MainActivity
+import ru.music.radiostationvedaradio.ui.viewmodel.ViewModelMainActivity
 import ru.music.radiostationvedaradio.utils.TAG
 import ru.music.radiostationvedaradio.utils.myLog
-import ru.music.radiostationvedaradio.viewmodel.ViewModelMainActivity
 
 class MainFragment : Fragment() {
 

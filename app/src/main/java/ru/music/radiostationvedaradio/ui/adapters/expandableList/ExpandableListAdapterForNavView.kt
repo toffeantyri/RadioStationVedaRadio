@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.view.adapters.expandableList
+package ru.music.radiostationvedaradio.ui.adapters.expandableList
 
 import android.content.Context
 import android.view.LayoutInflater

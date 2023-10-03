@@ -7,7 +7,7 @@
     android:gravity="center_horizontal"
     android:orientation="vertical"
     tools:background="@color/green_100_alp50"
-    tools:context=".screens.BadAdviceFragment">
+    tools:context=".ui.screens.BadAdviceFragment">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_marginTop="@dimen/card_margin"

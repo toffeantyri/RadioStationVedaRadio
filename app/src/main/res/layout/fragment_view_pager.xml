@@ -4,13 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".screens.ViewPagerFragment">
+    tools:context=".ui.screens.ViewPagerFragment">
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/view_pager_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <Button
         android:layout_width="match_parent"

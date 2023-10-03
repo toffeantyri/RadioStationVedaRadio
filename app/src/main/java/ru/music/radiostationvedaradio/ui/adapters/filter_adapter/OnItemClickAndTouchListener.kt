@@ -1,11 +1,11 @@
-package ru.music.radiostationvedaradio.view.adapters.filter_adapter
+package ru.music.radiostationvedaradio.ui.adapters.filter_adapter
 
 import android.annotation.SuppressLint
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.AdapterView
-import ru.music.radiostationvedaradio.view.adapters.OnFilterClickListener
+import ru.music.radiostationvedaradio.ui.adapters.OnFilterClickListener
 
 class OnItemClickAndTouchListener(private val onFilterClickListener: OnFilterClickListener) :
     AdapterView.OnItemSelectedListener, View.OnTouchListener {

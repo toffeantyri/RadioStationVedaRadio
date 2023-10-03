@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.screens
+package ru.music.radiostationvedaradio.ui.screens
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -13,7 +13,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.activityes.MainActivity
+import ru.music.radiostationvedaradio.ui.MainActivity
 
 
 const val TAG_WEB_URL = "web_url"

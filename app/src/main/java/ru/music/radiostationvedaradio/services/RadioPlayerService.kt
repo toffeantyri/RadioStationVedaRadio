@@ -40,10 +40,10 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.activityes.MainActivity
 import ru.music.radiostationvedaradio.data.api.VedaradioRetrofitApi
 import ru.music.radiostationvedaradio.data.model.MetadataRadioService
 import ru.music.radiostationvedaradio.data.model.metadatavedaradio.StreamVedaradioJSONClass
+import ru.music.radiostationvedaradio.ui.MainActivity
 import ru.music.radiostationvedaradio.utils.AUTHOR
 import ru.music.radiostationvedaradio.utils.SONG_NAME
 

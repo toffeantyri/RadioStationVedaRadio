@@ -37,7 +37,7 @@
 
 
         <service
-            android:name=".services.player_service.RadioMediaService"
+            android:name=".services.RadioMediaService"
             android:foregroundServiceType="mediaPlayback"
             android:exported="false"
             android:enabled="true"
@@ -50,7 +50,7 @@
 
 
         <activity
-            android:name=".activityes.MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.App.Starting"
             android:launchMode="singleTask">

@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.services.player_service
+package ru.music.radiostationvedaradio.services
 
 import android.app.PendingIntent
 import android.content.Intent
@@ -10,8 +10,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import com.google.common.util.concurrent.ListenableFuture
-import ru.music.radiostationvedaradio.activityes.MainActivity
-import ru.music.radiostationvedaradio.services.LOG_TAG
+import ru.music.radiostationvedaradio.ui.MainActivity
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class RadioMediaService : MediaSessionService(), MediaSession.Callback {

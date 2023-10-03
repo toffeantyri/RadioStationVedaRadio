@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.view.adapters
+package ru.music.radiostationvedaradio.ui.adapters
 
 interface OnFilterClickListener {
 

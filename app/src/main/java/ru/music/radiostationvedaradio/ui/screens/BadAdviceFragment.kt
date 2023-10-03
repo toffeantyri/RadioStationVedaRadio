@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.screens
+package ru.music.radiostationvedaradio.ui.screens
 
 import android.os.Bundle
 import android.util.Log
@@ -12,11 +12,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.activityes.MainActivity
 import ru.music.radiostationvedaradio.databinding.BadAdviceFragmentBinding
+import ru.music.radiostationvedaradio.ui.MainActivity
+import ru.music.radiostationvedaradio.ui.adapters.badadvice.AntiHoroAdapter
+import ru.music.radiostationvedaradio.ui.viewmodel.BadAdviceViewModel
 import ru.music.radiostationvedaradio.utils.getTodayDate
-import ru.music.radiostationvedaradio.view.adapters.badadvice.AntiHoroAdapter
-import ru.music.radiostationvedaradio.viewmodel.BadAdviceViewModel
 
 
 class BadAdviceFragment : Fragment() {

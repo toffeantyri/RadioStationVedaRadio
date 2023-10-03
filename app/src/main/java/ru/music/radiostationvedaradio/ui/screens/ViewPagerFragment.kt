@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.screens
+package ru.music.radiostationvedaradio.ui.screens
 
 import androidx.fragment.app.Fragment
 

@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.view.adapters.badadvice
+package ru.music.radiostationvedaradio.ui.adapters.badadvice
 
 import android.view.LayoutInflater
 import android.view.View

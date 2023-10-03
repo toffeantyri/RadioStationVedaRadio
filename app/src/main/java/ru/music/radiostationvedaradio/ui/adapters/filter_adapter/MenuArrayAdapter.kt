@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.view.adapters.filter_adapter
+package ru.music.radiostationvedaradio.ui.adapters.filter_adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,9 +8,9 @@ import android.widget.ArrayAdapter
 import androidx.core.view.isVisible
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.databinding.ChooseQualityItemBinding
+import ru.music.radiostationvedaradio.ui.adapters.OnFilterClickListener
 import ru.music.radiostationvedaradio.utils.hide
 import ru.music.radiostationvedaradio.utils.show
-import ru.music.radiostationvedaradio.view.adapters.OnFilterClickListener
 
 
 class MenuArrayAdapter(
