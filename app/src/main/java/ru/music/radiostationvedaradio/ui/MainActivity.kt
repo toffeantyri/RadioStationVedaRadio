@@ -53,6 +53,8 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
     private var controllerJob: Job? = null
     private var controllerFuture: ListenableFuture<MediaController>? = null
     private lateinit var controller: MediaController
+    private val playerListener by lazy { PlayerStateListener(controller) }
+
 
     private val qualityAdapter by lazy {
         MenuArrayAdapter(
@@ -61,20 +63,13 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
             this
         )
     }
-
-    private val playerListener by lazy { PlayerStateListener(controller) }
-
     private lateinit var binding: ActivityMainBinding
-
     private val viewModel: ViewModelMainActivity by viewModels()
-
     var webUrl: String? = "" // url для WebFragment public для webFragment
-
 
     private val mMenuAdapter: ExpandableListAdapterForNavView by lazy {
         ExpandableListAdapterForNavView(this, listDataHeader, listDataChild)
     }
-
     private val listDataHeader: List<ExpandableMenuItem> by lazy {
         listOf(ExpandableMenuItem(getString(R.string.link_header_name), R.drawable.ic_bookmark))
     }
@@ -90,7 +85,6 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
             )
         )
     }
-
     private val listViewData: List<SimpleMenuItem> by lazy {
         listOf(
             SimpleMenuItem(getString(R.string.bad_advice_header_name), R.drawable.ic_note),
@@ -99,31 +93,6 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
         )
     }
     private val adapterListView: BaseAdapter by lazy { ListViewAdapter(listViewData) }
-
-
-    override fun onItemFilterClick(position: Int) {
-        pushUrl(getUrlByPos(position))
-        qualityAdapter.checkedPosition = position
-        qualityAdapter.notifyDataSetChanged()
-    }
-
-    private fun getUrlByPos(pos: Int): String {
-        return when (pos) {
-            0 -> getString(R.string.veda_radio_stream_link_low)
-            1 -> getString(R.string.veda_radio_stream_link_medium)
-            2 -> getString(R.string.veda_radio_stream_link_high)
-            else -> getString(R.string.veda_radio_stream_link_low)
-        }
-    }
-
-    private fun getPosByUrl(url: String?): Int {
-        return when (url) {
-            getString(R.string.veda_radio_stream_link_low) -> 0
-            getString(R.string.veda_radio_stream_link_medium) -> 1
-            getString(R.string.veda_radio_stream_link_high) -> 2
-            else -> 0
-        }
-    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -196,6 +165,30 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
     override fun onDestroy() {
         binding.mainBanner.destroy()
         super.onDestroy()
+    }
+
+    override fun onItemFilterClick(position: Int) {
+        pushUrl(getUrlByPos(position))
+        qualityAdapter.checkedPosition = position
+        qualityAdapter.notifyDataSetChanged()
+    }
+
+    private fun getUrlByPos(pos: Int): String {
+        return when (pos) {
+            0 -> getString(R.string.veda_radio_stream_link_low)
+            1 -> getString(R.string.veda_radio_stream_link_medium)
+            2 -> getString(R.string.veda_radio_stream_link_high)
+            else -> getString(R.string.veda_radio_stream_link_low)
+        }
+    }
+
+    private fun getPosByUrl(url: String?): Int {
+        return when (url) {
+            getString(R.string.veda_radio_stream_link_low) -> 0
+            getString(R.string.veda_radio_stream_link_medium) -> 1
+            getString(R.string.veda_radio_stream_link_high) -> 2
+            else -> 0
+        }
     }
 
 

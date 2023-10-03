@@ -9,10 +9,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import ru.music.radiostationvedaradio.utils.LOG_TAG
 
 class PlayerStateListener(
-    private val controller: MediaController
+    controller: MediaController
 ) : Player.Listener {
 
-    val playStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(controller.isPlaying)
+    private val _playStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(controller.isPlaying)
+    val playStateFlow: MutableStateFlow<Boolean> get() = _playStateFlow
 
     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
         Log.d(LOG_TAG, "onMediaMetadataChanged ${mediaMetadata.title}")
@@ -20,7 +21,6 @@ class PlayerStateListener(
     }
 
     override fun onPlaybackStateChanged(playbackState: Int) {
-        Log.d(LOG_TAG, "onPlaybackStateChanged $playbackState")
         if (playbackState == PlaybackState.STATE_PAUSED) {
             playStateFlow.tryEmit(false)
         }
@@ -28,7 +28,6 @@ class PlayerStateListener(
     }
 
     override fun onIsPlayingChanged(isPlaying: Boolean) {
-        Log.d(LOG_TAG, "onIsPlayingChanged $isPlaying")
         playStateFlow.tryEmit(isPlaying)
         super.onIsPlayingChanged(isPlaying)
     }
