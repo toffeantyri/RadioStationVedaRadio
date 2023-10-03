@@ -1,10 +1,12 @@
 package ru.music.radiostationvedaradio.ui
 
+import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.media.AudioManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.BaseAdapter
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -24,12 +26,14 @@ import com.yandex.mobile.ads.common.AdRequestError
 import com.yandex.mobile.ads.common.ImpressionData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.music.radiostationvedaradio.R
 import ru.music.radiostationvedaradio.data.model.menus.ExpandableChildItem
 import ru.music.radiostationvedaradio.data.model.menus.ExpandableMenuItem
 import ru.music.radiostationvedaradio.data.model.menus.SimpleMenuItem
 import ru.music.radiostationvedaradio.databinding.ActivityMainBinding
+import ru.music.radiostationvedaradio.services.LOG_TAG
 import ru.music.radiostationvedaradio.services.RadioMediaService
 import ru.music.radiostationvedaradio.ui.adapters.OnFilterClickListener
 import ru.music.radiostationvedaradio.ui.adapters.expandableList.ExpandableListAdapterForNavView
@@ -44,6 +48,7 @@ import ru.music.radiostationvedaradio.utils.openIntentUrl
 
 class MainActivity : AppCompatActivity(), OnFilterClickListener {
 
+    private var controllerJob: Job? = null
     private var controllerFuture: ListenableFuture<MediaController>? = null
     private lateinit var controller: MediaController
 
@@ -55,9 +60,7 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
         )
     }
 
-    private val playerListener by lazy {
-        PlayController(controller)
-    }
+    private val playerListener by lazy { PlayController(controller) }
 
     private lateinit var binding: ActivityMainBinding
 
@@ -71,12 +74,7 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
     }
 
     private val listDataHeader: List<ExpandableMenuItem> by lazy {
-        listOf(
-            ExpandableMenuItem(
-                getString(R.string.link_header_name),
-                R.drawable.ic_bookmark
-            )
-        )
+        listOf(ExpandableMenuItem(getString(R.string.link_header_name), R.drawable.ic_bookmark))
     }
     private val listDataChild: HashMap<ExpandableMenuItem, List<ExpandableChildItem>> by lazy {
         hashMapOf(
@@ -98,9 +96,7 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
             SimpleMenuItem(getString(R.string.item_exit), R.drawable.ic_exit)
         )
     }
-    private val adapterListView: BaseAdapter by lazy {
-        ListViewAdapter(listViewData)
-    }
+    private val adapterListView: BaseAdapter by lazy { ListViewAdapter(listViewData) }
 
 
     override fun onItemFilterClick(position: Int) {
@@ -112,7 +108,6 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
         }
         qualityAdapter.checkedPosition = position
         qualityAdapter.notifyDataSetChanged()
-        playerListener.play()
     }
 
     private fun getUrlByPos(pos: Int): String {
@@ -134,19 +129,23 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
         loadAndShowBanner()
     }
 
+
+    @SuppressLint("RepeatOnLifecycleWrongUsage")
     private fun collectorPlayerState() {
-        lifecycleScope.launch {
+        controllerJob?.cancel()
+        controllerJob = lifecycleScope.launch {
             playerListener.playStateFlow.collect { isPlaying ->
+                Log.d(LOG_TAG, "VIEW COLLECTOR is Play $isPlaying")
                 with(binding) {
                     if (isPlaying) {
                         toolbarContainer.actionPlay.setImageResource(R.drawable.ic_pause)
                         toolbarContainer.actionPlay.setOnClickListener {
-                            playerListener.pause()
+                            controller.pause()
                         }
                     } else {
                         toolbarContainer.actionPlay.setImageResource(R.drawable.ic_play_filled)
                         toolbarContainer.actionPlay.setOnClickListener {
-                            playerListener.play()
+                            controller.play()
                         }
                     }
                 }
@@ -164,7 +163,9 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
                 binding.slidingPanelPlayer.playerView.player = controller
                 controller.addListener(playerListener)
                 collectorPlayerState()
-                playerListener.pushUrl(getUrlByPos(qualityAdapter.checkedPosition))
+                if (controller.isPlaying.not()) {
+                    playerListener.pushUrl(getUrlByPos(qualityAdapter.checkedPosition))
+                }
             }
         }, MoreExecutors.directExecutor())
 

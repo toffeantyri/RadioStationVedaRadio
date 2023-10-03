@@ -14,7 +14,7 @@ class PlayController(
     private val controller: MediaController
 ) : Player.Listener {
 
-    val playStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val playStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(controller.isPlaying)
     private var url: String = ""
     fun pushUrl(urlStream: String) {
         if (urlStream != url) {
@@ -29,18 +29,7 @@ class PlayController(
         }
     }
 
-    fun play() {
-        if (!controller.isPlaying) {
-            controller.play()
-        }
-    }
 
-    fun pause() {
-        if (controller.isPlaying) {
-            controller.playWhenReady = false
-            controller.pause()
-        }
-    }
 
     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
         Log.d(LOG_TAG, "onMediaMetadataChanged ${mediaMetadata.title}")
