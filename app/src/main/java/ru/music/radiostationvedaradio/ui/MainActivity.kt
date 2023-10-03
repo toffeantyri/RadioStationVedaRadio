@@ -117,11 +117,21 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
                         toolbarContainer.actionPlay.setOnClickListener {
                             controller.pause()
                         }
+                        slidingPanelPlayer.fabPlayPause.setImageResource(androidx.media3.ui.R.drawable.exo_icon_pause)
+                        slidingPanelPlayer.fabPlayPause.setOnClickListener {
+                            controller.pause()
+                        }
+                        slidingPanelPlayer.mainEqualizer.animateBars()
                     } else {
                         toolbarContainer.actionPlay.setImageResource(R.drawable.ic_play_filled)
                         toolbarContainer.actionPlay.setOnClickListener {
                             controller.play()
                         }
+                        slidingPanelPlayer.fabPlayPause.setImageResource(androidx.media3.ui.R.drawable.exo_icon_play)
+                        slidingPanelPlayer.fabPlayPause.setOnClickListener {
+                            controller.play()
+                        }
+                        slidingPanelPlayer.mainEqualizer.stopBars()
                     }
                 }
             }
@@ -135,7 +145,6 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
         controllerFuture?.addListener({
             controllerFuture?.let {
                 controller = it.get()
-                binding.slidingPanelPlayer.playerView.player = controller
                 controller.addListener(playerListener)
                 collectorPlayerState()
                 initQualityChooser()
