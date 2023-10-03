@@ -50,7 +50,8 @@ import ru.music.radiostationvedaradio.utils.openIntentUrl
 
 class MainActivity : AppCompatActivity(), OnFilterClickListener {
 
-    private var controllerJob: Job? = null
+    private var playerStateJob: Job? = null
+    private var metadataStateJob: Job? = null
     private var controllerFuture: ListenableFuture<MediaController>? = null
     private lateinit var controller: MediaController
     private val playerListener by lazy { PlayerStateListener(controller) }
@@ -105,10 +106,10 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
     }
 
 
-    @SuppressLint("RepeatOnLifecycleWrongUsage")
+    @SuppressLint("PrivateResource")
     private fun collectorPlayerState() {
-        controllerJob?.cancel()
-        controllerJob = lifecycleScope.launch {
+        playerStateJob?.cancel()
+        playerStateJob = lifecycleScope.launch {
             playerListener.playStateFlow.collect { isPlaying ->
                 Log.d(LOG_TAG, "VIEW COLLECTOR is Play $isPlaying")
                 with(binding) {
@@ -147,6 +148,7 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
                 controller = it.get()
                 controller.addListener(playerListener)
                 collectorPlayerState()
+                collectMetadata()
                 initQualityChooser()
                 if (controller.isPlaying.not()) {
                     pushUrl(getUrlByPos(qualityAdapter.checkedPosition))
@@ -155,6 +157,25 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
         }, MoreExecutors.directExecutor())
 
 
+    }
+
+    private fun collectMetadata() {
+        metadataStateJob?.cancel()
+        metadataStateJob = lifecycleScope.launch {
+            playerListener.metaDataStateFlow.collect { title ->
+                Log.d(LOG_TAG, "METADATA collector song $title")
+                with(binding) {
+                    val list = title?.split("-")
+                    val artist: String =
+                        list?.getOrNull(0) ?: getString(R.string.default_veda_artist)
+                    val song: String =
+                        list?.getOrNull(0) ?: getString(R.string.default_veda_song)
+                    slidingPanelPlayer.tvSongAutor.text = artist
+                    slidingPanelPlayer.tvSongTrack.text = song
+                }
+            }
+
+        }
     }
 
     override fun onStop() {
