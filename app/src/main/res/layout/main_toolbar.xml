@@ -51,6 +51,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/action_play"
             app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone"
             app:tint="@color/white" />
 
         <ImageButton
