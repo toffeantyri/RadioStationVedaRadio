@@ -16,9 +16,6 @@ import ru.music.radiostationvedaradio.ui.MainActivity
 
 class ReaderListFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = ReaderListFragment()
-    }
 
     private lateinit var parentActivity: MainActivity
 
