@@ -30,6 +30,7 @@ class MenuArrayAdapter(
     var checkedPosition = START_CHECKED_POS
     private val userFilterClickListener = OnItemClickAndTouchListener(onFilterClickListener)
 
+
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         return getHeaderView(position, convertView, parent)
     }
@@ -46,9 +47,9 @@ class MenuArrayAdapter(
 
         with(binding) {
             root.isVisible = headerViewVisible
-            arrowUp.isVisible = arrowVisibility
             arrowUp.rotation = 0f
             arrowUp.show()
+            arrowUp.isVisible = arrowVisibility
             qualityName.text = list[position]
         }
         return binding.root

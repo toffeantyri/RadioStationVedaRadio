@@ -111,6 +111,7 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
         setContentView(binding.root)
         initView()
         loadAndShowBanner()
+        initQualityChooser()
     }
 
 
@@ -126,7 +127,6 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
                         toolbarContainer.actionPlay.setOnClickListener {
                             controller.pause()
                         }
-                        //slidingPanelPlayer.fabPlayPause.setImageResource(androidx.media3.ui.R.drawable.exo_icon_pause)
                         slidingPanelPlayer.fabPlayPause.setOnClickListener {
                             controller.pause()
                         }
@@ -136,7 +136,6 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
                         toolbarContainer.actionPlay.setOnClickListener {
                             controller.play()
                         }
-                        //slidingPanelPlayer.fabPlayPause.setImageResource(androidx.media3.ui.R.drawable.exo_icon_play)
                         slidingPanelPlayer.fabPlayPause.setOnClickListener {
                             controller.play()
                         }
@@ -152,22 +151,28 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
         super.onStart()
         val sessionToken = SessionToken(this, ComponentName(this, RadioMediaService::class.java))
         controllerFuture = MediaController.Builder(this, sessionToken).buildAsync()
-        controllerFuture?.addListener({
-            controllerFuture?.let {
-                controller = it.get()
-                controller.addListener(playerListener)
-                binding.slidingPanelPlayer.fabPlayPause.player = controller
-                collectorPlayerState()
-                collectMetadata()
-                initQualityChooser {
+        controllerFuture?.addListener(
+            {
+                controllerFuture?.let {
+                    controller = it.get()
+                    controller.addListener(playerListener)
+                    binding.slidingPanelPlayer.fabPlayPause.player = controller
+                    collectorPlayerState()
+                    collectMetadata()
+
+                    val playingUrl = if (controller.mediaItemCount > 0) {
+                        controller.getMediaItemAt(0).mediaId
+                    } else null
+
+                    val pos = qualityList.indexOfFirst { url -> url == playingUrl }.coerceAtLeast(0)
+                    qualityAdapter.checkedPosition = pos
                     if (controller.isPlaying.not()) {
                         val url = qualityList[qualityAdapter.checkedPosition]
                         pushUrl(url)
                     }
                 }
-
-            }
-        }, MoreExecutors.directExecutor())
+            }, MoreExecutors.directExecutor()
+        )
 
 
     }
@@ -325,21 +330,13 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
     }
 
 
-    private fun initQualityChooser(onInitComplete: () -> Unit) {
+    private fun initQualityChooser() {
         with(binding.toolbarContainer) {
-            val playingUrl = if (controller.mediaItemCount > 0) {
-                controller.getMediaItemAt(0).mediaId
-            } else {
-                null
-            }
-            val pos = qualityList.indexOfFirst { it == playingUrl }.coerceAtLeast(0)
-            qualityAdapter.checkedPosition = pos
             qualityAdapter.setHeaderViewVisibility(false)
             qualityAdapter.setArrowViewVisibility(false)
             qualitySpinner.adapter = qualityAdapter
             qualitySpinner.setOnTouchListener(qualityAdapter.getUserSelectionClickListener())
             qualitySpinner.onItemSelectedListener = qualityAdapter.getUserSelectionClickListener()
-            onInitComplete()
         }
     }
 
