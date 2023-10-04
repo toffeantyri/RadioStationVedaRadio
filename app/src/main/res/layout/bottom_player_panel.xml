@@ -7,6 +7,7 @@
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
+
     <es.claucookie.miniequalizerlibrary.EqualizerView
         android:id="@+id/main_equalizer"
         android:layout_width="50dp"
@@ -30,7 +31,7 @@
         android:gravity="start"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/fab_play_pause"
+        app:layout_constraintEnd_toStartOf="@id/play_button_container"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/main_equalizer"
         app:layout_constraintTop_toTopOf="parent">
@@ -66,20 +67,40 @@
         </com.google.android.material.textview.MaterialTextView>
     </LinearLayout>
 
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_play_pause"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/play_button_container"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginEnd="8dp"
-        android:background="@color/blue_500"
-        android:elevation="5dp"
-        android:minWidth="50dp"
-        android:minHeight="50dp"
-        android:src="@android:drawable/ic_media_play"
+        app:cardBackgroundColor="@color/blue_200"
+        app:cardCornerRadius="25dp"
+        app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.media3.ui.PlayerControlView
+            style="@style/Theme.RadioStationVedaRadio"
+            android:id="@+id/fab_play_pause"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:alpha="1"
+            app:bar_gravity="center"
+            app:played_color="@color/blue_200"
+            app:scrubber_color="@color/green_200"
+            app:show_fastforward_button="false"
+            app:show_next_button="false"
+            app:show_previous_button="false"
+            app:show_rewind_button="false"
+            app:show_shuffle_button="false"
+            app:show_subtitle_button="false"
+            app:show_timeout="0"
+            app:show_vr_button="false"
+            app:unplayed_color="@color/blue_200" />
+
+    </androidx.cardview.widget.CardView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

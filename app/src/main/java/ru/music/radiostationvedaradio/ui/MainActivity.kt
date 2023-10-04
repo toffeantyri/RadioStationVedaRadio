@@ -41,7 +41,7 @@ import ru.music.radiostationvedaradio.ui.adapters.OnFilterClickListener
 import ru.music.radiostationvedaradio.ui.adapters.expandableList.ExpandableListAdapterForNavView
 import ru.music.radiostationvedaradio.ui.adapters.filter_adapter.MenuArrayAdapter
 import ru.music.radiostationvedaradio.ui.adapters.listview.ListViewAdapter
-import ru.music.radiostationvedaradio.ui.controller.PlayerStateListener
+import ru.music.radiostationvedaradio.ui.player_listener.PlayerStateListener
 import ru.music.radiostationvedaradio.ui.screens.TAG_WEB_URL
 import ru.music.radiostationvedaradio.ui.viewmodel.ViewModelMainActivity
 import ru.music.radiostationvedaradio.utils.LOG_TAG
@@ -119,7 +119,7 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
                         toolbarContainer.actionPlay.setOnClickListener {
                             controller.pause()
                         }
-                        slidingPanelPlayer.fabPlayPause.setImageResource(androidx.media3.ui.R.drawable.exo_icon_pause)
+                        //slidingPanelPlayer.fabPlayPause.setImageResource(androidx.media3.ui.R.drawable.exo_icon_pause)
                         slidingPanelPlayer.fabPlayPause.setOnClickListener {
                             controller.pause()
                         }
@@ -129,7 +129,7 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
                         toolbarContainer.actionPlay.setOnClickListener {
                             controller.play()
                         }
-                        slidingPanelPlayer.fabPlayPause.setImageResource(androidx.media3.ui.R.drawable.exo_icon_play)
+                        //slidingPanelPlayer.fabPlayPause.setImageResource(androidx.media3.ui.R.drawable.exo_icon_play)
                         slidingPanelPlayer.fabPlayPause.setOnClickListener {
                             controller.play()
                         }
@@ -140,6 +140,7 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
         }
     }
 
+    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     override fun onStart() {
         super.onStart()
         val sessionToken = SessionToken(this, ComponentName(this, RadioMediaService::class.java))
@@ -148,6 +149,7 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
             controllerFuture?.let {
                 controller = it.get()
                 controller.addListener(playerListener)
+                binding.slidingPanelPlayer.fabPlayPause.player = controller
                 collectorPlayerState()
                 collectMetadata()
                 initQualityChooser()

@@ -1,4 +1,4 @@
-package ru.music.radiostationvedaradio.ui.controller
+package ru.music.radiostationvedaradio.ui.player_listener
 
 import android.media.session.PlaybackState
 import android.util.Log

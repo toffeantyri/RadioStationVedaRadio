@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-<color name="translucent_black">#99000000</color>
-<color name="black">#000000</color>
-<color name="white">#ffffff</color>
-<color name="info_text">#ffffff</color>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <color name="translucent_black">#99000000</color>
+    <color name="black">#000000</color>
+    <color name="white">#ffffff</color>
+    <color name="info_text">#ffffff</color>
 
 
     <color name="green_100">#8DA786</color>
@@ -20,4 +20,7 @@
     <color name="blue_100">#A7D2FF</color>
 
     <color name="gold_500">#FFCC35</color>
+
+    <color name="exo_bottom_bar_background" tools:override="true">#00FFFFFF</color>
+    <color name="exo_black_opacity_60" tools:override="true">#00FFFFFF</color>
 </resources>
