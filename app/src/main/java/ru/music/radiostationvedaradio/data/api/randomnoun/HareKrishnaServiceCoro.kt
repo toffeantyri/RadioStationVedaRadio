@@ -6,8 +6,8 @@ import retrofit2.http.Url
 
 interface HareKrishnaServiceCoro {
 
-        @GET()
-   suspend fun getNewTcitata(@Url url : String): Response<String>
+    @GET()
+    suspend fun getNewTcitata(@Url url: String): Response<String>
 
 
 }

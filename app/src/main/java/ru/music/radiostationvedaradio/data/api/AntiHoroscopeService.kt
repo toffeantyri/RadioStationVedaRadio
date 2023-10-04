@@ -8,6 +8,6 @@ import ru.music.radiostationvedaradio.data.model.antihoro.HoroscopeModelClasses
 interface AntiHoroscopeService {
 
     @GET("/r/export/utf/xml/daily/anti.xml")
-    suspend fun getHoroXML() : Response<HoroscopeModelClasses>
+    suspend fun getHoroXML(): Response<HoroscopeModelClasses>
 
 }

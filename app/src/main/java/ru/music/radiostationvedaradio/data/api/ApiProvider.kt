@@ -34,11 +34,11 @@ class ApiProvider {
         .build()
 
 
+    fun provideNounOfToday(): HareKrishnaServiceCoro =
+        openhtmlRawBody.create(HareKrishnaServiceCoro::class.java)
 
-
-    fun provideNounOfToday() : HareKrishnaServiceCoro = openhtmlRawBody.create(HareKrishnaServiceCoro::class.java)
-
-    fun provideAntiHoro() : AntiHoroscopeService = openXmlBody.create(AntiHoroscopeService::class.java)
+    fun provideAntiHoro(): AntiHoroscopeService =
+        openXmlBody.create(AntiHoroscopeService::class.java)
 
 
 }
