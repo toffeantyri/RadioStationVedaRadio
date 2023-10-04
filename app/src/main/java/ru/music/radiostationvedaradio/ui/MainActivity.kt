@@ -65,6 +65,13 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
             this
         )
     }
+    private val qualityList by lazy {
+        listOf(
+            getString(R.string.veda_radio_stream_link_low),
+            getString(R.string.veda_radio_stream_link_medium),
+            getString(R.string.veda_radio_stream_link_high)
+        )
+    }
     private lateinit var binding: ActivityMainBinding
     private val viewModel: ViewModelMainActivity by viewModels()
     var webUrl: String? = "" // url для WebFragment public для webFragment
@@ -152,10 +159,13 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
                 binding.slidingPanelPlayer.fabPlayPause.player = controller
                 collectorPlayerState()
                 collectMetadata()
-                initQualityChooser()
-                if (controller.isPlaying.not()) {
-                    pushUrl(getUrlByPos(qualityAdapter.checkedPosition))
+                initQualityChooser {
+                    if (controller.isPlaying.not()) {
+                        val url = qualityList[qualityAdapter.checkedPosition]
+                        pushUrl(url)
+                    }
                 }
+
             }
         }, MoreExecutors.directExecutor())
 
@@ -201,27 +211,10 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
     }
 
     override fun onItemFilterClick(position: Int) {
-        pushUrl(getUrlByPos(position))
+        val url = qualityList[position]
+        pushUrl(url)
         qualityAdapter.checkedPosition = position
         qualityAdapter.notifyDataSetChanged()
-    }
-
-    private fun getUrlByPos(pos: Int): String {
-        return when (pos) {
-            0 -> getString(R.string.veda_radio_stream_link_low)
-            1 -> getString(R.string.veda_radio_stream_link_medium)
-            2 -> getString(R.string.veda_radio_stream_link_high)
-            else -> getString(R.string.veda_radio_stream_link_low)
-        }
-    }
-
-    private fun getPosByUrl(url: String?): Int {
-        return when (url) {
-            getString(R.string.veda_radio_stream_link_low) -> 0
-            getString(R.string.veda_radio_stream_link_medium) -> 1
-            getString(R.string.veda_radio_stream_link_high) -> 2
-            else -> 0
-        }
     }
 
 
@@ -261,7 +254,13 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
         doubleBackPress = true
         val handler = Handler(Looper.getMainLooper())
         handler.postDelayed({ doubleBackPress = false }, 2000)
-        this.exitDialog(onFullExit = {})
+        this.exitDialog(
+            onFullExit = {
+                controller.stop()
+                controller.removeListener(playerListener)
+                controller.release()
+                controllerFuture = null
+            })
     }
 
 
@@ -326,19 +325,21 @@ class MainActivity : AppCompatActivity(), OnFilterClickListener {
     }
 
 
-    private fun initQualityChooser() {
+    private fun initQualityChooser(onInitComplete: () -> Unit) {
         with(binding.toolbarContainer) {
             val playingUrl = if (controller.mediaItemCount > 0) {
                 controller.getMediaItemAt(0).mediaId
             } else {
                 null
             }
-            qualityAdapter.checkedPosition = getPosByUrl(playingUrl)
+            val pos = qualityList.indexOfFirst { it == playingUrl }.coerceAtLeast(0)
+            qualityAdapter.checkedPosition = pos
             qualityAdapter.setHeaderViewVisibility(false)
             qualityAdapter.setArrowViewVisibility(false)
             qualitySpinner.adapter = qualityAdapter
             qualitySpinner.setOnTouchListener(qualityAdapter.getUserSelectionClickListener())
             qualitySpinner.onItemSelectedListener = qualityAdapter.getUserSelectionClickListener()
+            onInitComplete()
         }
     }
 
