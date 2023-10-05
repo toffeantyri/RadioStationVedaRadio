@@ -13,6 +13,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import ru.music.radiostationvedaradio.R
+import ru.music.radiostationvedaradio.databinding.FragmentWebViewBinding
 import ru.music.radiostationvedaradio.ui.MainActivity
 
 
@@ -20,32 +21,25 @@ const val TAG_WEB_URL = "web_url"
 
 class WebViewFragment : Fragment() {
 
+    private lateinit var binding: FragmentWebViewBinding
     private lateinit var webUrl: String
     private lateinit var parentActivity: MainActivity
-
-    companion object {
-        @JvmStatic
-        fun newInstance() = WebViewFragment().apply {
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view0 = inflater.inflate(R.layout.fragment_web_view, container, false)
+    ): View {
+        binding = FragmentWebViewBinding.inflate(inflater)
         webUrl = arguments?.getString(TAG_WEB_URL) ?: ""
         parentActivity = (activity as MainActivity)
         setHasOptionsMenu(true)
-        return view0
+        return binding.root
     }
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val viewView = view.findViewById<WebView>(R.id.web_view1)
-        overrideOnBackPressedWithCallback(viewView)
-
+        overrideOnBackPressedWithCallback(binding.webView1)
         val myWebClient = object : WebViewClient() {
             override fun onReceivedError(
                 view: WebView?,
@@ -64,15 +58,16 @@ class WebViewFragment : Fragment() {
                 super.onPageStarted(view, url, favicon)
                 view?.visibility = View.VISIBLE
                 parentActivity.webUrl = url
-                view?.findViewById<View>(R.id.progress_cicle_webpage)?.visibility = View.GONE
+                binding.progressCicleWebpage.visibility = View.GONE
             }
 
 
         }
 
         view.apply {
-            findViewById<View>(R.id.progress_cicle_webpage).visibility = View.VISIBLE
-            findViewById<WebView>(R.id.web_view1).apply {
+
+            binding.progressCicleWebpage.visibility = View.VISIBLE
+            binding.webView1.apply {
                 webViewClient = myWebClient
                 webChromeClient = WebChromeClient()
                 settings.apply {
@@ -122,28 +117,30 @@ class WebViewFragment : Fragment() {
         menu.findItem(R.id.action_high_quality).isVisible = false
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val webView = view?.findViewById<WebView>(R.id.web_view1)
-        when (item.itemId) {
-            R.id.action_web_back -> {
-                if (webView?.canGoBack() == true) webView.goBack()
-            }
+        with(binding) {
+            when (item.itemId) {
+                R.id.action_web_back -> {
+                    if (webView1.canGoBack()) webView1.goBack()
+                }
 
-            R.id.action_web_forward -> {
-                if (webView?.canGoForward() == true) webView.goForward()
-            }
+                R.id.action_web_forward -> {
+                    if (webView1.canGoForward()) webView1.goForward()
+                }
 
-            R.id.action_web_cancel -> {
-                val action = WebViewFragmentDirections.actionWebViewFragmentToMainFragment()
-                findNavController().navigate(action)
-            }
+                R.id.action_web_cancel -> {
+                    val action = WebViewFragmentDirections.actionWebViewFragmentToMainFragment()
+                    findNavController().navigate(action)
+                }
 
-            R.id.action_web_openbrow -> {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(webView?.url))
-                startActivity(intent)
+                R.id.action_web_openbrow -> {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(webView1.url))
+                    startActivity(intent)
+                }
             }
+            return super.onOptionsItemSelected(item)
         }
-        return super.onOptionsItemSelected(item)
     }
 
 
