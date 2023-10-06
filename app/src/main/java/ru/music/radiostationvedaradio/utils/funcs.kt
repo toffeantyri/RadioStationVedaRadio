@@ -1,12 +1,10 @@
 package ru.music.radiostationvedaradio.utils
 
 import android.annotation.SuppressLint
-import android.app.ActivityManager
 import android.content.Context
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import ru.music.radiostationvedaradio.data.database.room.AntiHoroTodayEntity
 import ru.music.radiostationvedaradio.data.model.antihoro.HoroItemHolder
@@ -47,13 +45,6 @@ fun myLogNet(message: String) {
 fun Context.showToast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }
-
-
-//функция проверки запущен ли сервис Класса T
-private fun <T> Context.isServiceRunning(service: Class<T>) =
-    (getSystemService(AppCompatActivity.ACTIVITY_SERVICE) as ActivityManager)
-        .getRunningServices(Integer.MAX_VALUE)
-        .any { it.service.className == service.name }
 
 
 @SuppressLint("SimpleDateFormat")

@@ -1,5 +1,6 @@
 package ru.music.radiostationvedaradio.ui.adapters.badadvice
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -61,6 +62,7 @@ class AntiHoroAdapter : RecyclerView.Adapter<AntiHoroAdapter.HoroViewHolder>() {
         return itemList.size
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun fillListAdapter(list: List<HoroItemHolder>) {
         itemList = list
         notifyDataSetChanged()
@@ -71,7 +73,7 @@ class AntiHoroAdapter : RecyclerView.Adapter<AntiHoroAdapter.HoroViewHolder>() {
         holder.itemView.setOnClickListener {
             if (expandedPosition >= 0) notifyItemChanged(expandedPosition)
 
-            expandedPosition = holder.adapterPosition
+            expandedPosition = holder.absoluteAdapterPosition
             notifyItemChanged(expandedPosition)
         }
     }
