@@ -1,78 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal"
     android:background="@color/green_200"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
 
     <es.claucookie.miniequalizerlibrary.EqualizerView
-        android:layout_gravity="center_vertical"
         android:id="@+id/main_equalizer"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginVertical="15dp"
         android:layout_marginStart="15dp"
         android:elevation="10dp"
         android:fadingEdgeLength="10dp"
         app:animDuration="3500"
         app:foregroundColor="@color/white"
-        android:layout_marginVertical="15dp"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:layout_marginStart="80dp"
-        android:orientation="vertical"
+        android:id="@+id/text_container"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
         android:gravity="start"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent">
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/play_button_container"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toEndOf="@id/main_equalizer"
+        app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tv_song_autor"
-            android:textColor="@color/white"
             style="@style/text_style"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxLines="1"
             android:text="@string/app_name"
-            android:textSize="18dp"
-            android:maxLines="1"/>
+            android:textColor="@color/white"
+            android:textSize="18dp" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tv_song_track"
-            android:textColor="@color/white"
             style="@style/text_style"
-            android:layout_width="220dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textSize="15dp"
-            android:maxLines="1"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:singleLine="true"
             android:ellipsize="marquee"
-            android:scrollHorizontally="true"
-            android:freezesText="true"
+            android:focusable="true"
             android:focusableInTouchMode="true"
-            android:focusable="true">
+            android:freezesText="true"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:maxLines="1"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:text="@string/app_name"
+            android:textColor="@color/white"
+            android:textSize="15dp">
+
             <requestFocus />
         </com.google.android.material.textview.MaterialTextView>
     </LinearLayout>
 
+    <androidx.cardview.widget.CardView
+        android:id="@+id/play_button_container"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="8dp"
+        app:cardBackgroundColor="@color/blue_200"
+        app:cardCornerRadius="25dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/fab_play_pause"
-        android:layout_gravity="center_vertical|end"
-        android:layout_marginEnd="15dp"
-        android:src="@android:drawable/ic_media_play"
-        app:borderWidth="5dp"
-        app:backgroundTint="@color/blue_500"
-        android:elevation="5dp"
-        app:fabSize="normal"
-        app:tint="@color/white"
-        app:maxImageSize="36dp"
-        />
+        <androidx.media3.ui.PlayerControlView
+            style="@style/Theme.RadioStationVedaRadio"
+            android:id="@+id/fab_play_pause"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:alpha="1"
+            app:bar_gravity="center"
+            app:played_color="@color/blue_200"
+            app:scrubber_color="@color/green_200"
+            app:show_fastforward_button="false"
+            app:show_next_button="false"
+            app:show_previous_button="false"
+            app:show_rewind_button="false"
+            app:show_shuffle_button="false"
+            app:show_subtitle_button="false"
+            app:show_timeout="0"
+            app:show_vr_button="false"
+            app:unplayed_color="@color/blue_200" />
 
-</FrameLayout>
+    </androidx.cardview.widget.CardView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
 
 
 

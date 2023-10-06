@@ -5,6 +5,10 @@
     <string name="default_veda_artist">Veda Radio</string>
     <string name="default_veda_song">From Heart to Heart</string>
 
+    <!--    <string name="veda_radio_stream_link_high">http://listen.vedaradio.fm:8000/medium</string>-->
+    <!--    <string name="veda_radio_stream_link_medium">http://listen.vedaradio.fm:8000/low</string>-->
+    <!--    <string name="veda_radio_stream_link_low">http://listen.vedaradio.fm:8000/verylow</string>-->
+
     <string name="veda_radio_stream_link_high">https://stream.vedaradio.fm/high?</string>
     <string name="veda_radio_stream_link_medium">https://stream.vedaradio.fm/medium?</string>
     <string name="veda_radio_stream_link_low">https://stream.vedaradio.fm/low?</string>
@@ -63,8 +67,18 @@
     <string name="toolbar_play_pause">Play/Pause</string>
     <string name="toolbar_refresh_radio">Refresh Radio</string>
     <string name="test_text">Test text</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string name="permission_denied">Разрешение не получено, некоторые функции остануться недоступны</string>
+
+
+    <string name="notification_content_title">Playback cannot be resumed</string>
+    <string name="notification_content_text">Press on the play button on the media notification if it
+    is still present, otherwise please open the app to start the playback and re-connect the session
+    to the controller</string>
+    <string name="notification_channel_name">Playback cannot be resumed</string>
+
+    <string name="controls_shuffle_on_description">Shuffle</string>
+    <string name="controls_shuffle_off_description">Unshuffle</string>
 
 </resources>

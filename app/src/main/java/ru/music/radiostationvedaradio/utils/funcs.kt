@@ -1,16 +1,14 @@
 package ru.music.radiostationvedaradio.utils
 
-import android.app.ActivityManager
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavController
+import android.view.View
+import android.widget.Toast
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import ru.music.radiostationvedaradio.R
-import ru.music.radiostationvedaradio.activityes.MainActivity
-import ru.music.radiostationvedaradio.busines.database.room.AntiHoroTodayEntity
-import ru.music.radiostationvedaradio.busines.model.antihoro.HoroItemHolder
-import ru.music.radiostationvedaradio.busines.model.antihoro.HoroscopeModelClasses
+import ru.music.radiostationvedaradio.data.database.room.AntiHoroTodayEntity
+import ru.music.radiostationvedaradio.data.model.antihoro.HoroItemHolder
+import ru.music.radiostationvedaradio.data.model.antihoro.HoroscopeModelClasses
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -24,30 +22,32 @@ fun String.parceNounHareKrishnaFromHtml(): String {
     return formattedText2 ?: ""
 }
 
+fun View.show() {
+    this.visibility = View.VISIBLE
+}
+
+fun View.hide() {
+    this.visibility = View.GONE
+}
+
+fun View.invisible() {
+    this.visibility = View.INVISIBLE
+}
+
 fun myLog(message: String) {
-    Log.d(TAG, message)
+    Log.d(LOG_TAG, message)
 }
 
 fun myLogNet(message: String) {
     Log.d(TAG_NET, message)
 }
 
-fun NavController.navigateChangeTitleToolbar(
-    parentAcivity: MainActivity,
-    idAction: Int,
-    newTitle: String = parentAcivity.getString(R.string.app_name)
-) {
-    this.navigate(idAction)
-    parentAcivity.mToolbar.title = newTitle
+fun Context.showToast(message: String) {
+    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }
 
-//функция проверки запущен ли сервис Класса T
-private fun <T> Context.isServiceRunning(service: Class<T>) =
-    (getSystemService(AppCompatActivity.ACTIVITY_SERVICE) as ActivityManager)
-        .getRunningServices(Integer.MAX_VALUE)
-        .any { it.service.className == service.name }
 
-
+@SuppressLint("SimpleDateFormat")
 fun getTodayDate(format: String): String {
     val date = Calendar.getInstance().time
     val formatter = SimpleDateFormat(format)
@@ -113,4 +113,6 @@ fun AntiHoroTodayEntity.toListHoroItemHolder(): List<HoroItemHolder> {
     val mapper = jacksonObjectMapper()
     return this.list.map { mapper.readValue(it, HoroItemHolder::class.java) }
 }
+
+
 

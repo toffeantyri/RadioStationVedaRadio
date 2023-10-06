@@ -1,115 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    tools:background="@color/green_100_alp50"
-    tools:context=".screens.BadAdviceFragment">
+    tools:context=".ui.screens.BadAdviceFragment">
 
-    <com.google.android.material.card.MaterialCardView
-        android:layout_marginTop="@dimen/card_margin"
-        android:layout_marginStart="@dimen/card_margin"
-        android:layout_marginEnd="@dimen/card_margin"
-        app:cardCornerRadius="10dp"
-        android:padding="5dp"
-        app:cardElevation="10dp"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        >
+        app:elevation="0dp"
+        android:background="@android:color/transparent">
 
-        <LinearLayout
+        <com.google.android.material.appbar.MaterialToolbar
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            app:elevation="0dp"
+            app:layout_scrollFlags="scroll"
+            android:layout_height="wrap_content">
 
-            <TextView
-                style="@style/text_style"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/bad_advice_header_name"
-                android:layout_gravity="center_horizontal"
-                android:padding="10dp"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:textSize="20sp"
-                android:textStyle="normal"
-                android:elevation="10dp"/>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/blue_500"
-                />
-
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:layout_marginStart="@dimen/card_margin"
+                android:layout_marginTop="@dimen/card_margin"
+                android:layout_marginEnd="@dimen/card_margin"
+                android:padding="5dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="0dp">
 
-                <TextView
-                    android:gravity="end"
-                    android:layout_weight="1"
-                    android:paddingHorizontal="10dp"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/text_style"
-                    android:textColor="@color/black"
-                    android:textStyle="normal"
-                    android:textSize="12dp"
-                    android:text="@string/bad_advice_header_descr"/>
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/text_style"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:elevation="10dp"
+                        android:padding="10dp"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="@string/bad_advice_header_name"
+                        android:textSize="20sp"
+                        android:textStyle="normal" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/blue_500" />
 
 
-                <TextView
-                    android:layout_weight="1"
-                    android:id="@+id/tv_date_list"
-                    style="@style/text_style"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:elevation="10dp"
-                    android:gravity="center_horizontal"
-                    android:padding="10dp"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:textSize="20sp"
-                    android:textStyle="normal"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="03.03.2020" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
-            </LinearLayout>
+                        <TextView
+                            style="@style/text_style"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:paddingHorizontal="10dp"
+                            android:text="@string/bad_advice_header_descr"
+                            android:textColor="@color/black"
+                            android:textSize="12dp"
+                            android:textStyle="normal" />
 
 
+                        <TextView
+                            android:id="@+id/tv_date_list"
+                            style="@style/text_style"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:elevation="10dp"
+                            android:gravity="center_horizontal"
+                            android:padding="10dp"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
+                            android:textSize="20sp"
+                            android:textStyle="normal"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:text="03.03.2020" />
 
+                    </LinearLayout>
 
-        </LinearLayout>
+                </LinearLayout>
 
+            </com.google.android.material.card.MaterialCardView>
 
-    </com.google.android.material.card.MaterialCardView>
+        </com.google.android.material.appbar.MaterialToolbar>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <ProgressBar
-        style="@style/progressBarBlue"
         android:id="@+id/horo_progressbar"
+        style="@style/progressBarBlue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
         android:visibility="gone"
-        tools:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/horo_rv"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -117,4 +127,4 @@
         tools:listitem="@layout/horo_rv_item" />
 
 
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

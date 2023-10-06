@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="ru.music.radiostationvedaradio.screens.MainFragment"
+        android:name="ru.music.radiostationvedaradio.ui.screens.MainFragment"
         android:label="fragment_main"
         tools:layout="@layout/fragment_main">
         <action
@@ -20,13 +20,10 @@
             app:destination="@id/badAdviceFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
-        <action
-            android:id="@+id/action_mainFragment_to_epubReaderFragment"
-            app:destination="@id/epubReaderFragment" />
     </fragment>
     <fragment
         android:id="@+id/webViewFragment"
-        android:name="ru.music.radiostationvedaradio.screens.WebViewFragment"
+        android:name="ru.music.radiostationvedaradio.ui.screens.WebViewFragment"
         android:label="fragment_web_view"
         tools:layout="@layout/fragment_web_view">
         <action
@@ -39,7 +36,7 @@
     </fragment>
     <fragment
         android:id="@+id/badAdviceFragment"
-        android:name="ru.music.radiostationvedaradio.screens.BadAdviceFragment"
+        android:name="ru.music.radiostationvedaradio.ui.screens.BadAdviceFragment"
         android:label="BadAdviceFragment" >
         <action
             android:id="@+id/action_badAdviceFragment_to_mainFragment"
@@ -49,33 +46,5 @@
             app:launchSingleTop="true"
             app:popUpTo="@+id/navigation_graph_main" />
     </fragment>
-    <fragment
-        android:id="@+id/epubReaderFragment"
-        android:name="ru.music.radiostationvedaradio.screens.ReaderListFragment"
-        android:label="epub_reader_fragment"
-        tools:layout="@layout/reader_list_fragment" >
-        <action
-            android:id="@+id/action_epubReaderFragment_to_mainFragment"
-            app:destination="@id/mainFragment"
-            app:enterAnim="@anim/nav_default_pop_enter_anim"
-            app:exitAnim="@anim/nav_default_pop_exit_anim"
-            app:launchSingleTop="true"
-            app:popUpTo="@id/navigation_graph_main" />
-        <action
-            android:id="@+id/action_epubReaderFragment_to_viewPagerFragment"
-            app:destination="@id/viewPagerFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/viewPagerFragment"
-        android:name="ru.music.radiostationvedaradio.screens.ViewPagerFragment"
-        android:label="fragment_view_pager"
-        tools:layout="@layout/fragment_view_pager" >
-        <action
-            android:id="@+id/action_viewPagerFragment_to_epubReaderFragment"
-            app:destination="@id/epubReaderFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:launchSingleTop="true"
-            app:popUpTo="@id/navigation_graph_main" />
-    </fragment>
+
 </navigation>

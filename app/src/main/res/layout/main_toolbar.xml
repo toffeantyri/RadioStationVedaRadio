@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/MainToolbarStyle"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="@color/green_200"
+    app:contentInsetStart="0dp"
+    app:layout_scrollFlags="scroll|enterAlways">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageButton
+            android:id="@+id/action_home"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:paddingHorizontal="@dimen/default_margin"
+            android:rotation="90"
+            android:src="@drawable/baseline_horizontal_split_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/action_refresh"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white" />
+
+        <ProgressBar
+            android:id="@+id/refresh_progressbar"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginVertical="@dimen/default_margin"
+            android:indeterminate="true"
+            android:visibility="invisible"
+            android:indeterminateTint="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/action_refresh"
+            app:layout_constraintStart_toStartOf="@id/action_refresh"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/action_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:paddingHorizontal="@dimen/default_margin"
+            android:src="@drawable/ic_autorenew_black_24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/action_play"
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone"
+            app:tint="@color/white" />
+
+        <ImageButton
+            android:id="@+id/action_play"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:paddingHorizontal="@dimen/default_margin"
+            android:src="@drawable/ic_play_filled"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/action_quality_container"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white" />
+
+
+        <ImageButton
+            android:id="@+id/action_quality_container"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"
+            android:paddingHorizontal="@dimen/default_margin"
+            android:src="@drawable/ic_more_dots"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/qualitySpinner"
+            style="@style/favorite_filter_spinner"
+            android:layout_width="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_height="wrap_content"
+            android:dropDownWidth="200dp"
+            android:popupBackground="@drawable/rectangle_r10"
+            android:spinnerMode="dialog"
+            app:layout_constraintBottom_toBottomOf="@id/action_quality_container"
+            app:layout_constraintEnd_toEndOf="@id/action_quality_container"
+            app:layout_constraintStart_toStartOf="@id/action_quality_container"
+            app:layout_constraintTop_toTopOf="@id/action_quality_container"
+            tools:listitem="@layout/choose_quality_item" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.appcompat.widget.Toolbar>

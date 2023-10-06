@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="array_quality_list">
+        <item>Низкое качество(48kb/s)</item>
+        <item>Среднее качество(96/kb/s)</item>
+        <item>Высокое качество(128ks/s)</item>
+    </string-array>
+
+</resources>
